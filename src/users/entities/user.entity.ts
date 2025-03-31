@@ -1,1 +1,15 @@
-export class User {}
+export class User {
+    id: number;
+    name: string;
+    username: string;
+    password: string;
+    email: string;
+    role: string;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null; // Nullable field
+    stickers_number: number;
+    coins: number;
+    conquests: number;  
+    last_login: Date | null; // Nullable field
+}

@@ -1,5 +1,6 @@
 export class CreateUserDto {
-    id: string;
+    id: number;
+    name: string;
     username: string;
     password: string;
     email: string;
@@ -10,4 +11,5 @@ export class CreateUserDto {
     stickers_number: number;
     coins: number;
     conquests: number;
+    last_login: Date;
 }
