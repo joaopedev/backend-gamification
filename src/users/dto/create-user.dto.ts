@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MinLength,
@@ -27,14 +28,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsEmail(undefined, { message: 'Please provide valid Email.' })
   email: string;
-
-  @IsNotEmpty()
-  @IsInt()
-  stickers_number: number;
-
-  @IsNotEmpty()
-  @IsInt()
-  coins: number;
 
   @IsNotEmpty()
   @Matches(passwordRegEx, {
