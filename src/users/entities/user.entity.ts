@@ -1,7 +1,7 @@
 import { CoinTransaction } from "src/coin-transaction/entities/coin-transaction.entity";
 import { Trade } from "src/trades/entities/trade.entity";
 import { UserSticker } from "src/user-stickers/entities/user-sticker.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class User {
@@ -52,4 +52,10 @@ export class User {
 
     @Column({ type: 'timestamp', nullable: true })
     last_login?: Date | null; // Nullable field
+
+    @Column({ type: 'int', default: 1 })
+    level: number;
+
+    @ManyToMany(() => User, (user) => user.friends)
+    friends: User[]; // Many-to-many relationship with other users (friends)
 }
