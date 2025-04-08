@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
-import { CreateStickerDto } from './dto/create-sticker.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Sticker } from './entities/sticker.entity';
+import { CreateStickerDTO } from './dto/create-sticker.dto';
 import { UpdateStickerDto } from './dto/update-sticker.dto';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class StickersService {
-  create(createStickerDto: CreateStickerDto) {
-    return 'This action adds a new sticker';
+  constructor(
+    @InjectRepository(Sticker)
+    private readonly stickerRepo: Repository<Sticker>,
+
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+  ) {}
+
+  async create(createStickerDto: CreateStickerDTO, file: Express.Multer.File) {
+    const { name, sponsor } = createStickerDto;
+
+    const newSticker = this.stickerRepo.create({
+      name,
+      sponsor,
+      image_url: file.filename
+    });
+
+    return this.stickerRepo.save(newSticker);
   }
 
   findAll() {
-    return `This action returns all stickers`;
+    return this.stickerRepo.find({ relations: ['user'] });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} sticker`;
+    return this.stickerRepo.findOne({ where: { id }, relations: ['user'] });
   }
 
-  update(id: number, updateStickerDto: UpdateStickerDto) {
-    return `This action updates a #${id} sticker`;
+  async update(id: number, updateStickerDto: UpdateStickerDto) {
+    await this.stickerRepo.update(id, updateStickerDto);
+    return this.stickerRepo.findOne({ where: { id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} sticker`;
+  async remove(id: number) {
+    const sticker = await this.stickerRepo.findOne({ where: { id } });
+    if (!sticker) throw new NotFoundException('Sticker not found');
+    await this.stickerRepo.delete(id);
+    return { message: 'Sticker deleted' };
   }
 }
