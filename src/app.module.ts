@@ -9,18 +9,24 @@ import { StickerPackModule } from './sticker-pack/sticker-pack.module';
 import { TasksModule } from './tasks/tasks.module';
 import { UserStickersModule } from './user-stickers/user-stickers.module';
 import { CoinTransactionModule } from './coin-transaction/coin-transaction.module';
+import { FriendsRelationshipModule } from './friends-relationship/friends-relationship.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [UsersModule, StickersModule, TypeOrmModule.forRoot({
     type: 'postgres',
     host: 'localhost',
-    password: 'postgres',
     port: 5432,
     username: 'postgres',
+    password: 'postgres',
     database: 'dbgamification',
-    logging: true,
+    migrationsRun: true,
+    autoLoadEntities: true,
+    migrationsTableName: 'migrations',
     synchronize: true,
-  }), TradesModule, StickerPackModule, TasksModule, UserStickersModule, CoinTransactionModule,],
+    logging: true,
+    entities: [__dirname + '/**/*.entity.js']
+  }), TradesModule, StickerPackModule, TasksModule, UserStickersModule, CoinTransactionModule, FriendsRelationshipModule, AuthModule, ],
   controllers: [AppController],
   providers: [AppService],
 })
