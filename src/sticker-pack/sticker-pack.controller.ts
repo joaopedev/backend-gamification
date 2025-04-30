@@ -1,34 +1,47 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { StickerPackService } from './sticker-pack.service';
-import { CreateStickerPackDTO } from './dto/create-sticker-pack.dto';
-import { UpdateStickerPackDto } from './dto/update-sticker-pack.dto';
 
-@Controller('sticker-pack')
+@Controller('sticker-packs')
 export class StickerPackController {
-  constructor(private readonly stickerPackService: StickerPackService) {}
+  constructor(private readonly service: StickerPackService) {}
 
-  @Post()
-  create(@Body() createStickerPackDto: CreateStickerPackDTO) {
-    return this.stickerPackService.create(createStickerPackDto);
+  @Post('activity')
+  createFromActivity(
+    @Body('userId', ParseIntPipe) userId: number,
+    @Body('title') title: string,
+  ) {
+    return this.service.createFromActivity(userId, title);
+  }
+
+  @Post('qrcode')
+  createFromQRCode(
+    @Body('userId', ParseIntPipe) userId: number,
+    @Body('title') title: string,
+    @Body('stickerIds') stickerIds: number[],
+  ) {
+    return this.service.createFromQRCode(userId, title, stickerIds);
   }
 
   @Get()
   findAll() {
-    return this.stickerPackService.findAll();
+    return this.service.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.stickerPackService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStickerPackDto: UpdateStickerPackDto) {
-    return this.stickerPackService.update(+id, updateStickerPackDto);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.service.findOne(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.stickerPackService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.service.remove(id);
   }
 }
