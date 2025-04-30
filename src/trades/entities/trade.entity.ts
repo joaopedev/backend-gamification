@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn } from 'typeorm';
-import { User } from '../../users/entities/user.entity'; // Import the User entity
+import { Users } from '../../users/entities/user.entity'; // Import the User entity
 import { Sticker } from '../../stickers/entities/sticker.entity'; // Import the Sticker entity
 import { TradeStatus } from './tradeEnum';
 
@@ -8,11 +8,11 @@ export class Trade {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.initiatedTrades)
-  requester: User; // Quem solicitou a troca
+  @ManyToOne(() => Users, (user) => user.initiatedTrades)
+  requester: Users; // Quem solicitou a troca
 
-  @ManyToOne(() => User, (user) => user.receivedTrades)
-  receiver: User; // Quem recebeu a solicitação
+  @ManyToOne(() => Users, (user) => user.receivedTrades)
+  receiver: Users; // Quem recebeu a solicitação
 
   @ManyToOne(() => Sticker)
   offeredSticker: Sticker; // Figurinha oferecida
