@@ -1,34 +1,59 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  Get,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { FriendsRelationshipService } from './friends-relationship.service';
 import { CreateFriendsRelationshipDto } from './dto/create-friends-relationship.dto';
-import { UpdateFriendsRelationshipDto } from './dto/update-friends-relationship.dto';
 
-@Controller('friends-relationship')
+@Controller('friends')
 export class FriendsRelationshipController {
-  constructor(private readonly friendsRelationshipService: FriendsRelationshipService) {}
+  constructor(private readonly service: FriendsRelationshipService) {}
 
-  @Post()
-  create(@Body() createFriendsRelationshipDto: CreateFriendsRelationshipDto) {
-    return this.friendsRelationshipService.create(createFriendsRelationshipDto);
+  // POST /friends/request
+  @Post('request')
+  sendRequest(@Body() dto: CreateFriendsRelationshipDto) {
+    return this.service.sendRequest(dto.user_id, dto.friend_id);
   }
 
-  @Get()
-  findAll() {
-    return this.friendsRelationshipService.findAll();
+  // PATCH /friends/accept/:userId/:requesterId
+  @Patch('accept/:userId/:requesterId')
+  acceptRequest(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('requesterId', ParseIntPipe) requesterId: number,
+  ) {
+    return this.service.acceptRequest(userId, requesterId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.friendsRelationshipService.findOne(+id);
+  // PATCH /friends/block/:userId/:targetId
+  @Patch('block/:userId/:targetId')
+  blockUser(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('targetId', ParseIntPipe) targetId: number,
+  ) {
+    return this.service.blockUser(userId, targetId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFriendsRelationshipDto: UpdateFriendsRelationshipDto) {
-    return this.friendsRelationshipService.update(+id, updateFriendsRelationshipDto);
+  // GET /friends/:userId
+  @Get(':userId')
+  getFriends(@Param('userId', ParseIntPipe) userId: number) {
+    return this.service.getFriends(userId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.friendsRelationshipService.remove(+id);
+  // GET /friends/pending/:userId
+  @Get('pending/:userId')
+  getPendingRequests(@Param('userId', ParseIntPipe) userId: number) {
+    return this.service.getPendingRequests(userId);
+  }
+
+  // DELETE /friends/:userId/:targetId
+  @Delete(':userId/:targetId')
+  remove(@Param('userId', ParseIntPipe) userId: number, @Param('targetId', ParseIntPipe) targetId: number) {
+    return this.service.removeRelationship(userId, targetId);
   }
 }

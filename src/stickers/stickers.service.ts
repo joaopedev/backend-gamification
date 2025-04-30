@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { Sticker } from './entities/sticker.entity';
 import { CreateStickerDTO } from './dto/create-sticker.dto';
 import { UpdateStickerDto } from './dto/update-sticker.dto';
-import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class StickersService {
@@ -12,8 +11,6 @@ export class StickersService {
     @InjectRepository(Sticker)
     private readonly stickerRepo: Repository<Sticker>,
 
-    @InjectRepository(User)
-    private readonly userRepo: Repository<User>,
   ) {}
 
   async create(createStickerDto: CreateStickerDTO, file: Express.Multer.File) {

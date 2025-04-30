@@ -13,7 +13,4 @@ export class FriendsRelationship {
 
     @Column({ default: false })
     is_blocked: boolean; // Indicates if the user has blocked the friend
-
-    @Column({ default: false })
-    is_pending: boolean; // Indicates if the friend request is pending
 }

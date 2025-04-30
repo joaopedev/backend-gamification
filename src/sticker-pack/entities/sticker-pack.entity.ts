@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Users } from 'src/users/entities/user.entity';
+import { Sticker } from 'src/stickers/entities/sticker.entity';
 
 @Entity('sticker_packs')
 export class StickerPack {
@@ -9,18 +10,9 @@ export class StickerPack {
   @Column({ type: 'varchar', length: 100 })
   title: string;
 
-  @Column({ type: 'varchar', length: 100 })
-  description: string;
+  @ManyToOne(() => Users, (user) => user)
+  user: Users;
 
-  @Column({ type: 'varchar', length: 100 })
-  image_url: string;
-
-  @OneToMany(() => User, (user) => user)
-  user: User;
-
-  @Column({ type: 'varchar', length: 100 })
-  sponsor: string; // Number of stickers in the collection
-
-  @Column({type: 'boolean', default: false})
-  pasted: boolean; // Indicates if the sticker pack is pasted or not
+  @OneToMany(() => Sticker, (sticker) => sticker.stickerPack, { cascade: true })
+  stickers: Sticker[];
 }

@@ -1,53 +1,80 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { Users } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { encodePassword } from 'src/utils/bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
+  constructor(
+    @InjectRepository(Users)
+    private readonly userRepository: Repository<Users>,
+  ) {}
+
   async create(createUserDto: CreateUserDto) {
-    const user = this.userRepository.create(createUserDto);
-    try {
-      const existingUser = await this.userRepository.findOne({ where: { username: createUserDto.username } });
-      if (existingUser) {
-        throw new Error('Username already exists');
-      }
-      const existingEmail = await this.userRepository.findOne({ where: { email: createUserDto.email } });
-      if (existingEmail) {
-        throw new Error('Email already exists');
-      }
-    } catch (error) {
-      throw new Error('Error checking existing user: ' + error.message);
+    const { username, email, password } = createUserDto;
+
+    const existingUser = await this.userRepository.findOne({
+      where: { username },
+    });
+    if (existingUser) {
+      throw new ConflictException('Username already exists');
     }
-    // Hash the password before saving it to the database
-    const hashedPassword = encodePassword(createUserDto.password);
-    createUserDto.password = hashedPassword;
+
+    const existingEmail = await this.userRepository.findOne({
+      where: { email },
+    });
+    if (existingEmail) {
+      throw new ConflictException('Email already exists');
+    }
+
+    const hashedPassword = encodePassword(password);
+    const user = this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+
+    console.log('User saved:', user);
     await this.userRepository.save(user);
-    return user;
+
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   async findAll() {
     const users = await this.userRepository.find();
-    return users.map(user => {
-      const { password, ...userWithoutPassword } = user; // Exclude password from the response
-      return userWithoutPassword;
+    return users.map(({ password, ...rest }) => rest);
+  }
+
+  async findOne(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new BadRequestException('User not found');
+
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    await this.userRepository.update(id, updateUserDto);
+    return this.findOne(id);
+  }
+
+  async remove(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    console.log('User found:', id, user);
+    if (!user) throw new BadRequestException('User not found');
+    try {
+      await this.userRepository.remove(user);
+      return { message: 'User removed successfully' };
+    } catch (error) {
+      console.error('Error removing user:', error);
+      throw new BadRequestException('Error removing user');
     }
-    );
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }

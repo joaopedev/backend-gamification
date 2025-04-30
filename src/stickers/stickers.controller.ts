@@ -49,17 +49,17 @@ export class StickersController {
     return this.stickersService.findAll();
   }
 
-  @Get(':id')
+  @Get('findOne/:id')
   findOne(@Param('id') id: string) {
     return this.stickersService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('updateOne/:id')
   update(@Param('id') id: string, @Body() updateStickerDto: UpdateStickerDto) {
     return this.stickersService.update(+id, updateStickerDto);
   }
 
-  @Delete(':id')
+  @Delete('deleteUser/:id')
   remove(@Param('id') id: string) {
     return this.stickersService.remove(+id);
   }
