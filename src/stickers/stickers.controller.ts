@@ -34,10 +34,7 @@ export class StickersController {
       }),
     }),
   )
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return file;
-  }
-  create(
+  async create(
     @Body() createStickerDto: CreateStickerDTO,
     @UploadedFile() file: Express.Multer.File,
   ) {
@@ -47,6 +44,11 @@ export class StickersController {
   @Get()
   findAll() {
     return this.stickersService.findAll();
+  }
+
+  @Post('import-existing')
+  async importExistingStickers() {
+    return this.stickersService.populateFromExistingImages();
   }
 
   @Get('findOne/:id')
