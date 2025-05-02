@@ -14,6 +14,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
 import { join } from 'path';
 import { CustomMailService } from './mail/mail.service';
+import { FileModule } from './file.module';
 
 
 @Module({
@@ -21,8 +22,8 @@ import { CustomMailService } from './mail/mail.service';
     type: 'postgres',
     host: 'localhost',
     port: 5432,
-    username: 'postgres',
-    password: 'postgres',
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
     database: 'dbgamification',
     migrationsRun: true,
     autoLoadEntities: true,
@@ -50,7 +51,7 @@ import { CustomMailService } from './mail/mail.service';
         strict: true,
       },
     },
-  }), TradesModule, StickerPackModule, UserStickersModule, CoinTransactionModule, FriendsRelationshipModule, AuthModule, ],
+  }), TradesModule, StickerPackModule, UserStickersModule, CoinTransactionModule, FriendsRelationshipModule, AuthModule, FileModule, ],
   controllers: [AppController],
   providers: [AppService, CustomMailService],
 })
