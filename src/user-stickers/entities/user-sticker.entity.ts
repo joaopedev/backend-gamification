@@ -15,4 +15,10 @@ export class UserSticker {
 
   @Column({ default: 1 })
   quantity: number;
+
+  @Column({ default: 1 })
+  sponsor?: string;
+
+  @Column({type: 'boolean', default: false})
+  pasted: boolean; 
 }
