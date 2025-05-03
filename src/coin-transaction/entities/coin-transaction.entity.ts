@@ -10,7 +10,7 @@ export class CoinTransaction {
   type: 'TASK' | 'QR_CODE';
 
   @Column()
-  amount: number; // Quantidade de moedas recebidas
+  coins: number; // Quantidade de moedas recebidas
 
   @ManyToOne(() => Users, (user) => user.transactions)
   user: Users;
