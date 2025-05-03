@@ -31,6 +31,10 @@ export class CoinTransactionService {
     await this.coinTransactionRepo.save(transaction);
     await this.usersRepo.increment({ id: userId }, 'coins', coins);
 
+    const updatedUser = await this.usersRepo.findOne({ where: { id: userId } });
+    if (!updatedUser) throw new NotFoundException('Usuário não encontrado após atualização');
+    transaction.user = updatedUser;
+
     return transaction;
   }
 
