@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
-import { Users } from '../../users/entities/user.entity'; // Import the User entity
+import { Users } from '../../users/entities/user.entity';
 
 @Entity()
 export class CoinTransaction {
@@ -10,7 +10,7 @@ export class CoinTransaction {
   type: 'TASK' | 'QR_CODE';
 
   @Column()
-  coins: number; // Quantidade de moedas recebidas
+  coins: number; 
 
   @ManyToOne(() => Users, (user) => user.transactions)
   user: Users;
