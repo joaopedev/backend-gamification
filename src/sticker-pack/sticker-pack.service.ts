@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { StickerPack } from './entities/sticker-pack.entity';
 import { Sticker } from 'src/stickers/entities/sticker.entity';
+import { UserSticker } from 'src/user-stickers/entities/user-sticker.entity';
 
 @Injectable()
 export class StickerPackService {
@@ -11,7 +12,7 @@ export class StickerPackService {
     private readonly stickerPackRepo: Repository<StickerPack>,
 
     @InjectRepository(Sticker)
-    private readonly stickerRepo: Repository<Sticker>,
+    private readonly stickerRepo: Repository<UserSticker>,
   ) {}
 
   async createFromActivity(userId: number, title: string) {
