@@ -13,25 +13,26 @@ export class CoinTransactionService {
     private coinTransactionRepo: Repository<CoinTransaction>,
 
     @InjectRepository(Users)
-    private usersRepo: Repository<Users>
+    private usersRepo: Repository<Users>,
   ) {}
 
   async create(createCoinTransactionDto: CreateCoinTransactionDTO) {
-    const { userId, amount, type } = createCoinTransactionDto;
-  
+    const { userId, coins, type } = createCoinTransactionDto;
     const user = await this.usersRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
   
-    user.coins += amount;
+    user.coins += coins;
+    await this.usersRepo.save(user);
   
     const transaction = this.coinTransactionRepo.create({
       user,
-      amount,
+      coins,
       type,
     });
   
-    await this.usersRepo.save(user); 
-    return this.coinTransactionRepo.save(transaction);
+    await this.coinTransactionRepo.save(transaction);
+  
+    return transaction;
   }
 
   findAll() {

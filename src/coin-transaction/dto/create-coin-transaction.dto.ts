@@ -6,7 +6,7 @@ export class CreateCoinTransactionDTO {
 
   @IsInt()
   @Min(1)
-  amount: number;
+  coins: number;
 
   @IsInt()
   userId: number;

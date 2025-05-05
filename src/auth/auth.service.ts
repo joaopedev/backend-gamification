@@ -25,7 +25,7 @@ export class AuthService {
 
   async login(data: LoginDto) {
     const user = await this.userRepo.findOne({
-      where: { username: data.username },
+      where: { username: data.email },
     });
     if (!user || !(await bcrypt.compare(data.password, user.password))) {
       throw new UnauthorizedException('Credenciais inválidas');
