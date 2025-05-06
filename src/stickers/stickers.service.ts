@@ -34,7 +34,7 @@ export class StickersService {
         sponsor: 'default sponsor',
         description: 'default description',
         category: 'default category',
-        area: 'default area',
+        section: 'default area',
         sub_category: 'default sub-category',
         image_url: `http://localhost:3000/sticker-images/${file}`,
       });
@@ -60,7 +60,7 @@ export class StickersService {
         sponsor: 'Padrão',
         description: 'Figurinha automática',
         category: 'Geral',
-        area: 'Desconhecida',
+        section: 'Desconhecida',
         image_url: `http://localhost:3000/sticker-images/${file}`,
       });
   
@@ -71,7 +71,7 @@ export class StickersService {
   }
 
   async create(createStickerDto: CreateStickerDTO, file: Express.Multer.File) {
-    const { name, sponsor, description, category, area } =
+    const { name, sponsor, description, category, section } =
       createStickerDto;
 
     const filePath = join(__dirname, '..', '..', 'uploads', 'stickers', file.filename);
@@ -88,7 +88,7 @@ export class StickersService {
       sponsor,
       description,
       category,
-      area,
+      section,
       image_url: `http://localhost:3000/sticker-images/${file.filename}`,
     });
 

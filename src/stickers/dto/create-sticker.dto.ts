@@ -14,7 +14,7 @@ export class CreateStickerDTO {
   category: string;
 
   @IsString()
-  area: string;
+  section: string;
 
   @IsString()
   imageUrl: string;
