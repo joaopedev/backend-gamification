@@ -11,47 +11,64 @@ import { CoinTransactionModule } from './coin-transaction/coin-transaction.modul
 import { FriendsRelationshipModule } from './friends-relationship/friends-relationship.module';
 import { AuthModule } from './auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { CustomMailService } from './mail/mail.service';
 import { FileModule } from './file.module';
-
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UsersModule, StickersModule, TypeOrmModule.forRoot({
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'postgres',
-    password: "postgres",
-    database: 'dbgamification',
-    migrationsRun: true,
-    autoLoadEntities: true,
-    migrationsTableName: 'migrations',
-    synchronize: true,
-    logging: true,
-    entities: [__dirname + '/**/*.entity.js']
-  }), MailerModule.forRoot({
-    transport: {
-      host: 'smtp.gmail.com', // ou o SMTP do seu provedor
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER ,
-        pass: process.env.EMAIL_PASS,
+  imports: [  
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+      ignoreEnvFile: false,
+    }),
+    UsersModule,
+    StickersModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: 5432,
+      username: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASS || 'postgres',
+      database: process.env.DB_NAME,
+      migrationsRun: true,
+      autoLoadEntities: true,
+      migrationsTableName: 'migrations',
+      synchronize: true,
+      logging: true,
+      entities: [__dirname + '/**/*.entity.js'],
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
       },
-    },
-    defaults: {
-      from: '"Gammification" <gammification@gmail.com>',
-    },
-    template: {
-      dir: join(__dirname, 'templates'), // opcional, para templates com handlebars
-      adapter: new HandlebarsAdapter(),
-      options: {
-        strict: true,
+      defaults: {
+        from: '"Gammification" <gammification@gmail.com>',
       },
-    },
-  }), TradesModule, StickerPackModule, UserStickersModule, CoinTransactionModule, FriendsRelationshipModule, AuthModule, FileModule, ],
+      template: {
+        dir: join(__dirname, 'templates'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
+    TradesModule,
+    StickerPackModule,
+    UserStickersModule,
+    CoinTransactionModule,
+    FriendsRelationshipModule,
+    AuthModule,
+    FileModule,
+  ],
   controllers: [AppController],
   providers: [AppService, CustomMailService],
 })
