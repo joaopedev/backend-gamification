@@ -28,11 +28,11 @@ import { ConfigModule } from '@nestjs/config';
     StickersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,
-      port: 5432,
-      username: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASS || 'postgres',
-      database: process.env.DB_NAME,
+      host: process.env.DATABASE_HOST,
+      port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT) : 5432,
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD?.toString(),
+      database: process.env.DATABASE_NAME,
       migrationsRun: true,
       autoLoadEntities: true,
       migrationsTableName: 'migrations',
@@ -71,5 +71,7 @@ import { ConfigModule } from '@nestjs/config';
   ],
   controllers: [AppController],
   providers: [AppService, CustomMailService],
+
+  
 })
 export class AppModule {}
