@@ -39,6 +39,9 @@ import { ConfigModule } from '@nestjs/config';
       synchronize: true,
       logging: true,
       entities: [__dirname + '/**/*.entity.js'],
+      ssl:{
+        rejectUnauthorized: false,
+      }
     }),
     MailerModule.forRoot({
       transport: {
