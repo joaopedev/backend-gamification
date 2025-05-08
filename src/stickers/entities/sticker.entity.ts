@@ -25,7 +25,7 @@ export class Sticker {
   category: string; // Category of the sticker
 
   @Column({ type: 'varchar', length: 100 })
-  area: string; // Area of the sticker
+  section: string; // Area of the sticker
 
   @Column({ type: 'varchar', length: 100 })
   sub_category?: string; // Area of the sticker
