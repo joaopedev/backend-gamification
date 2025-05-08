@@ -22,13 +22,13 @@ export class StickersService {
   async seedStickers() {
     const stickersDir = join(__dirname, '..', '..', 'uploads', 'stickers');
     const files = fs.readdirSync(stickersDir);
-  
+
     for (const file of files) {
       const name = file.split('.')[0];
-  
+
       const exists = await this.stickerRepo.findOne({ where: { name } });
       if (exists) continue;
-  
+
       const newSticker = this.stickerRepo.create({
         name,
         sponsor: 'default sponsor',
@@ -38,43 +38,56 @@ export class StickersService {
         sub_category: 'default sub-category',
         image_url: `http://localhost:3000/sticker-images/${file}`,
       });
-  
+
       await this.stickerRepo.save(newSticker);
     }
-  
+
     console.log('✅ Stickers populados automaticamente.');
   }
 
   async populateFromExistingImages() {
     const stickersDir = join(__dirname, '..', '..', 'uploads', 'stickers');
     const files = readdirSync(stickersDir);
-  
+
     for (const file of files) {
-      const existing = await this.stickerRepo.findOne({ where: { image_url: `http://localhost:3000/sticker-images/${file}` } });
-      if (existing) continue;
-  
-      const name = file.split('.')[0]; // Ex: "A1.png" -> "A1"
-  
+      const imageUrl = `http://localhost:3000/sticker-images/${file}`;
+      const name = file.split('.')[0];
+
+      const existing = await this.stickerRepo.findOne({
+        where: [{ image_url: imageUrl }, { name: name }],
+      });
+
+      if (existing) {
+        console.log(`Sticker "${name}" already exists. Skipping.`);
+        continue;
+      }
+
       const newSticker = this.stickerRepo.create({
         name,
         sponsor: 'Padrão',
         description: 'Figurinha automática',
         category: 'Geral',
         section: 'Desconhecida',
-        image_url: `http://localhost:3000/sticker-images/${file}`,
+        image_url: imageUrl,
       });
-  
+
       await this.stickerRepo.save(newSticker);
     }
-  
+
     return { message: 'Importação concluída' };
   }
 
   async create(createStickerDto: CreateStickerDTO, file: Express.Multer.File) {
-    const { name, sponsor, description, category, section } =
-      createStickerDto;
+    const { name, sponsor, description, category, section } = createStickerDto;
 
-    const filePath = join(__dirname, '..', '..', 'uploads', 'stickers', file.filename);
+    const filePath = join(
+      __dirname,
+      '..',
+      '..',
+      'uploads',
+      'stickers',
+      file.filename,
+    );
     if (!fs.existsSync(filePath)) {
       throw new BadRequestException('File not found');
     }
@@ -96,7 +109,7 @@ export class StickersService {
   }
 
   findAll() {
-    return this.stickerRepo.find({ relations: ['user'] });
+    return this.stickerRepo.find();
   }
 
   findOne(id: number) {
