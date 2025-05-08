@@ -22,6 +22,7 @@ let Sticker = class Sticker {
     category;
     section;
     sub_category;
+    links;
 };
 exports.Sticker = Sticker;
 __decorate([
@@ -60,6 +61,10 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
     __metadata("design:type", String)
 ], Sticker.prototype, "sub_category", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'simple-json', nullable: true }),
+    __metadata("design:type", Array)
+], Sticker.prototype, "links", void 0);
 exports.Sticker = Sticker = __decorate([
     (0, typeorm_1.Entity)('stickers')
 ], Sticker);

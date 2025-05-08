@@ -7,6 +7,7 @@ export declare class Sticker {
     description: string;
     stickerPack: StickerPack[];
     category: string;
-    area: string;
+    section: string;
     sub_category?: string;
+    links?: string[];
 }
