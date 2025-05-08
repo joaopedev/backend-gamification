@@ -50,17 +50,22 @@ let StickersService = class StickersService {
         const stickersDir = (0, path_1.join)(__dirname, '..', '..', 'uploads', 'stickers');
         const files = (0, fs_1.readdirSync)(stickersDir);
         for (const file of files) {
-            const existing = await this.stickerRepo.findOne({ where: { image_url: `http://localhost:3000/sticker-images/${file}` } });
-            if (existing)
-                continue;
+            const imageUrl = `http://localhost:3000/sticker-images/${file}`;
             const name = file.split('.')[0];
+            const existing = await this.stickerRepo.findOne({
+                where: [{ image_url: imageUrl }, { name: name }],
+            });
+            if (existing) {
+                console.log(`Sticker "${name}" already exists. Skipping.`);
+                continue;
+            }
             const newSticker = this.stickerRepo.create({
                 name,
                 sponsor: 'Padrão',
                 description: 'Figurinha automática',
                 category: 'Geral',
                 section: 'Desconhecida',
-                image_url: `http://localhost:3000/sticker-images/${file}`,
+                image_url: imageUrl,
             });
             await this.stickerRepo.save(newSticker);
         }
