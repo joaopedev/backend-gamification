@@ -8,6 +8,8 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Put,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { StickersService } from './stickers.service';
 import { CreateStickerDTO } from './dto/create-sticker.dto';
@@ -51,13 +53,13 @@ export class StickersController {
     return this.stickersService.populateFromExistingImages();
   }
 
-  @Get('findOne/:id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.stickersService.findOne(+id);
   }
 
-  @Patch('updateOne/:id')
-  update(@Param('id') id: string, @Body() updateStickerDto: UpdateStickerDto) {
+  @Put(':id')
+  update(@Param('id', ParseIntPipe) id: string, @Body() updateStickerDto: UpdateStickerDto) {
     return this.stickersService.update(+id, updateStickerDto);
   }
 
