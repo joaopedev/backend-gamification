@@ -113,7 +113,7 @@ export class StickersService {
   }
 
   findOne(id: number) {
-    return this.stickerRepo.findOne({ where: { id }, relations: ['user'] });
+    return this.stickerRepo.findOne({ where: { id }});
   }
 
   async update(id: number, updateStickerDto: UpdateStickerDto) {

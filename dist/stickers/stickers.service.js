@@ -96,7 +96,7 @@ let StickersService = class StickersService {
         return this.stickerRepo.find();
     }
     findOne(id) {
-        return this.stickerRepo.findOne({ where: { id }, relations: ['user'] });
+        return this.stickerRepo.findOne({ where: { id } });
     }
     async update(id, updateStickerDto) {
         await this.stickerRepo.update(id, updateStickerDto);
