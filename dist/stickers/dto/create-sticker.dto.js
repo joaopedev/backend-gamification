@@ -16,7 +16,7 @@ class CreateStickerDTO {
     sponsor;
     description;
     category;
-    area;
+    section;
     imageUrl;
 }
 exports.CreateStickerDTO = CreateStickerDTO;
@@ -39,7 +39,7 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateStickerDTO.prototype, "area", void 0);
+], CreateStickerDTO.prototype, "section", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)

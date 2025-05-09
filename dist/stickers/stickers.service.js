@@ -38,7 +38,7 @@ let StickersService = class StickersService {
                 sponsor: 'default sponsor',
                 description: 'default description',
                 category: 'default category',
-                area: 'default area',
+                section: 'default area',
                 sub_category: 'default sub-category',
                 image_url: `http://localhost:3000/sticker-images/${file}`,
             });
@@ -50,24 +50,29 @@ let StickersService = class StickersService {
         const stickersDir = (0, path_1.join)(__dirname, '..', '..', 'uploads', 'stickers');
         const files = (0, fs_1.readdirSync)(stickersDir);
         for (const file of files) {
-            const existing = await this.stickerRepo.findOne({ where: { image_url: `http://localhost:3000/sticker-images/${file}` } });
-            if (existing)
-                continue;
+            const imageUrl = `http://localhost:3000/sticker-images/${file}`;
             const name = file.split('.')[0];
+            const existing = await this.stickerRepo.findOne({
+                where: [{ image_url: imageUrl }, { name: name }],
+            });
+            if (existing) {
+                console.log(`Sticker "${name}" already exists. Skipping.`);
+                continue;
+            }
             const newSticker = this.stickerRepo.create({
                 name,
                 sponsor: 'Padrão',
                 description: 'Figurinha automática',
                 category: 'Geral',
-                area: 'Desconhecida',
-                image_url: `http://localhost:3000/sticker-images/${file}`,
+                section: 'Desconhecida',
+                image_url: imageUrl,
             });
             await this.stickerRepo.save(newSticker);
         }
         return { message: 'Importação concluída' };
     }
     async create(createStickerDto, file) {
-        const { name, sponsor, description, category, area } = createStickerDto;
+        const { name, sponsor, description, category, section } = createStickerDto;
         const filePath = (0, path_1.join)(__dirname, '..', '..', 'uploads', 'stickers', file.filename);
         if (!fs.existsSync(filePath)) {
             throw new common_1.BadRequestException('File not found');
@@ -82,16 +87,16 @@ let StickersService = class StickersService {
             sponsor,
             description,
             category,
-            area,
+            section,
             image_url: `http://localhost:3000/sticker-images/${file.filename}`,
         });
         return this.stickerRepo.save(newSticker);
     }
     findAll() {
-        return this.stickerRepo.find({ relations: ['user'] });
+        return this.stickerRepo.find();
     }
     findOne(id) {
-        return this.stickerRepo.findOne({ where: { id }, relations: ['user'] });
+        return this.stickerRepo.findOne({ where: { id } });
     }
     async update(id, updateStickerDto) {
         await this.stickerRepo.update(id, updateStickerDto);

@@ -3,6 +3,6 @@ export declare class CreateStickerDTO {
     sponsor: string;
     description: string;
     category: string;
-    area: string;
+    section: string;
     imageUrl: string;
 }

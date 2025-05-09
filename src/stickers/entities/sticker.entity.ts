@@ -29,4 +29,7 @@ export class Sticker {
 
   @Column({ type: 'varchar', length: 100 })
   sub_category?: string; // Area of the sticker
+
+  @Column({ type: 'simple-json', nullable: true })
+  links?: string[];
 }

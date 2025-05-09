@@ -76,15 +76,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], StickersController.prototype, "importExistingStickers", null);
 __decorate([
-    (0, common_1.Get)('findOne/:id'),
+    (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], StickersController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Patch)('updateOne/:id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_sticker_dto_1.UpdateStickerDto]),
