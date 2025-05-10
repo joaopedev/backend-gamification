@@ -17,5 +17,5 @@ export class CreateStickerDTO {
   section: string;
 
   @IsString()
-  imageUrl: string;
+  image_url: string;
 }
