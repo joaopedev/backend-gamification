@@ -50,7 +50,7 @@ export class StickersService {
     const files = readdirSync(stickersDir);
 
     for (const file of files) {
-      const imageUrl = `http://localhost:3000/sticker-images/${file}`;
+      const imageUrl = `${process.env.API_LINK}sticker-images/${file}`;
       const name = file.split('.')[0];
 
       const existing = await this.stickerRepo.findOne({
