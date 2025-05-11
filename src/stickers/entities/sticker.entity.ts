@@ -6,7 +6,7 @@ export class Sticker {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 300 })
   name: string;
 
   @Column({ type: 'varchar', length: 100 })
