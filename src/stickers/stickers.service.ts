@@ -102,7 +102,7 @@ export class StickersService {
       description,
       category,
       section,
-      image_url: `http://localhost:3000/sticker-images/${file.filename}`,
+      image_url: `${process.env.API_LINK}${file.filename}`,
     });
 
     return this.stickerRepo.save(newSticker);
