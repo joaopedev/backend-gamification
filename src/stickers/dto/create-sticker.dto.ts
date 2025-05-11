@@ -18,4 +18,7 @@ export class CreateStickerDTO {
 
   @IsString()
   image_url: string;
+
+  @IsString()
+  sub_category?: string;
 }
