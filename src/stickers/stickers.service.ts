@@ -36,7 +36,7 @@ export class StickersService {
         category: 'default category',
         section: 'default area',
         sub_category: 'default sub-category',
-        image_url: `http://localhost:3000/sticker-images/${file}`,
+        image_url: `${process.env.API_LINK}sticker-images/${file}`,
       });
 
       await this.stickerRepo.save(newSticker);
