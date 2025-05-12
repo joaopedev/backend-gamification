@@ -24,13 +24,13 @@ export class StickersService {
     const files = fs.readdirSync(stickersDir);
 
     for (const file of files) {
-      const name = file.split('.')[0];
+      const image_url = file.split('.')[0];
 
-      const exists = await this.stickerRepo.findOne({ where: { name } });
+      const exists = await this.stickerRepo.findOne({ where: { image_url } });
       if (exists) continue;
 
       const newSticker = this.stickerRepo.create({
-        name,
+        name: 'default name',
         sponsor: 'default sponsor',
         description: 'default description',
         category: 'default category',
