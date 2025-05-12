@@ -24,7 +24,7 @@ export class StickersService {
     const files = fs.readdirSync(stickersDir);
 
     for (const file of files) {
-      const image_url = file.split('.')[0];
+      const image_url = `${process.env.API_LINK}sticker-images/${file}`;
 
       const exists = await this.stickerRepo.findOne({ where: { image_url } });
       if (exists) continue;
