@@ -63,7 +63,7 @@ export class StickersController {
     return this.stickersService.update(+id, updateStickerDto);
   }
 
-  @Delete('deleteUser/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.stickersService.remove(+id);
   }
