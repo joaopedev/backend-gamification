@@ -113,7 +113,7 @@ export class StickersService {
   }
 
   findOne(id: number) {
-    return this.stickerRepo.findOne({ where: { id }});
+    return this.stickerRepo.findOne({ where: { id } });
   }
 
   async update(id: number, updateStickerDto: UpdateStickerDto) {
@@ -127,18 +127,24 @@ export class StickersService {
     await this.stickerRepo.delete(id);
     return { message: 'Sticker deleted' };
   }
-  
+
   async removeByIds(ids: number[]) {
-    if (!ids || ids.length === 0) {
+    if (!Array.isArray(ids) || ids.length === 0) {
       throw new BadRequestException('No IDs provided');
     }
 
-    const stickers = await this.stickerRepo.findByIds(ids);
+    const validIds = ids.filter((id) => typeof id === 'number' && !isNaN(id));
+
+    if (validIds.length === 0) {
+      throw new BadRequestException('No valid numeric IDs provided');
+    }
+
+    const stickers = await this.stickerRepo.findByIds(validIds);
     if (stickers.length === 0) {
       throw new NotFoundException('No stickers found for the provided IDs');
     }
 
-    await this.stickerRepo.delete(ids);
+    await this.stickerRepo.delete(validIds);
     return { message: 'Stickers deleted' };
   }
 }
