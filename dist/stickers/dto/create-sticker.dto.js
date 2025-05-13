@@ -17,7 +17,9 @@ class CreateStickerDTO {
     description;
     category;
     section;
-    imageUrl;
+    image_url;
+    sub_category;
+    links;
 }
 exports.CreateStickerDTO = CreateStickerDTO;
 __decorate([
@@ -43,5 +45,13 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateStickerDTO.prototype, "imageUrl", void 0);
+], CreateStickerDTO.prototype, "image_url", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateStickerDTO.prototype, "sub_category", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", Array)
+], CreateStickerDTO.prototype, "links", void 0);
 //# sourceMappingURL=create-sticker.dto.js.map

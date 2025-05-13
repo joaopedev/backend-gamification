@@ -20,6 +20,7 @@ let Users = class Users {
     name;
     username;
     password;
+    confirm_password;
     email;
     image_url;
     updated_at;
@@ -57,6 +58,10 @@ __decorate([
     __metadata("design:type", String)
 ], Users.prototype, "password", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", String)
+], Users.prototype, "confirm_password", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 100, unique: true }),
     __metadata("design:type", String)
 ], Users.prototype, "email", void 0);
@@ -81,7 +86,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Users.prototype, "stickers_number", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'int', default: 0 }),
+    (0, typeorm_1.Column)({ type: 'int', default: 120 }),
     __metadata("design:type", Number)
 ], Users.prototype, "coins", void 0);
 __decorate([

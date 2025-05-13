@@ -17,6 +17,7 @@ class CreateUserDto {
     username;
     email;
     password;
+    confirm_password;
 }
 exports.CreateUserDto = CreateUserDto;
 __decorate([
@@ -49,4 +50,15 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Matches)(passwordRegEx, {
+        message: `Password must contain Minimum 8 and maximum 20 characters, 
+      at least one uppercase letter, 
+      one lowercase letter, 
+      one number and 
+      one special character`,
+    }),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "confirm_password", void 0);
 //# sourceMappingURL=create-user.dto.js.map

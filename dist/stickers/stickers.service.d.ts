@@ -16,4 +16,7 @@ export declare class StickersService {
     remove(id: number): Promise<{
         message: string;
     }>;
+    removeByIds(ids: number[]): Promise<{
+        message: string;
+    }>;
 }

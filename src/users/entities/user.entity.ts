@@ -24,7 +24,7 @@ export class Users {
   @Column({ type: 'varchar', length: 100 })
   password: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   confirm_password: string;
 
   @Column({ type: 'varchar', length: 100, unique: true })

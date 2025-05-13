@@ -51,6 +51,9 @@ exports.AppModule = AppModule = __decorate([
                 synchronize: true,
                 logging: true,
                 entities: [__dirname + '/**/*.entity.js'],
+                ssl: {
+                    rejectUnauthorized: false,
+                }
             }),
             mailer_1.MailerModule.forRoot({
                 transport: {

@@ -4,5 +4,7 @@ export declare class CreateStickerDTO {
     description: string;
     category: string;
     section: string;
-    imageUrl: string;
+    image_url: string;
+    sub_category?: string;
+    links?: string[];
 }

@@ -10,11 +10,16 @@ exports.UserStickersModule = void 0;
 const common_1 = require("@nestjs/common");
 const user_stickers_service_1 = require("./user-stickers.service");
 const user_stickers_controller_1 = require("./user-stickers.controller");
+const typeorm_1 = require("@nestjs/typeorm");
+const user_entity_1 = require("../users/entities/user.entity");
+const sticker_entity_1 = require("../stickers/entities/sticker.entity");
+const user_sticker_entity_1 = require("./entities/user-sticker.entity");
 let UserStickersModule = class UserStickersModule {
 };
 exports.UserStickersModule = UserStickersModule;
 exports.UserStickersModule = UserStickersModule = __decorate([
     (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.Users, sticker_entity_1.Sticker, user_sticker_entity_1.UserSticker])],
         controllers: [user_stickers_controller_1.UserStickersController],
         providers: [user_stickers_service_1.UserStickersService],
     })

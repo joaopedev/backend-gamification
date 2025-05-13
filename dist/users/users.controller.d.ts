@@ -8,6 +8,7 @@ export declare class UsersController {
         id: number;
         name: string;
         username: string;
+        confirm_password: string;
         email: string;
         image_url?: string;
         updated_at: Date;
@@ -31,6 +32,7 @@ export declare class UsersController {
         id: number;
         name: string;
         username: string;
+        confirm_password: string;
         email: string;
         image_url?: string;
         updated_at: Date;
@@ -54,6 +56,7 @@ export declare class UsersController {
         id: number;
         name: string;
         username: string;
+        confirm_password: string;
         email: string;
         image_url?: string;
         updated_at: Date;
@@ -77,6 +80,7 @@ export declare class UsersController {
         id: number;
         name: string;
         username: string;
+        confirm_password: string;
         email: string;
         image_url?: string;
         updated_at: Date;

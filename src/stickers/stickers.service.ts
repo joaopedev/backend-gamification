@@ -127,4 +127,18 @@ export class StickersService {
     await this.stickerRepo.delete(id);
     return { message: 'Sticker deleted' };
   }
+  
+  async removeByIds(ids: number[]) {
+    if (!ids || ids.length === 0) {
+      throw new BadRequestException('No IDs provided');
+    }
+
+    const stickers = await this.stickerRepo.findByIds(ids);
+    if (stickers.length === 0) {
+      throw new NotFoundException('No stickers found for the provided IDs');
+    }
+
+    await this.stickerRepo.delete(ids);
+    return { message: 'Stickers deleted' };
+  }
 }

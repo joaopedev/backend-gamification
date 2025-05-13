@@ -9,6 +9,7 @@ export declare class UsersService {
         id: number;
         name: string;
         username: string;
+        confirm_password: string;
         email: string;
         image_url?: string;
         updated_at: Date;
@@ -32,6 +33,7 @@ export declare class UsersService {
         id: number;
         name: string;
         username: string;
+        confirm_password: string;
         email: string;
         image_url?: string;
         updated_at: Date;
@@ -55,6 +57,7 @@ export declare class UsersService {
         id: number;
         name: string;
         username: string;
+        confirm_password: string;
         email: string;
         image_url?: string;
         updated_at: Date;
@@ -78,6 +81,7 @@ export declare class UsersService {
         id: number;
         name: string;
         username: string;
+        confirm_password: string;
         email: string;
         image_url?: string;
         updated_at: Date;

@@ -7,6 +7,7 @@ export declare class Users {
     name: string;
     username: string;
     password: string;
+    confirm_password: string;
     email: string;
     image_url?: string;
     updated_at: Date;
