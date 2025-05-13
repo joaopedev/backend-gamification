@@ -110,14 +110,18 @@ let StickersService = class StickersService {
         return { message: 'Sticker deleted' };
     }
     async removeByIds(ids) {
-        if (!ids || ids.length === 0) {
+        if (!Array.isArray(ids) || ids.length === 0) {
             throw new common_1.BadRequestException('No IDs provided');
         }
-        const stickers = await this.stickerRepo.findByIds(ids);
+        const validIds = ids.filter((id) => typeof id === 'number' && !isNaN(id));
+        if (validIds.length === 0) {
+            throw new common_1.BadRequestException('No valid numeric IDs provided');
+        }
+        const stickers = await this.stickerRepo.findByIds(validIds);
         if (stickers.length === 0) {
             throw new common_1.NotFoundException('No stickers found for the provided IDs');
         }
-        await this.stickerRepo.delete(ids);
+        await this.stickerRepo.delete(validIds);
         return { message: 'Stickers deleted' };
     }
 };
