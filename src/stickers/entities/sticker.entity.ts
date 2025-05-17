@@ -1,5 +1,12 @@
 import { StickerPack } from 'src/sticker-pack/entities/sticker-pack.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { UserSticker } from 'src/user-stickers/entities/user-sticker.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('stickers')
 export class Sticker {
@@ -32,4 +39,7 @@ export class Sticker {
 
   @Column({ type: 'simple-json', nullable: true })
   links?: string[];
+
+  @OneToMany(() => UserSticker, (userSticker) => userSticker.sticker)
+  userStickers: UserSticker[];
 }
