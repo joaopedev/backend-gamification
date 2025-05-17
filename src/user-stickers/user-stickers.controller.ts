@@ -11,6 +11,7 @@ import {
 import { UserStickersService } from './user-stickers.service';
 import { CreateUserStickerDTO } from './dto/create-user-sticker.dto';
 import { UpdateUserStickerDto } from './dto/update-user-sticker.dto';
+import { UpdatePastedDto } from './dto/update-pasted.dto';
 
 @Controller('user-stickers')
 export class UserStickersController {
@@ -38,6 +39,14 @@ export class UserStickersController {
   ) {
     return this.userStickersService.update(id, updateUserStickerDto);
   }
+
+  @Patch(':id/paste')
+updatePasted(
+  @Param('id', ParseIntPipe) id: number,
+  @Body() body: UpdatePastedDto,
+) {
+  return this.userStickersService.updatePasted(id, body.pasted);
+}
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {

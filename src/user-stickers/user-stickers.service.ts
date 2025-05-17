@@ -8,27 +8,41 @@ import { Repository } from 'typeorm';
 import { UserSticker } from './entities/user-sticker.entity';
 import { CreateUserStickerDTO } from './dto/create-user-sticker.dto';
 import { UpdateUserStickerDto } from './dto/update-user-sticker.dto';
+import { Users } from 'src/users/entities/user.entity';
+import { Sticker } from 'src/stickers/entities/sticker.entity';
 
 @Injectable()
 export class UserStickersService {
   constructor(
     @InjectRepository(UserSticker)
     private readonly userStickerRepo: Repository<UserSticker>,
+
+    @InjectRepository(Users)
+    private readonly usersRepo: Repository<Users>,
+
+    @InjectRepository(Sticker)
+    private readonly stickerRepo: Repository<Sticker>,
   ) {}
 
   async create(createUserStickerDto: CreateUserStickerDTO) {
     const { userId, stickerId = 0 } = createUserStickerDto;
 
+    const user = await this.usersRepo.findOneBy({ id: Number(userId) });
+    const sticker = await this.stickerRepo.findOneBy({ id: Number(stickerId) });
+
+    if (!user || !sticker) {
+      throw new NotFoundException('User or Sticker not found');
+    }
+
     const newUserSticker = this.userStickerRepo.create({
-      user: { id: Number(userId) } as any,
-      sticker: { id: Number(stickerId) } as any,
+      user,
+      sticker,
       quantity: 1,
       pasted: false,
     });
 
     return this.userStickerRepo.save(newUserSticker);
   }
-
   async findAll() {
     return this.userStickerRepo.find({ relations: ['user', 'sticker'] });
   }
@@ -52,6 +66,13 @@ export class UserStickersService {
     return this.userStickerRepo.save(sticker);
   }
 
+  async updatePasted(id: number, pasted: boolean) {
+    const userSticker = await this.findOne(id);
+
+    userSticker.pasted = pasted;
+    return this.userStickerRepo.save(userSticker);
+  }
+
   async remove(id: number) {
     const sticker = await this.findOne(id);
     await this.userStickerRepo.remove(sticker);
@@ -63,6 +84,13 @@ export class UserStickersService {
     stickerId: number,
     sponsor: string = 'DEFAULT',
   ) {
+    const user = await this.usersRepo.findOneBy({ id: userId });
+    const sticker = await this.stickerRepo.findOneBy({ id: stickerId });
+
+    if (!user || !sticker) {
+      throw new NotFoundException('User or Sticker not found');
+    }
+
     const existing = await this.userStickerRepo.findOne({
       where: { user: { id: userId }, sticker: { id: stickerId }, sponsor },
     });
@@ -73,8 +101,8 @@ export class UserStickersService {
     }
 
     const newUserSticker = this.userStickerRepo.create({
-      user: { id: userId } as any,
-      sticker: { id: stickerId } as any,
+      user,
+      sticker,
       sponsor,
       quantity: 1,
       pasted: false,
@@ -117,8 +145,7 @@ export class UserStickersService {
       where: { user: { id: userId }, sticker: { id: stickerId }, sponsor },
     });
 
-    if (!userSticker)
-      throw new NotFoundException('Sticker not found for user');
+    if (!userSticker) throw new NotFoundException('Sticker not found for user');
 
     await this.userStickerRepo.remove(userSticker);
     return { message: 'Sticker removed' };
