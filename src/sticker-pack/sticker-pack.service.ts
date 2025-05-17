@@ -26,10 +26,21 @@ export class StickerPackService {
     private readonly stickerRepo: Repository<Sticker>,
   ) {}
 
-  async createFromCoins(userId: number, title: string) {
-    const PACK_COST = 100;
+  async createFromCoins(userId: number, title: string, quantity: number) {
     const STICKER_COUNT = 4;
     const MAX_ATTEMPTS = 100;
+
+    const priceTable = {
+      1: 50,
+      3: 120,
+      5: 180,
+    };
+
+    if (![1, 3, 5].includes(quantity)) {
+      throw new BadRequestException('Invalid quantity. Must be 1, 3 or 5.');
+    }
+
+    const PACK_COST = priceTable[quantity];
 
     const user = await this.userRepo.findOne({
       where: { id: userId },
@@ -40,20 +51,22 @@ export class StickerPackService {
 
     if (user.coins < PACK_COST) {
       throw new BadRequestException(
-        'Not enough coins to purchase a sticker pack',
+        'Not enough coins to purchase sticker packs',
       );
     }
 
-    // IDs de figurinhas que o usuário já possui
     const ownedStickerIds = new Set<number>(
       user.userStickers.map((us) => us.sticker.id),
     );
 
-    const selectedStickers: Sticker[] = [];
+    const allSelectedStickers: Sticker[] = [];
     const selectedIds = new Set<number>();
     let attempts = 0;
 
-    while (selectedStickers.length < STICKER_COUNT && attempts < MAX_ATTEMPTS) {
+    while (
+      allSelectedStickers.length < quantity * STICKER_COUNT &&
+      attempts < MAX_ATTEMPTS * quantity
+    ) {
       const randomId = Math.floor(Math.random() * 260) + 1;
       if (selectedIds.has(randomId) || ownedStickerIds.has(randomId)) {
         attempts++;
@@ -68,39 +81,52 @@ export class StickerPackService {
         continue;
       }
 
-      selectedStickers.push(sticker);
+      allSelectedStickers.push(sticker);
       selectedIds.add(randomId);
     }
 
-    if (selectedStickers.length < STICKER_COUNT) {
+    if (allSelectedStickers.length < quantity * STICKER_COUNT) {
       throw new BadRequestException('Could not find enough eligible stickers');
     }
 
-    // Cria os UserStickers
-    const userStickers = selectedStickers.map((sticker) =>
-      this.userStickerRepo.create({
+    const userStickers: UserSticker[] = [];
+    const packs: StickerPack[] = [];
+
+    for (let i = 0; i < quantity; i++) {
+      const packStickers = allSelectedStickers.slice(
+        i * STICKER_COUNT,
+        (i + 1) * STICKER_COUNT,
+      );
+
+      // Cria e salva os UserStickers
+      const newUserStickers = packStickers.map((sticker) =>
+        this.userStickerRepo.create({
+          user,
+          sticker,
+          quantity: 1,
+          sponsor: sticker.sponsor,
+          pasted: false,
+        }),
+      );
+
+      userStickers.push(...newUserStickers);
+
+      // Cria o pacote
+      const pack = this.stickerPackRepo.create({
+        title: `${title} ${i + 1}`,
         user,
-        sticker,
-        quantity: 1,
-        sponsor: sticker.sponsor,
-        pasted: false,
-      }),
-    );
+        stickers: packStickers,
+      });
+
+      packs.push(pack);
+    }
 
     await this.userStickerRepo.save(userStickers);
 
-    // Deduz moedas
     user.coins -= PACK_COST;
     await this.userRepo.save(user);
 
-    // Cria o pacote
-    const pack = this.stickerPackRepo.create({
-      title,
-      user,
-      stickers: selectedStickers,
-    });
-
-    return this.stickerPackRepo.save(pack);
+    return this.stickerPackRepo.save(packs);
   }
 
   findAll() {

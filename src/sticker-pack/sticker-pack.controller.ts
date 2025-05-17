@@ -17,8 +17,9 @@ export class StickerPackController {
   createFromCoins(
     @Body('userId', ParseIntPipe) userId: number,
     @Body('title') title: string,
+    @Body('quantity', ParseIntPipe) quantity: number, // novo parâmetro
   ) {
-    return this.service.createFromCoins(userId, title);
+    return this.service.createFromCoins(userId, title, quantity);
   }
 
   @Get()
