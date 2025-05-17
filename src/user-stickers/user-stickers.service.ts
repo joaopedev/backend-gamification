@@ -16,18 +16,23 @@ export class UserStickersService {
     private readonly userStickerRepo: Repository<UserSticker>,
   ) {}
 
-  // Método padrão: create
   async create(createUserStickerDto: CreateUserStickerDTO) {
-    const newUserSticker = this.userStickerRepo.create(createUserStickerDto);
+    const { userId, stickerId = 0 } = createUserStickerDto;
+
+    const newUserSticker = this.userStickerRepo.create({
+      user: { id: Number(userId) } as any,
+      sticker: { id: Number(stickerId) } as any,
+      quantity: 1,
+      pasted: false,
+    });
+
     return this.userStickerRepo.save(newUserSticker);
   }
 
-  // Método padrão: findAll
   async findAll() {
     return this.userStickerRepo.find({ relations: ['user', 'sticker'] });
   }
 
-  // Método padrão: findOne
   async findOne(id: number) {
     const sticker = await this.userStickerRepo.findOne({
       where: { id },
@@ -41,21 +46,18 @@ export class UserStickersService {
     return sticker;
   }
 
-  // Método padrão: update
   async update(id: number, updateUserStickerDto: UpdateUserStickerDto) {
     const sticker = await this.findOne(id);
     Object.assign(sticker, updateUserStickerDto);
     return this.userStickerRepo.save(sticker);
   }
 
-  // Método padrão: remove
   async remove(id: number) {
     const sticker = await this.findOne(id);
     await this.userStickerRepo.remove(sticker);
     return { message: 'UserSticker removed successfully' };
   }
 
-  // Método customizado: Adicionar ou incrementar figurinha
   async addStickerToUser(
     userId: number,
     stickerId: number,
@@ -81,7 +83,6 @@ export class UserStickersService {
     return this.userStickerRepo.save(newUserSticker);
   }
 
-  // Método customizado: Colar figurinha
   async pasteSticker(
     userId: number,
     stickerId: number,
@@ -100,7 +101,6 @@ export class UserStickersService {
     return this.userStickerRepo.save(userSticker);
   }
 
-  // Método customizado: Listar figurinhas do usuário
   async getUserStickers(userId: number) {
     return this.userStickerRepo.find({
       where: { user: { id: userId } },
@@ -108,7 +108,6 @@ export class UserStickersService {
     });
   }
 
-  // Método customizado: Remover figurinha do usuário
   async removeSticker(
     userId: number,
     stickerId: number,
