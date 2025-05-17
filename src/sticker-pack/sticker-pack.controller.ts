@@ -13,21 +13,12 @@ import { StickerPackService } from './sticker-pack.service';
 export class StickerPackController {
   constructor(private readonly service: StickerPackService) {}
 
-  @Post('activity')
-  createFromActivity(
+  @Post('coins')
+  createFromCoins(
     @Body('userId', ParseIntPipe) userId: number,
     @Body('title') title: string,
   ) {
-    return this.service.createFromActivity(userId, title);
-  }
-
-  @Post('qrcode')
-  createFromQRCode(
-    @Body('userId', ParseIntPipe) userId: number,
-    @Body('title') title: string,
-    @Body('stickerIds') stickerIds: number[],
-  ) {
-    return this.service.createFromQRCode(userId, title, stickerIds);
+    return this.service.createFromCoins(userId, title);
   }
 
   @Get()

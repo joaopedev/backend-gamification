@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Sticker } from 'src/stickers/entities/sticker.entity';
 import { Users } from 'src/users/entities/user.entity';
 import { StickerPack } from './entities/sticker-pack.entity';
+import { UserSticker } from 'src/user-stickers/entities/user-sticker.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Sticker, Users, StickerPack])],
+  imports: [TypeOrmModule.forFeature([Sticker, Users, StickerPack, UserSticker])],
   controllers: [StickerPackController],
   providers: [StickerPackService],
   exports: [StickerPackService]
