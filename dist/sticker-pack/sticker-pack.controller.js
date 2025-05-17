@@ -20,8 +20,8 @@ let StickerPackController = class StickerPackController {
     constructor(service) {
         this.service = service;
     }
-    createFromCoins(userId, title) {
-        return this.service.createFromCoins(userId, title);
+    createFromCoins(userId, title, quantity) {
+        return this.service.createFromCoins(userId, title, quantity);
     }
     findAll() {
         return this.service.findAll();
@@ -38,8 +38,9 @@ __decorate([
     (0, common_1.Post)('coins'),
     __param(0, (0, common_1.Body)('userId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)('title')),
+    __param(2, (0, common_1.Body)('quantity', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:paramtypes", [Number, String, Number]),
     __metadata("design:returntype", void 0)
 ], StickerPackController.prototype, "createFromCoins", null);
 __decorate([

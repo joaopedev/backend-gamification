@@ -9,7 +9,7 @@ export declare class StickerPackService {
     private readonly userRepo;
     private readonly stickerRepo;
     constructor(stickerPackRepo: Repository<StickerPack>, userStickerRepo: Repository<UserSticker>, userRepo: Repository<Users>, stickerRepo: Repository<Sticker>);
-    createFromCoins(userId: number, title: string): Promise<StickerPack>;
+    createFromCoins(userId: number, title: string, quantity: number): Promise<StickerPack[]>;
     findAll(): Promise<StickerPack[]>;
     findOne(id: number): Promise<StickerPack | null>;
     remove(id: number): Promise<StickerPack>;

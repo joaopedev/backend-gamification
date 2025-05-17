@@ -54,7 +54,7 @@ __decorate([
     __metadata("design:type", String)
 ], Sticker.prototype, "category", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "section", void 0);
 __decorate([

@@ -31,10 +31,18 @@ let StickerPackService = class StickerPackService {
         this.userRepo = userRepo;
         this.stickerRepo = stickerRepo;
     }
-    async createFromCoins(userId, title) {
-        const PACK_COST = 100;
+    async createFromCoins(userId, title, quantity) {
         const STICKER_COUNT = 4;
         const MAX_ATTEMPTS = 100;
+        const priceTable = {
+            1: 50,
+            3: 120,
+            5: 180,
+        };
+        if (![1, 3, 5].includes(quantity)) {
+            throw new common_1.BadRequestException('Invalid quantity. Must be 1, 3 or 5.');
+        }
+        const PACK_COST = priceTable[quantity];
         const user = await this.userRepo.findOne({
             where: { id: userId },
             relations: ['userStickers', 'userStickers.sticker'],
@@ -42,13 +50,14 @@ let StickerPackService = class StickerPackService {
         if (!user)
             throw new common_1.NotFoundException('User not found');
         if (user.coins < PACK_COST) {
-            throw new common_1.BadRequestException('Not enough coins to purchase a sticker pack');
+            throw new common_1.BadRequestException('Not enough coins to purchase sticker packs');
         }
         const ownedStickerIds = new Set(user.userStickers.map((us) => us.sticker.id));
-        const selectedStickers = [];
+        const allSelectedStickers = [];
         const selectedIds = new Set();
         let attempts = 0;
-        while (selectedStickers.length < STICKER_COUNT && attempts < MAX_ATTEMPTS) {
+        while (allSelectedStickers.length < quantity * STICKER_COUNT &&
+            attempts < MAX_ATTEMPTS * quantity) {
             const randomId = Math.floor(Math.random() * 260) + 1;
             if (selectedIds.has(randomId) || ownedStickerIds.has(randomId)) {
                 attempts++;
@@ -61,28 +70,35 @@ let StickerPackService = class StickerPackService {
                 attempts++;
                 continue;
             }
-            selectedStickers.push(sticker);
+            allSelectedStickers.push(sticker);
             selectedIds.add(randomId);
         }
-        if (selectedStickers.length < STICKER_COUNT) {
+        if (allSelectedStickers.length < quantity * STICKER_COUNT) {
             throw new common_1.BadRequestException('Could not find enough eligible stickers');
         }
-        const userStickers = selectedStickers.map((sticker) => this.userStickerRepo.create({
-            user,
-            sticker,
-            quantity: 1,
-            sponsor: sticker.sponsor,
-            pasted: false,
-        }));
+        const userStickers = [];
+        const packs = [];
+        for (let i = 0; i < quantity; i++) {
+            const packStickers = allSelectedStickers.slice(i * STICKER_COUNT, (i + 1) * STICKER_COUNT);
+            const newUserStickers = packStickers.map((sticker) => this.userStickerRepo.create({
+                user,
+                sticker,
+                quantity: 1,
+                sponsor: sticker.sponsor,
+                pasted: false,
+            }));
+            userStickers.push(...newUserStickers);
+            const pack = this.stickerPackRepo.create({
+                title: `${title} ${i + 1}`,
+                user,
+                stickers: packStickers,
+            });
+            packs.push(pack);
+        }
         await this.userStickerRepo.save(userStickers);
         user.coins -= PACK_COST;
         await this.userRepo.save(user);
-        const pack = this.stickerPackRepo.create({
-            title,
-            user,
-            stickers: selectedStickers,
-        });
-        return this.stickerPackRepo.save(pack);
+        return this.stickerPackRepo.save(packs);
     }
     findAll() {
         return this.stickerPackRepo.find({ relations: ['stickers'] });
