@@ -17,41 +17,70 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const sticker_pack_entity_1 = require("./entities/sticker-pack.entity");
+const user_sticker_entity_1 = require("../user-stickers/entities/user-sticker.entity");
+const user_entity_1 = require("../users/entities/user.entity");
 const sticker_entity_1 = require("../stickers/entities/sticker.entity");
 let StickerPackService = class StickerPackService {
     stickerPackRepo;
+    userStickerRepo;
+    userRepo;
     stickerRepo;
-    constructor(stickerPackRepo, stickerRepo) {
+    constructor(stickerPackRepo, userStickerRepo, userRepo, stickerRepo) {
         this.stickerPackRepo = stickerPackRepo;
+        this.userStickerRepo = userStickerRepo;
+        this.userRepo = userRepo;
         this.stickerRepo = stickerRepo;
     }
-    async createFromActivity(userId, title) {
-        const stickers = await this.stickerRepo.find({
-            where: {
-                user: { id: userId },
-                sponsor: (0, typeorm_2.Not)('SPECIAL'),
-            },
-            take: 4,
+    async createFromCoins(userId, title) {
+        const PACK_COST = 100;
+        const STICKER_COUNT = 4;
+        const MAX_ATTEMPTS = 100;
+        const user = await this.userRepo.findOne({
+            where: { id: userId },
+            relations: ['userStickers', 'userStickers.sticker'],
         });
-        if (stickers.length < 4) {
-            throw new Error('Not enough stickers available for activity-based pack');
+        if (!user)
+            throw new common_1.NotFoundException('User not found');
+        if (user.coins < PACK_COST) {
+            throw new common_1.BadRequestException('Not enough coins to purchase a sticker pack');
         }
+        const ownedStickerIds = new Set(user.userStickers.map((us) => us.sticker.id));
+        const selectedStickers = [];
+        const selectedIds = new Set();
+        let attempts = 0;
+        while (selectedStickers.length < STICKER_COUNT && attempts < MAX_ATTEMPTS) {
+            const randomId = Math.floor(Math.random() * 260) + 1;
+            if (selectedIds.has(randomId) || ownedStickerIds.has(randomId)) {
+                attempts++;
+                continue;
+            }
+            const sticker = await this.stickerRepo.findOne({
+                where: { id: randomId },
+            });
+            if (!sticker || sticker.sponsor === 'SPECIAL') {
+                attempts++;
+                continue;
+            }
+            selectedStickers.push(sticker);
+            selectedIds.add(randomId);
+        }
+        if (selectedStickers.length < STICKER_COUNT) {
+            throw new common_1.BadRequestException('Could not find enough eligible stickers');
+        }
+        const userStickers = selectedStickers.map((sticker) => this.userStickerRepo.create({
+            user,
+            sticker,
+            quantity: 1,
+            sponsor: sticker.sponsor,
+            pasted: false,
+        }));
+        await this.userStickerRepo.save(userStickers);
+        user.coins -= PACK_COST;
+        await this.userRepo.save(user);
         const pack = this.stickerPackRepo.create({
             title,
-            user: { id: userId },
-            stickers,
-        });
-        return this.stickerPackRepo.save(pack);
-    }
-    async createFromQRCode(userId, title, stickerIds) {
-        const stickers = await this.stickerRepo.findByIds(stickerIds);
-        if (!stickers.length) {
-            throw new Error('No stickers found for QR code');
-        }
-        const pack = this.stickerPackRepo.create({
-            title,
-            user: { id: userId },
-            stickers,
+            user,
+            stickers: selectedStickers,
         });
         return this.stickerPackRepo.save(pack);
     }
@@ -59,7 +88,10 @@ let StickerPackService = class StickerPackService {
         return this.stickerPackRepo.find({ relations: ['stickers'] });
     }
     findOne(id) {
-        return this.stickerPackRepo.findOne({ where: { id }, relations: ['stickers'] });
+        return this.stickerPackRepo.findOne({
+            where: { id },
+            relations: ['stickers'],
+        });
     }
     async remove(id) {
         const pack = await this.stickerPackRepo.findOne({ where: { id } });
@@ -72,8 +104,12 @@ exports.StickerPackService = StickerPackService;
 exports.StickerPackService = StickerPackService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(sticker_pack_entity_1.StickerPack)),
-    __param(1, (0, typeorm_1.InjectRepository)(sticker_entity_1.Sticker)),
+    __param(1, (0, typeorm_1.InjectRepository)(user_sticker_entity_1.UserSticker)),
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.Users)),
+    __param(3, (0, typeorm_1.InjectRepository)(sticker_entity_1.Sticker)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], StickerPackService);
 //# sourceMappingURL=sticker-pack.service.js.map
