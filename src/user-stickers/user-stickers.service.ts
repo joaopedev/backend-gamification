@@ -30,6 +30,7 @@ export class UserStickersService {
     const user = await this.usersRepo.findOneOrFail({
       where: { id: Number(userId) },
     });
+
     const sticker = await this.stickerRepo.findOneOrFail({
       where: { id: Number(stickerId) },
     });
@@ -41,7 +42,7 @@ export class UserStickersService {
       pasted: false,
     });
 
-    return this.userStickerRepo.save(newUserSticker);
+    return await this.userStickerRepo.save(newUserSticker);
   }
 
   async findAll() {

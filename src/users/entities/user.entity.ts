@@ -40,7 +40,7 @@ export class Users {
   created_at: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  deleted_at?: Date | null; // Nullable field
+  deleted_at?: Date | null;
 
   @Column({ type: 'int', default: 0 })
   stickers_number: number;
@@ -54,9 +54,6 @@ export class Users {
   @OneToMany(() => CoinTransaction, (transaction) => transaction.user)
   transactions: CoinTransaction[];
 
-  @OneToMany(() => UserSticker, (userSticker) => userSticker.user)
-  userStickers: UserSticker[];
-
   @OneToMany(() => Trade, (trade) => trade.requester)
   initiatedTrades: Trade[];
 
@@ -64,16 +61,19 @@ export class Users {
   receivedTrades: Trade[];
 
   @Column({ type: 'timestamp', nullable: true })
-  last_login?: Date | null; // Nullable field
+  last_login?: Date | null;
 
   @Column({ type: 'int', default: 1 })
   level: number;
 
   @ManyToMany(() => Users, (user) => user.friends)
-  friends: Users[]; // Many-to-many relationship with other users (friends)
+  friends: Users[];
 
   @OneToMany(() => StickerPack, (pack) => pack.user)
   stickerPacks: StickerPack[];
+
+  @OneToMany(() => UserSticker, (us) => us.user)
+  userStickers: UserSticker[];
 
   @Column({ nullable: true })
   resetPasswordToken: string;
