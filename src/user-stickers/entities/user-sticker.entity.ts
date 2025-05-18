@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn, ManyToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Column,
+  JoinColumn,
+} from 'typeorm';
 import { Users } from '../../users/entities/user.entity';
 import { Sticker } from '../../stickers/entities/sticker.entity';
 
@@ -7,11 +13,17 @@ export class UserSticker {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToMany(() => Users, (user) => user.userStickers, { nullable: true })
-  @JoinColumn({ name: 'user_id' }) 
+  @ManyToOne(() => Users, (user) => user.userStickers, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
   user: Users;
 
-  @ManyToOne(() => Sticker, (sticker) => sticker.userStickers, { nullable: false })
+  @ManyToOne(() => Sticker, (sticker) => sticker.userStickers, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'sticker_id' })
   sticker: Sticker;
 
@@ -19,7 +31,7 @@ export class UserSticker {
   quantity: number;
 
   @Column({ default: '' })
-  sponsor?: string;
+  sponsor: string;
 
   @Column({ type: 'boolean', default: false })
   pasted: boolean;
