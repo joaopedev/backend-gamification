@@ -43,16 +43,22 @@ let StickerPackService = class StickerPackService {
             throw new common_1.BadRequestException('Invalid quantity. Must be 1, 3 or 5.');
         }
         const PACK_COST = priceTable[quantity];
-        const user = await this.userRepo.findOne({
+        const fullUser = await this.userRepo.findOne({
             where: { id: userId },
             relations: ['userStickers', 'userStickers.sticker'],
         });
+        if (!fullUser)
+            throw new common_1.NotFoundException('User not found');
+        const user = await this.userRepo.findOneOrFail({ where: { id: userId } });
+        if (fullUser.coins < PACK_COST) {
+            throw new common_1.BadRequestException('Not enough coins to purchase sticker packs');
+        }
         if (!user)
             throw new common_1.NotFoundException('User not found');
         if (user.coins < PACK_COST) {
             throw new common_1.BadRequestException('Not enough coins to purchase sticker packs');
         }
-        const ownedStickerIds = new Set(user.userStickers.map((us) => us.sticker.id));
+        const ownedStickerIds = new Set(fullUser.userStickers.map((us) => us.sticker.id));
         const allSelectedStickers = [];
         const selectedIds = new Set();
         let attempts = 0;

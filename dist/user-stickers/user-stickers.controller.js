@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const user_stickers_service_1 = require("./user-stickers.service");
 const create_user_sticker_dto_1 = require("./dto/create-user-sticker.dto");
 const update_user_sticker_dto_1 = require("./dto/update-user-sticker.dto");
+const update_pasted_dto_1 = require("./dto/update-pasted.dto");
 let UserStickersController = class UserStickersController {
     userStickersService;
     constructor(userStickersService) {
@@ -29,13 +30,19 @@ let UserStickersController = class UserStickersController {
         return this.userStickersService.findAll();
     }
     findOne(id) {
-        return this.userStickersService.findOne(+id);
+        return this.userStickersService.findOne(id);
     }
     update(id, updateUserStickerDto) {
-        return this.userStickersService.update(+id, updateUserStickerDto);
+        return this.userStickersService.update(id, updateUserStickerDto);
+    }
+    findByUser(userId) {
+        return this.userStickersService.findByUser(userId);
+    }
+    updatePasted(id, body) {
+        return this.userStickersService.updatePasted(id, body.pasted);
     }
     remove(id) {
-        return this.userStickersService.remove(+id);
+        return this.userStickersService.remove(id);
     }
 };
 exports.UserStickersController = UserStickersController;
@@ -54,24 +61,39 @@ __decorate([
 ], UserStickersController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], UserStickersController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_user_sticker_dto_1.UpdateUserStickerDto]),
+    __metadata("design:paramtypes", [Number, update_user_sticker_dto_1.UpdateUserStickerDto]),
     __metadata("design:returntype", void 0)
 ], UserStickersController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)('user/:userId'),
+    __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], UserStickersController.prototype, "findByUser", null);
+__decorate([
+    (0, common_1.Patch)(':id/paste'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_pasted_dto_1.UpdatePastedDto]),
+    __metadata("design:returntype", void 0)
+], UserStickersController.prototype, "updatePasted", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], UserStickersController.prototype, "remove", null);
 exports.UserStickersController = UserStickersController = __decorate([

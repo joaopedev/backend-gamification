@@ -17,13 +17,13 @@ export declare class Users {
     coins: number;
     conquests: number;
     transactions: CoinTransaction[];
-    userStickers: UserSticker[];
     initiatedTrades: Trade[];
     receivedTrades: Trade[];
     last_login?: Date | null;
     level: number;
     friends: Users[];
     stickerPacks: StickerPack[];
+    userStickers: UserSticker[];
     resetPasswordToken: string;
     resetPasswordExpires: Date;
 }

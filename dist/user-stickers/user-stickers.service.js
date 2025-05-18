@@ -17,14 +17,32 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_sticker_entity_1 = require("./entities/user-sticker.entity");
+const user_entity_1 = require("../users/entities/user.entity");
+const sticker_entity_1 = require("../stickers/entities/sticker.entity");
 let UserStickersService = class UserStickersService {
     userStickerRepo;
-    constructor(userStickerRepo) {
+    usersRepo;
+    stickerRepo;
+    constructor(userStickerRepo, usersRepo, stickerRepo) {
         this.userStickerRepo = userStickerRepo;
+        this.usersRepo = usersRepo;
+        this.stickerRepo = stickerRepo;
     }
     async create(createUserStickerDto) {
-        const newUserSticker = this.userStickerRepo.create(createUserStickerDto);
-        return this.userStickerRepo.save(newUserSticker);
+        const { userId, stickerId = 0 } = createUserStickerDto;
+        const user = await this.usersRepo.findOneOrFail({
+            where: { id: Number(userId) },
+        });
+        const sticker = await this.stickerRepo.findOneOrFail({
+            where: { id: Number(stickerId) },
+        });
+        const newUserSticker = this.userStickerRepo.create({
+            user,
+            sticker,
+            quantity: 1,
+            pasted: false,
+        });
+        return await this.userStickerRepo.save(newUserSticker);
     }
     async findAll() {
         return this.userStickerRepo.find({ relations: ['user', 'sticker'] });
@@ -39,10 +57,27 @@ let UserStickersService = class UserStickersService {
         }
         return sticker;
     }
+    async findByUser(userId) {
+        const stickers = await this.userStickerRepo.find({
+            where: {
+                user: { id: userId },
+            },
+            relations: ['user', 'sticker'],
+            order: {
+                sticker: { id: 'ASC' },
+            },
+        });
+        return stickers;
+    }
     async update(id, updateUserStickerDto) {
         const sticker = await this.findOne(id);
         Object.assign(sticker, updateUserStickerDto);
         return this.userStickerRepo.save(sticker);
+    }
+    async updatePasted(id, pasted) {
+        const userSticker = await this.findOne(id);
+        userSticker.pasted = pasted;
+        return this.userStickerRepo.save(userSticker);
     }
     async remove(id) {
         const sticker = await this.findOne(id);
@@ -50,6 +85,11 @@ let UserStickersService = class UserStickersService {
         return { message: 'UserSticker removed successfully' };
     }
     async addStickerToUser(userId, stickerId, sponsor = 'DEFAULT') {
+        const user = await this.usersRepo.findOneBy({ id: userId });
+        const sticker = await this.stickerRepo.findOneBy({ id: stickerId });
+        if (!user || !sticker) {
+            throw new common_1.NotFoundException('User or Sticker not found');
+        }
         const existing = await this.userStickerRepo.findOne({
             where: { user: { id: userId }, sticker: { id: stickerId }, sponsor },
         });
@@ -58,8 +98,8 @@ let UserStickersService = class UserStickersService {
             return this.userStickerRepo.save(existing);
         }
         const newUserSticker = this.userStickerRepo.create({
-            user: { id: userId },
-            sticker: { id: stickerId },
+            user,
+            sticker,
             sponsor,
             quantity: 1,
             pasted: false,
@@ -97,6 +137,10 @@ exports.UserStickersService = UserStickersService;
 exports.UserStickersService = UserStickersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_sticker_entity_1.UserSticker)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.Users)),
+    __param(2, (0, typeorm_1.InjectRepository)(sticker_entity_1.Sticker)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], UserStickersService);
 //# sourceMappingURL=user-stickers.service.js.map

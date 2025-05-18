@@ -30,13 +30,13 @@ let Users = class Users {
     coins;
     conquests;
     transactions;
-    userStickers;
     initiatedTrades;
     receivedTrades;
     last_login;
     level;
     friends;
     stickerPacks;
+    userStickers;
     resetPasswordToken;
     resetPasswordExpires;
 };
@@ -98,10 +98,6 @@ __decorate([
     __metadata("design:type", Array)
 ], Users.prototype, "transactions", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => user_sticker_entity_1.UserSticker, (userSticker) => userSticker.user),
-    __metadata("design:type", Array)
-], Users.prototype, "userStickers", void 0);
-__decorate([
     (0, typeorm_1.OneToMany)(() => trade_entity_1.Trade, (trade) => trade.requester),
     __metadata("design:type", Array)
 ], Users.prototype, "initiatedTrades", void 0);
@@ -125,6 +121,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => sticker_pack_entity_1.StickerPack, (pack) => pack.user),
     __metadata("design:type", Array)
 ], Users.prototype, "stickerPacks", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => user_sticker_entity_1.UserSticker, (us) => us.user),
+    __metadata("design:type", Array)
+], Users.prototype, "userStickers", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)

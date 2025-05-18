@@ -27,11 +27,19 @@ __decorate([
     __metadata("design:type", Number)
 ], UserSticker.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.Users, (user) => user.stickers_number),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.Users, (user) => user.userStickers, {
+        nullable: false,
+        onDelete: 'CASCADE',
+    }),
+    (0, typeorm_1.JoinColumn)({ name: 'user_id' }),
     __metadata("design:type", user_entity_1.Users)
 ], UserSticker.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => sticker_entity_1.Sticker, (sticker) => sticker.id),
+    (0, typeorm_1.ManyToOne)(() => sticker_entity_1.Sticker, (sticker) => sticker.userStickers, {
+        nullable: false,
+        onDelete: 'CASCADE',
+    }),
+    (0, typeorm_1.JoinColumn)({ name: 'sticker_id' }),
     __metadata("design:type", sticker_entity_1.Sticker)
 ], UserSticker.prototype, "sticker", void 0);
 __decorate([
@@ -39,7 +47,7 @@ __decorate([
     __metadata("design:type", Number)
 ], UserSticker.prototype, "quantity", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: "" }),
+    (0, typeorm_1.Column)({ default: '' }),
     __metadata("design:type", String)
 ], UserSticker.prototype, "sponsor", void 0);
 __decorate([
@@ -47,6 +55,6 @@ __decorate([
     __metadata("design:type", Boolean)
 ], UserSticker.prototype, "pasted", void 0);
 exports.UserSticker = UserSticker = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)('user_stickers')
 ], UserSticker);
 //# sourceMappingURL=user-sticker.entity.js.map

@@ -2,13 +2,19 @@ import { Repository } from 'typeorm';
 import { UserSticker } from './entities/user-sticker.entity';
 import { CreateUserStickerDTO } from './dto/create-user-sticker.dto';
 import { UpdateUserStickerDto } from './dto/update-user-sticker.dto';
+import { Users } from 'src/users/entities/user.entity';
+import { Sticker } from 'src/stickers/entities/sticker.entity';
 export declare class UserStickersService {
     private readonly userStickerRepo;
-    constructor(userStickerRepo: Repository<UserSticker>);
+    private readonly usersRepo;
+    private readonly stickerRepo;
+    constructor(userStickerRepo: Repository<UserSticker>, usersRepo: Repository<Users>, stickerRepo: Repository<Sticker>);
     create(createUserStickerDto: CreateUserStickerDTO): Promise<UserSticker>;
     findAll(): Promise<UserSticker[]>;
     findOne(id: number): Promise<UserSticker>;
+    findByUser(userId: number): Promise<UserSticker[]>;
     update(id: number, updateUserStickerDto: UpdateUserStickerDto): Promise<UserSticker>;
+    updatePasted(id: number, pasted: boolean): Promise<UserSticker>;
     remove(id: number): Promise<{
         message: string;
     }>;

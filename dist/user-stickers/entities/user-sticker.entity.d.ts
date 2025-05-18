@@ -5,6 +5,6 @@ export declare class UserSticker {
     user: Users;
     sticker: Sticker;
     quantity: number;
-    sponsor?: string;
+    sponsor: string;
     pasted: boolean;
 }
