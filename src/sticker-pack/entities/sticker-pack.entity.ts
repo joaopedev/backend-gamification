@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Users } from 'src/users/entities/user.entity';
 import { Sticker } from 'src/stickers/entities/sticker.entity';
 
@@ -10,7 +16,7 @@ export class StickerPack {
   @Column({ type: 'varchar', length: 100 })
   title: string;
 
-  @ManyToOne(() => Users, (user) => user)
+  @ManyToOne(() => Users, (user) => user.stickerPacks)
   user: Users;
 
   @OneToMany(() => Sticker, (sticker) => sticker.stickerPack, { cascade: true })
