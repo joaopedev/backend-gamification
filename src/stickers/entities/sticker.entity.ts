@@ -20,26 +20,26 @@ export class Sticker {
   image_url: string;
 
   @Column({ type: 'varchar', length: 100 })
-  sponsor: string; // Number of stickers in the collection
+  sponsor: string;
 
   @Column({ type: 'varchar', length: 100 })
   description: string;
 
   @ManyToOne(() => StickerPack, (stickerPack) => stickerPack.stickers)
-  stickerPack: StickerPack[];
+  stickerPack: StickerPack;
 
   @Column({ type: 'varchar', length: 100 })
-  category: string; // Category of the sticker
+  category: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  section: string; // Area of the sticker
+  section: string;
 
-  @Column({ type: 'varchar', length: 100 })
-  sub_category?: string; // Area of the sticker
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  sub_category: string;
 
   @Column({ type: 'simple-json', nullable: true })
   links?: string[];
 
-  @OneToMany(() => UserSticker, (userSticker) => userSticker.sticker)
+  @OneToMany(() => UserSticker, (us) => us.sticker)
   userStickers: UserSticker[];
 }
