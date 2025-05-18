@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn, ManyToMany } from 'typeorm';
 import { Users } from '../../users/entities/user.entity';
 import { Sticker } from '../../stickers/entities/sticker.entity';
 
@@ -7,7 +7,7 @@ export class UserSticker {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Users, (user) => user.userStickers, { nullable: true })
+  @ManyToMany(() => Users, (user) => user.userStickers, { nullable: true })
   @JoinColumn({ name: 'user_id' }) 
   user: Users;
 
