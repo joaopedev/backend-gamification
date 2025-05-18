@@ -27,12 +27,12 @@ export class UserStickersService {
   async create(createUserStickerDto: CreateUserStickerDTO) {
     const { userId, stickerId = 0 } = createUserStickerDto;
 
-    const user = await this.usersRepo.findOneBy({ id: Number(userId) });
-    const sticker = await this.stickerRepo.findOneBy({ id: Number(stickerId) });
-
-    if (!user || !sticker) {
-      throw new NotFoundException('User or Sticker not found');
-    }
+    const user = await this.usersRepo.findOneOrFail({
+      where: { id: Number(userId) },
+    });
+    const sticker = await this.stickerRepo.findOneOrFail({
+      where: { id: Number(stickerId) },
+    });
 
     const newUserSticker = this.userStickerRepo.create({
       user,
@@ -43,6 +43,7 @@ export class UserStickersService {
 
     return this.userStickerRepo.save(newUserSticker);
   }
+
   async findAll() {
     return this.userStickerRepo.find({ relations: ['user', 'sticker'] });
   }
