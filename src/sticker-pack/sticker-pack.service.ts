@@ -42,10 +42,19 @@ export class StickerPackService {
 
     const PACK_COST = priceTable[quantity];
 
-    const user = await this.userRepo.findOne({
+    const fullUser = await this.userRepo.findOne({
       where: { id: userId },
       relations: ['userStickers', 'userStickers.sticker'],
     });
+    if (!fullUser) throw new NotFoundException('User not found');
+
+    const user = await this.userRepo.findOneOrFail({ where: { id: userId } });
+
+    if (fullUser.coins < PACK_COST) {
+      throw new BadRequestException(
+        'Not enough coins to purchase sticker packs',
+      );
+    }
 
     if (!user) throw new NotFoundException('User not found');
 
@@ -56,7 +65,7 @@ export class StickerPackService {
     }
 
     const ownedStickerIds = new Set<number>(
-      user.userStickers.map((us) => us.sticker.id),
+      fullUser.userStickers.map((us) => us.sticker.id),
     );
 
     const allSelectedStickers: Sticker[] = [];
