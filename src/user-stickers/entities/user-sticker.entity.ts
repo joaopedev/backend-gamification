@@ -7,7 +7,7 @@ export class UserSticker {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Users, (user) => user.userStickers, { nullable: false })
+  @ManyToOne(() => Users, (user) => user.userStickers, { nullable: true })
   @JoinColumn({ name: 'user_id' }) 
   user: Users;
 
