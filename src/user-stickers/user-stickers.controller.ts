@@ -40,13 +40,18 @@ export class UserStickersController {
     return this.userStickersService.update(id, updateUserStickerDto);
   }
 
+  @Get('user/:userId')
+  findByUser(@Param('userId', ParseIntPipe) userId: number) {
+    return this.userStickersService.findByUser(userId);
+  }
+
   @Patch(':id/paste')
-updatePasted(
-  @Param('id', ParseIntPipe) id: number,
-  @Body() body: UpdatePastedDto,
-) {
-  return this.userStickersService.updatePasted(id, body.pasted);
-}
+  updatePasted(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdatePastedDto,
+  ) {
+    return this.userStickersService.updatePasted(id, body.pasted);
+  }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {

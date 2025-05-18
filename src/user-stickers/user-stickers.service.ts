@@ -61,6 +61,20 @@ export class UserStickersService {
     return sticker;
   }
 
+  async findByUser(userId: number) {
+    const stickers = await this.userStickerRepo.find({
+      where: {
+        user: { id: userId },
+      },
+      relations: ['user', 'sticker'],
+      order: {
+        sticker: { id: 'ASC' },
+      },
+    });
+
+    return stickers;
+  }
+
   async update(id: number, updateUserStickerDto: UpdateUserStickerDto) {
     const sticker = await this.findOne(id);
     Object.assign(sticker, updateUserStickerDto);
