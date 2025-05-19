@@ -63,7 +63,7 @@ export class UserStickersService {
   }
 
   async findByUser(userId: number) {
-    const stickers = await this.userStickerRepo.find({
+    const userStickers = await this.userStickerRepo.find({
       where: {
         user: { id: userId },
       },
@@ -73,7 +73,7 @@ export class UserStickersService {
       },
     });
 
-    return stickers;
+    return userStickers.map((userSticker) => userSticker.sticker);
   }
 
   async update(id: number, updateUserStickerDto: UpdateUserStickerDto) {
