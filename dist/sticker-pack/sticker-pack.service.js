@@ -43,32 +43,19 @@ let StickerPackService = class StickerPackService {
             throw new common_1.BadRequestException('Invalid quantity. Must be 1, 3 or 5.');
         }
         const PACK_COST = priceTable[quantity];
-        const fullUser = await this.userRepo.findOne({
+        const user = await this.userRepo.findOne({
             where: { id: userId },
-            relations: ['userStickers', 'userStickers.sticker'],
         });
-        if (!fullUser)
-            throw new common_1.NotFoundException('User not found');
-        const user = await this.userRepo.findOneOrFail({ where: { id: userId } });
-        if (fullUser.coins < PACK_COST) {
-            throw new common_1.BadRequestException('Not enough coins to purchase sticker packs');
-        }
         if (!user)
             throw new common_1.NotFoundException('User not found');
         if (user.coins < PACK_COST) {
             throw new common_1.BadRequestException('Not enough coins to purchase sticker packs');
         }
-        const ownedStickerIds = new Set(fullUser.userStickers.map((us) => us.sticker.id));
         const allSelectedStickers = [];
-        const selectedIds = new Set();
         let attempts = 0;
         while (allSelectedStickers.length < quantity * STICKER_COUNT &&
             attempts < MAX_ATTEMPTS * quantity) {
             const randomId = Math.floor(Math.random() * 260) + 1;
-            if (selectedIds.has(randomId) || ownedStickerIds.has(randomId)) {
-                attempts++;
-                continue;
-            }
             const sticker = await this.stickerRepo.findOne({
                 where: { id: randomId },
             });
@@ -77,7 +64,7 @@ let StickerPackService = class StickerPackService {
                 continue;
             }
             allSelectedStickers.push(sticker);
-            selectedIds.add(randomId);
+            attempts++;
         }
         if (allSelectedStickers.length < quantity * STICKER_COUNT) {
             throw new common_1.BadRequestException('Could not find enough eligible stickers');
