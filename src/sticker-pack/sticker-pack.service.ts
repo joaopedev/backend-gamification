@@ -42,20 +42,9 @@ export class StickerPackService {
 
     const PACK_COST = priceTable[quantity];
 
-    const fullUser = await this.userRepo.findOne({
+    const user = await this.userRepo.findOne({
       where: { id: userId },
-      relations: ['userStickers', 'userStickers.sticker'],
     });
-    if (!fullUser) throw new NotFoundException('User not found');
-
-    const user = await this.userRepo.findOneOrFail({ where: { id: userId } });
-
-    if (fullUser.coins < PACK_COST) {
-      throw new BadRequestException(
-        'Not enough coins to purchase sticker packs',
-      );
-    }
-
     if (!user) throw new NotFoundException('User not found');
 
     if (user.coins < PACK_COST) {
@@ -64,12 +53,7 @@ export class StickerPackService {
       );
     }
 
-    const ownedStickerIds = new Set<number>(
-      fullUser.userStickers.map((us) => us.sticker.id),
-    );
-
     const allSelectedStickers: Sticker[] = [];
-    const selectedIds = new Set<number>();
     let attempts = 0;
 
     while (
@@ -77,21 +61,18 @@ export class StickerPackService {
       attempts < MAX_ATTEMPTS * quantity
     ) {
       const randomId = Math.floor(Math.random() * 260) + 1;
-      if (selectedIds.has(randomId) || ownedStickerIds.has(randomId)) {
-        attempts++;
-        continue;
-      }
 
       const sticker = await this.stickerRepo.findOne({
         where: { id: randomId },
       });
+
       if (!sticker || sticker.sponsor === 'SPECIAL') {
         attempts++;
         continue;
       }
 
       allSelectedStickers.push(sticker);
-      selectedIds.add(randomId);
+      attempts++;
     }
 
     if (allSelectedStickers.length < quantity * STICKER_COUNT) {
