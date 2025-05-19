@@ -58,7 +58,7 @@ let UserStickersService = class UserStickersService {
         return sticker;
     }
     async findByUser(userId) {
-        const stickers = await this.userStickerRepo.find({
+        const userStickers = await this.userStickerRepo.find({
             where: {
                 user: { id: userId },
             },
@@ -67,7 +67,7 @@ let UserStickersService = class UserStickersService {
                 sticker: { id: 'ASC' },
             },
         });
-        return stickers;
+        return userStickers.map((userSticker) => userSticker.sticker);
     }
     async update(id, updateUserStickerDto) {
         const sticker = await this.findOne(id);

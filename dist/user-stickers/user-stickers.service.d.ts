@@ -12,7 +12,7 @@ export declare class UserStickersService {
     create(createUserStickerDto: CreateUserStickerDTO): Promise<UserSticker>;
     findAll(): Promise<UserSticker[]>;
     findOne(id: number): Promise<UserSticker>;
-    findByUser(userId: number): Promise<UserSticker[]>;
+    findByUser(userId: number): Promise<Sticker[]>;
     update(id: number, updateUserStickerDto: UpdateUserStickerDto): Promise<UserSticker>;
     updatePasted(id: number, pasted: boolean): Promise<UserSticker>;
     remove(id: number): Promise<{
