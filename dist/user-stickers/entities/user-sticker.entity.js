@@ -20,6 +20,7 @@ let UserSticker = class UserSticker {
     quantity;
     sponsor;
     pasted;
+    albums;
 };
 exports.UserSticker = UserSticker;
 __decorate([
@@ -54,6 +55,13 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'boolean', default: false }),
     __metadata("design:type", Boolean)
 ], UserSticker.prototype, "pasted", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.Users, (user) => user.userStickers, {
+        nullable: true,
+        onDelete: 'SET NULL',
+    }),
+    __metadata("design:type", user_entity_1.Users)
+], UserSticker.prototype, "albums", void 0);
 exports.UserSticker = UserSticker = __decorate([
     (0, typeorm_1.Entity)('user_stickers')
 ], UserSticker);

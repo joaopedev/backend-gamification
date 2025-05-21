@@ -8,8 +8,8 @@ export declare class UserStickersController {
     create(createUserStickerDto: CreateUserStickerDTO): Promise<import("./entities/user-sticker.entity").UserSticker>;
     findAll(): Promise<import("./entities/user-sticker.entity").UserSticker[]>;
     findOne(id: number): Promise<import("./entities/user-sticker.entity").UserSticker>;
-    update(id: number, updateUserStickerDto: UpdateUserStickerDto): Promise<import("./entities/user-sticker.entity").UserSticker>;
-    findByUser(userId: number): Promise<import("../stickers/entities/sticker.entity").Sticker[]>;
+    update(id: number, updateUserStickerDto: UpdateUserStickerDto, userId: number): Promise<import("./entities/user-sticker.entity").UserSticker>;
+    findByUser(userId: number): Promise<import("./entities/user-sticker.entity").UserSticker[]>;
     updatePasted(id: number, body: UpdatePastedDto): Promise<import("./entities/user-sticker.entity").UserSticker>;
     getAlbumProgress(req: any): Promise<{
         total: number;

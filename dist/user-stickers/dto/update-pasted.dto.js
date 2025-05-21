@@ -13,10 +13,15 @@ exports.UpdatePastedDto = void 0;
 const class_validator_1 = require("class-validator");
 class UpdatePastedDto {
     pasted;
+    userId;
 }
 exports.UpdatePastedDto = UpdatePastedDto;
 __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], UpdatePastedDto.prototype, "pasted", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], UpdatePastedDto.prototype, "userId", void 0);
 //# sourceMappingURL=update-pasted.dto.js.map

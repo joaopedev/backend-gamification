@@ -39,6 +39,7 @@ let Users = class Users {
     userStickers;
     resetPasswordToken;
     resetPasswordExpires;
+    albums;
 };
 exports.Users = Users;
 __decorate([
@@ -133,6 +134,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'timestamp' }),
     __metadata("design:type", Date)
 ], Users.prototype, "resetPasswordExpires", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_sticker_entity_1.UserSticker, (us) => us.user),
+    __metadata("design:type", Array)
+], Users.prototype, "albums", void 0);
 exports.Users = Users = __decorate([
     (0, typeorm_1.Entity)('users')
 ], Users);

@@ -10,6 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Album = void 0;
+const user_sticker_entity_1 = require("../../user-stickers/entities/user-sticker.entity");
+const user_entity_1 = require("../../users/entities/user.entity");
 const typeorm_1 = require("typeorm");
 let Album = class Album {
     id;
@@ -17,6 +19,8 @@ let Album = class Album {
     description;
     total_stickers;
     image_url;
+    stickers;
+    users;
 };
 exports.Album = Album;
 __decorate([
@@ -39,6 +43,14 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 300, nullable: true }),
     __metadata("design:type", String)
 ], Album.prototype, "image_url", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => user_sticker_entity_1.UserSticker, (stickers) => stickers.albums),
+    __metadata("design:type", Array)
+], Album.prototype, "stickers", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => user_entity_1.Users, (user) => user.albums),
+    __metadata("design:type", Array)
+], Album.prototype, "users", void 0);
 exports.Album = Album = __decorate([
     (0, typeorm_1.Entity)('albums')
 ], Album);

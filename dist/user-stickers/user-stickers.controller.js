@@ -32,8 +32,8 @@ let UserStickersController = class UserStickersController {
     findOne(id) {
         return this.userStickersService.findOne(id);
     }
-    update(id, updateUserStickerDto) {
-        return this.userStickersService.update(id, updateUserStickerDto);
+    update(id, updateUserStickerDto, userId) {
+        return this.userStickersService.update(id, updateUserStickerDto, userId);
     }
     findByUser(userId) {
         return this.userStickersService.findByUser(userId);
@@ -74,8 +74,9 @@ __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Body)('userId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, update_user_sticker_dto_1.UpdateUserStickerDto]),
+    __metadata("design:paramtypes", [Number, update_user_sticker_dto_1.UpdateUserStickerDto, Number]),
     __metadata("design:returntype", void 0)
 ], UserStickersController.prototype, "update", null);
 __decorate([

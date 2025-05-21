@@ -7,4 +7,5 @@ export declare class UserSticker {
     quantity: number;
     sponsor: string;
     pasted: boolean;
+    albums: Users;
 }

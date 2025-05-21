@@ -27,6 +27,7 @@ export declare class UsersController {
         userStickers: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
         resetPasswordToken: string;
         resetPasswordExpires: Date;
+        albums: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
     }>;
     findAll(): Promise<{
         id: number;
@@ -51,6 +52,7 @@ export declare class UsersController {
         userStickers: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
         resetPasswordToken: string;
         resetPasswordExpires: Date;
+        albums: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
     }[]>;
     findOne(id: number): Promise<{
         id: number;
@@ -75,6 +77,7 @@ export declare class UsersController {
         userStickers: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
         resetPasswordToken: string;
         resetPasswordExpires: Date;
+        albums: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
     }>;
     update(id: number, updateUserDto: UpdateUserDto): Promise<{
         id: number;
@@ -99,6 +102,7 @@ export declare class UsersController {
         userStickers: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
         resetPasswordToken: string;
         resetPasswordExpires: Date;
+        albums: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
     }>;
     remove(id: number): Promise<{
         message: string;

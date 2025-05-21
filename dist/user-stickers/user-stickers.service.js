@@ -67,10 +67,31 @@ let UserStickersService = class UserStickersService {
                 sticker: { id: 'ASC' },
             },
         });
-        return userStickers.map((userSticker) => userSticker.sticker);
+        return userStickers;
     }
-    async update(id, updateUserStickerDto) {
+    async update(id, updateUserStickerDto, userId) {
         const sticker = await this.findOne(id);
+        if (sticker.user.id !== userId) {
+            throw new common_1.BadRequestException('You cannot update this sticker');
+        }
+        if (updateUserStickerDto.userId) {
+            const user = await this.usersRepo.findOneBy({
+                id: updateUserStickerDto.userId,
+            });
+            if (!user) {
+                throw new common_1.NotFoundException('User not found');
+            }
+            sticker.user = user;
+        }
+        if (updateUserStickerDto.stickerId) {
+            const stickerToUpdate = await this.stickerRepo.findOneBy({
+                id: updateUserStickerDto.stickerId,
+            });
+            if (!stickerToUpdate) {
+                throw new common_1.NotFoundException('Sticker not found');
+            }
+            sticker.sticker = stickerToUpdate;
+        }
         Object.assign(sticker, updateUserStickerDto);
         return this.userStickerRepo.save(sticker);
     }
