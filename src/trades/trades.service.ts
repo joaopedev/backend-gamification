@@ -66,6 +66,32 @@ export class TradesService {
     return `This action returns a #${id} trade`;
   }
 
+  async findAllTradesByUserId(userId: number) {
+    const trades = await this.tradeRepository.find({
+      where: [
+        { requester: { id: userId } },
+        { receiver: { id: userId } },
+      ],
+      relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
+    });
+    return trades.map((trade) => {
+      return trade;
+    });
+  }
+
+  // async findAllTradesByUserIdAndStatus(userId: number, status: TradeStatus) {
+  //   const trades = await this.tradeRepository.find({
+  //     where: [
+  //       { requester: { id: userId }, status },
+  //       { receiver: { id: userId }, status },
+  //     ],
+  //     relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
+  //   });
+  //   return trades.map((trade) => {
+  //     return trade;
+  //   });
+  // }
+
   async update(id: number, updateTradeDto: UpdateTradeDto) {
     const trade = await this.tradeRepository.findOne({ where: { id } });
     if (!trade) {
