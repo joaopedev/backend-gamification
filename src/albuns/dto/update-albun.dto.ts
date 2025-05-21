@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateAlbunDto } from './create-albun.dto';
+import { CreateAlbumDto } from './create-albun.dto';
 
-export class UpdateAlbunDto extends PartialType(CreateAlbunDto) {}
+export class UpdateAlbunDto extends PartialType(CreateAlbumDto) {}

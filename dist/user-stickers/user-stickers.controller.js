@@ -41,6 +41,10 @@ let UserStickersController = class UserStickersController {
     updatePasted(id, body) {
         return this.userStickersService.updatePasted(id, body.pasted);
     }
+    getAlbumProgress(req) {
+        const userId = req.user.id;
+        return this.userStickersService.getAlbumProgress(userId);
+    }
     remove(id) {
         return this.userStickersService.remove(id);
     }
@@ -67,7 +71,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserStickersController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
+    (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -82,13 +86,20 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserStickersController.prototype, "findByUser", null);
 __decorate([
-    (0, common_1.Patch)(':id/paste'),
+    (0, common_1.Put)(':id/paste'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, update_pasted_dto_1.UpdatePastedDto]),
     __metadata("design:returntype", void 0)
 ], UserStickersController.prototype, "updatePasted", null);
+__decorate([
+    (0, common_1.Get)('progress'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserStickersController.prototype, "getAlbumProgress", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

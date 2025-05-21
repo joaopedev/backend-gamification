@@ -24,4 +24,14 @@ export declare class UserStickersService {
     removeSticker(userId: number, stickerId: number, sponsor?: string): Promise<{
         message: string;
     }>;
+    getAlbumProgress(userId: number): Promise<{
+        total: number;
+        pasted: number;
+        missing: number;
+        completed: boolean;
+    }>;
+    getUserStickersByPasted(userId: number): Promise<{
+        pasted: Sticker[];
+        notPasted: Sticker[];
+    }>;
 }
