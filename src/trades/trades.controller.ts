@@ -22,6 +22,11 @@ export class TradesController {
     return this.tradesService.findOne(+id);
   }
 
+  @Get('user/:userId')
+  findAllTradesByUserId(@Param('userId') userId: string) {
+    return this.tradesService.findAllTradesByUserId(+userId);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTradeDto: UpdateTradeDto) {
     return this.tradesService.update(+id, updateTradeDto);
