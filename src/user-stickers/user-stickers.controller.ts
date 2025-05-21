@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Req,
+  Put,
 } from '@nestjs/common';
 import { UserStickersService } from './user-stickers.service';
 import { CreateUserStickerDTO } from './dto/create-user-sticker.dto';
@@ -32,7 +34,7 @@ export class UserStickersController {
     return this.userStickersService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserStickerDto: UpdateUserStickerDto,
@@ -45,12 +47,18 @@ export class UserStickersController {
     return this.userStickersService.findByUser(userId);
   }
 
-  @Patch(':id/paste')
+  @Put(':id/paste')
   updatePasted(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdatePastedDto,
   ) {
     return this.userStickersService.updatePasted(id, body.pasted);
+  }
+
+  @Get('progress')
+  getAlbumProgress(@Req() req) {
+    const userId = req.user.id;
+    return this.userStickersService.getAlbumProgress(userId);
   }
 
   @Delete(':id')

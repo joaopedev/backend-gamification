@@ -16,6 +16,7 @@ import { join } from 'path';
 import { CustomMailService } from './mail/mail.service';
 import { FileModule } from './file.module';
 import { ConfigModule } from '@nestjs/config';
+import { AlbunsModule } from './albuns/albuns.module';
 
 @Module({
   imports: [  
@@ -71,6 +72,7 @@ import { ConfigModule } from '@nestjs/config';
     FriendsRelationshipModule,
     AuthModule,
     FileModule,
+    AlbunsModule,
   ],
   controllers: [AppController],
   providers: [AppService, CustomMailService],

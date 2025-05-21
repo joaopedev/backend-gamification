@@ -166,4 +166,45 @@ export class UserStickersService {
     await this.userStickerRepo.remove(userSticker);
     return { message: 'Sticker removed' };
   }
+
+  async getAlbumProgress(userId: number) {
+    const totalAlbumStickers = 160;
+
+    const [pastedCount] = await this.userStickerRepo
+      .createQueryBuilder('userSticker')
+      .leftJoin('userSticker.user', 'user')
+      .where('user.id = :userId', { userId })
+      .andWhere('userSticker.pasted = true')
+      .select('COUNT(DISTINCT userSticker.sticker)', 'count')
+      .getRawMany();
+
+    const pasted = parseInt(pastedCount?.count || '0', 10);
+    const missing = totalAlbumStickers - pasted;
+
+    return {
+      total: totalAlbumStickers,
+      pasted,
+      missing,
+      completed: pasted === totalAlbumStickers,
+    };
+  }
+
+  async getUserStickersByPasted(userId: number) {
+    const userStickers = await this.userStickerRepo.find({
+      where: { user: { id: userId } },
+      relations: ['sticker'],
+    });
+
+    const pasted = userStickers
+      .filter((us) => us.pasted)
+      .map((us) => us.sticker);
+    const notPasted = userStickers
+      .filter((us) => !us.pasted)
+      .map((us) => us.sticker);
+
+    return {
+      pasted,
+      notPasted,
+    };
+  }
 }
