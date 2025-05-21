@@ -31,6 +31,9 @@ let TradesController = class TradesController {
     findOne(id) {
         return this.tradesService.findOne(+id);
     }
+    findAllTradesByUserId(userId) {
+        return this.tradesService.findAllTradesByUserId(+userId);
+    }
     update(id, updateTradeDto) {
         return this.tradesService.update(+id, updateTradeDto);
     }
@@ -59,6 +62,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], TradesController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)('user/:userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TradesController.prototype, "findAllTradesByUserId", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),

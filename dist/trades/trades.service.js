@@ -17,47 +17,49 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const trade_entity_1 = require("./entities/trade.entity");
 const typeorm_2 = require("typeorm");
+const tradeEnum_1 = require("./entities/tradeEnum");
+const user_entity_1 = require("../users/entities/user.entity");
+const sticker_entity_1 = require("../stickers/entities/sticker.entity");
 let TradesService = class TradesService {
     tradeRepository;
-    constructor(tradeRepository) {
+    usersRepository;
+    stickerRepository;
+    constructor(tradeRepository, usersRepository, stickerRepository) {
         this.tradeRepository = tradeRepository;
+        this.usersRepository = usersRepository;
+        this.stickerRepository = stickerRepository;
     }
     async create(createTradeDto) {
-        const trade = this.tradeRepository.create({
-            ...createTradeDto,
-            status: createTradeDto.status,
-        });
         try {
-            const existingTrade = await this.tradeRepository.findOne({ where: { id: createTradeDto.receiverId } });
+            const existingTrade = await this.tradeRepository.findOne({
+                where: {
+                    requester: { id: createTradeDto.requesterId },
+                    receiver: { id: createTradeDto.receiverId },
+                    offeredSticker: { id: createTradeDto.offeredStickerId },
+                    requestedSticker: { id: createTradeDto.requestedStickerId },
+                    status: tradeEnum_1.TradeStatus.PENDING,
+                },
+                relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
+            });
             if (existingTrade) {
-                throw new Error('Trade already exists');
+                throw new Error('Já existe uma troca pendente com esses dados');
             }
-            const existingSticker = await this.tradeRepository.findOne({ where: { id: createTradeDto.offeredStickerId } });
-            if (existingSticker) {
-                throw new Error('Sticker already exists');
-            }
-            const existingSticker2 = await this.tradeRepository.findOne({ where: { id: createTradeDto.requestedStickerId } });
-            if (existingSticker2) {
-                throw new Error('Sticker already exists');
-            }
-            const existingUser = await this.tradeRepository.findOne({ where: { id: createTradeDto.requesterId } });
-            if (existingUser) {
-                throw new Error('User already exists');
-            }
-            const existingUser2 = await this.tradeRepository.findOne({ where: { id: createTradeDto.receiverId } });
-            if (existingUser2) {
-                throw new Error('User already exists');
-            }
-            const trade = this.tradeRepository.create(createTradeDto);
-            await this.tradeRepository.save(trade);
+            const trade = this.tradeRepository.create({
+                requester: { id: createTradeDto.requesterId },
+                receiver: { id: createTradeDto.receiverId },
+                offeredSticker: { id: createTradeDto.offeredStickerId },
+                requestedSticker: { id: createTradeDto.requestedStickerId },
+                status: createTradeDto.status ?? tradeEnum_1.TradeStatus.PENDING,
+            });
+            return await this.tradeRepository.save(trade);
         }
         catch (error) {
-            return 'This action adds a new trade';
+            throw new Error(`Erro ao criar trade: ${error.message}`);
         }
     }
     async findAll() {
         const trades = await this.tradeRepository.find();
-        return trades.map(trade => {
+        return trades.map((trade) => {
             return trade;
         });
     }
@@ -67,6 +69,18 @@ let TradesService = class TradesService {
             throw new Error('Trade not found');
         }
         return `This action returns a #${id} trade`;
+    }
+    async findAllTradesByUserId(userId) {
+        const trades = await this.tradeRepository.find({
+            where: [
+                { requester: { id: userId } },
+                { receiver: { id: userId } },
+            ],
+            relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
+        });
+        return trades.map((trade) => {
+            return trade;
+        });
     }
     async update(id, updateTradeDto) {
         const trade = await this.tradeRepository.findOne({ where: { id } });
@@ -88,6 +102,10 @@ exports.TradesService = TradesService;
 exports.TradesService = TradesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(trade_entity_1.Trade)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.Users)),
+    __param(2, (0, typeorm_1.InjectRepository)(sticker_entity_1.Sticker)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], TradesService);
 //# sourceMappingURL=trades.service.js.map
