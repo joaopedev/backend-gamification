@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { UserSticker } from "src/user-stickers/entities/user-sticker.entity";
+import { Users } from "src/users/entities/user.entity";
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('albums')
 export class Album {
@@ -16,4 +18,10 @@ export class Album {
 
   @Column({ type: 'varchar', length: 300, nullable: true })
   image_url?: string;
+
+  @ManyToMany(() => UserSticker, (stickers) => stickers.albums)
+  stickers?: number[];
+
+  @ManyToMany(() => Users, (user) => user.albums)
+  users: Users[];
 }
