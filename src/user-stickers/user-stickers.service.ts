@@ -73,11 +73,34 @@ export class UserStickersService {
       },
     });
 
-    return userStickers.map((userSticker) => userSticker.sticker);
+    return userStickers;
   }
 
-  async update(id: number, updateUserStickerDto: UpdateUserStickerDto) {
+  async update(id: number, updateUserStickerDto: UpdateUserStickerDto, userId: number) {
     const sticker = await this.findOne(id);
+    if (sticker.user.id !== userId) {
+      throw new BadRequestException('You cannot update this sticker');
+    }
+
+    if (updateUserStickerDto.userId) {
+      const user = await this.usersRepo.findOneBy({
+        id: updateUserStickerDto.userId,
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      sticker.user = user;
+    }
+
+    if (updateUserStickerDto.stickerId) {
+      const stickerToUpdate = await this.stickerRepo.findOneBy({
+        id: updateUserStickerDto.stickerId,
+      });
+      if (!stickerToUpdate) {
+        throw new NotFoundException('Sticker not found');
+      }
+      sticker.sticker = stickerToUpdate;
+    }  
     Object.assign(sticker, updateUserStickerDto);
     return this.userStickerRepo.save(sticker);
   }
