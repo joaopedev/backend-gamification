@@ -38,8 +38,9 @@ export class UserStickersController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserStickerDto: UpdateUserStickerDto,
+    @Body('userId', ParseIntPipe) userId: number,
   ) {
-    return this.userStickersService.update(id, updateUserStickerDto);
+    return this.userStickersService.update(id, updateUserStickerDto, userId);
   }
 
   @Get('user/:userId')
