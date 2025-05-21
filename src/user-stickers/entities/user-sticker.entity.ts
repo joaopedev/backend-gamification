@@ -35,4 +35,10 @@ export class UserSticker {
 
   @Column({ type: 'boolean', default: false })
   pasted: boolean;
+
+  @ManyToOne(() => Users, (user) => user.userStickers, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  albums: Users;
 }
