@@ -5,50 +5,57 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Trade } from './entities/trade.entity';
 import { DeepPartial, Repository } from 'typeorm';
 import { TradeStatus } from './entities/tradeEnum';
+import { Users } from 'src/users/entities/user.entity';
+import { Sticker } from 'src/stickers/entities/sticker.entity';
 
 @Injectable()
 export class TradesService {
-  constructor(@InjectRepository(Trade) private readonly tradeRepository: Repository<Trade>) {}
-  async create(createTradeDto: CreateTradeDTO) {
-    const trade = this.tradeRepository.create({
-      ...createTradeDto,
-      status: createTradeDto.status as TradeStatus, // Explicitly cast status if necessary
-    });
-    try {
-      const existingTrade = await this.tradeRepository.findOne({ where: { id: createTradeDto.receiverId } });
-      if (existingTrade) {
-        throw new Error('Trade already exists');
-      }
+  constructor(
+    @InjectRepository(Trade)
+    private readonly tradeRepository: Repository<Trade>,
 
-      const existingSticker = await this.tradeRepository.findOne({ where: { id: createTradeDto.offeredStickerId } });
-      if (existingSticker) {
-        throw new Error('Sticker already exists');
-      }
-      const existingSticker2 = await this.tradeRepository.findOne({ where: { id: createTradeDto.requestedStickerId } });
-      if (existingSticker2) {
-        throw new Error('Sticker already exists');
-      }
-      const existingUser = await this.tradeRepository.findOne({ where: { id: createTradeDto.requesterId } });
-      if (existingUser) {
-        throw new Error('User already exists');
-      }
-      const existingUser2 = await this.tradeRepository.findOne({ where: { id: createTradeDto.receiverId } });
-      if (existingUser2) {
-        throw new Error('User already exists');
-      }
-      const trade = this.tradeRepository.create(createTradeDto as DeepPartial<Trade>);
-      await this.tradeRepository.save(trade);
+    @InjectRepository(Users)
+    private readonly usersRepository: Repository<Users>,
+
+    @InjectRepository(Sticker)
+    private readonly stickerRepository: Repository<Sticker>,
+  ) {}
+  async create(createTradeDto: CreateTradeDTO): Promise<Trade> {
+  try {
+    const existingTrade = await this.tradeRepository.findOne({
+      where: {
+        requester: { id: createTradeDto.requesterId },
+        receiver: { id: createTradeDto.receiverId },
+        offeredSticker: { id: createTradeDto.offeredStickerId },
+        requestedSticker: { id: createTradeDto.requestedStickerId },
+        status: TradeStatus.PENDING,
+      },
+      relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
+    });
+
+    if (existingTrade) {
+      throw new Error('Já existe uma troca pendente com esses dados');
     }
-    catch (error) {
-    return 'This action adds a new trade';}
+
+    const trade = this.tradeRepository.create({
+      requester: { id: createTradeDto.requesterId } as Users,
+      receiver: { id: createTradeDto.receiverId } as Users,
+      offeredSticker: { id: createTradeDto.offeredStickerId } as Sticker,
+      requestedSticker: { id: createTradeDto.requestedStickerId } as Sticker,
+      status: createTradeDto.status ?? TradeStatus.PENDING,
+    });
+
+    return await this.tradeRepository.save(trade);
+  } catch (error) {
+    throw new Error(`Erro ao criar trade: ${error.message}`);
   }
+}
 
   async findAll() {
     const trades = await this.tradeRepository.find();
-    return trades.map(trade => {
-      return trade; // Return the trade object as is
-    }
-    );
+    return trades.map((trade) => {
+      return trade;
+    });
   }
 
   async findOne(id: number) {
