@@ -45,7 +45,10 @@ export class FriendsRelationshipService {
 
   async acceptRequest(userId: number, requesterId: number) {
     const relationship = await this.friendsRepo.findOne({
-      where: { user_id: requesterId, friend_id: userId },
+      where: {
+        user_id: requesterId,
+        friend_id: userId,
+      },
       relations: ['user', 'friend'],
     });
 
@@ -53,11 +56,12 @@ export class FriendsRelationshipService {
       throw new NotFoundException('Friend request not found.');
     }
 
-    if (relationship.is_accepted) {
+    if (relationship.status === FriendsRelationshipStatus.ACCEPTED) {
       throw new BadRequestException('Request already accepted.');
     }
 
-    relationship.is_accepted = true;
+    relationship.status = FriendsRelationshipStatus.ACCEPTED;
+
     await this.friendsRepo.save(relationship);
 
     const [userFriends, requesterFriends] = await Promise.all([
