@@ -84,7 +84,7 @@ export class TradesService {
       where: {
         receiver: { id: userId },
       },
-      relations: ['requester', 'offeredSticker', 'requestedSticker'],
+      relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
     });
     return trades;
   }
