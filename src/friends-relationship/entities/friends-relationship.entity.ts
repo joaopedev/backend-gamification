@@ -7,6 +7,7 @@ import {
   JoinColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { FriendsRelationshipStatus } from './friends-relationshipEnum';
 
 @Entity()
 export class FriendsRelationship {
@@ -32,4 +33,7 @@ export class FriendsRelationship {
 
   @Column({ default: false })
   is_blocked: boolean; // Indicates if the user has blocked the friend
+
+  @Column({ type: 'enum', enum: FriendsRelationshipStatus, default: 'PENDING' })
+  status: FriendsRelationshipStatus;
 }
