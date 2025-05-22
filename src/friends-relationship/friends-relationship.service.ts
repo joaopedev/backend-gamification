@@ -83,10 +83,10 @@ export class FriendsRelationshipService {
   private async getFriendsCount(userId: number): Promise<number> {
     const [sent, received] = await Promise.all([
       this.friendsRepo.count({
-        where: { user_id: userId, is_accepted: true, is_blocked: false },
+        where: { user_id: userId, is_accepted: true, is_rejected: false },
       }),
       this.friendsRepo.count({
-        where: { friend_id: userId, is_accepted: true, is_blocked: false },
+        where: { friend_id: userId, is_accepted: true, is_rejected: false },
       }),
     ]);
     return sent + received;
@@ -119,7 +119,7 @@ export class FriendsRelationshipService {
     return rewarded;
   }
 
-  async blockUser(userId: number, targetId: number) {
+  async rejectedUserFriendRequest(userId: number, targetId: number) {
     const relationship = await this.friendsRepo.findOne({
       where: [
         { user_id: userId, friend_id: targetId },
@@ -132,12 +132,13 @@ export class FriendsRelationshipService {
       const newRel = this.friendsRepo.create({
         user_id: userId,
         friend_id: targetId,
-        is_blocked: true,
+        is_rejected: true,
       });
       return this.friendsRepo.save(newRel);
     }
 
-    relationship.is_blocked = true;
+    relationship.is_rejected = true;
+    relationship.status = FriendsRelationshipStatus.REJECTED;
     return this.friendsRepo.save(relationship);
   }
 
@@ -146,7 +147,7 @@ export class FriendsRelationshipService {
       where: {
         user_id: userId,
         is_accepted: true,
-        is_blocked: false,
+        is_rejected: false,
       },
       relations: ['friend'], // Popula o amigo
       order: { id: 'ASC' },
@@ -156,7 +157,7 @@ export class FriendsRelationshipService {
       where: {
         friend_id: userId,
         is_accepted: true,
-        is_blocked: false,
+        is_rejected: false,
       },
       relations: ['user'], // Popula o solicitante
       order: { id: 'ASC' },
@@ -171,7 +172,7 @@ export class FriendsRelationshipService {
       where: {
         friend_id: userId,
         is_accepted: false,
-        is_blocked: false,
+        is_rejected: false,
         status: FriendsRelationshipStatus.PENDING,
       },
       relations: ['friend'], // Popula os dados de quem enviou o pedido
@@ -186,7 +187,7 @@ export class FriendsRelationshipService {
       where: {
         user_id: userId,
         is_accepted: false,
-        is_blocked: false,
+        is_rejected: false,
         status: FriendsRelationshipStatus.PENDING,
       },
       relations: ['friend'], // Traz o usuário para quem ele mandou o pedido
