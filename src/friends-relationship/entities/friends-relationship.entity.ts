@@ -32,7 +32,7 @@ export class FriendsRelationship {
   is_accepted: boolean; // Indicates if the friend request has been accepted
 
   @Column({ default: false })
-  is_blocked: boolean; // Indicates if the user has blocked the friend
+  is_rejected: boolean; // Indicates if the user has blocked the friend
 
   @Column({ type: 'enum', enum: FriendsRelationshipStatus, default: 'PENDING' })
   status: FriendsRelationshipStatus;
