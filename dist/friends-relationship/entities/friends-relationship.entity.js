@@ -10,14 +10,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FriendsRelationship = void 0;
+const user_entity_1 = require("../../users/entities/user.entity");
 const typeorm_1 = require("typeorm");
 let FriendsRelationship = class FriendsRelationship {
+    id;
     user_id;
     friend_id;
+    user;
+    friend;
     is_accepted;
     is_blocked;
 };
 exports.FriendsRelationship = FriendsRelationship;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], FriendsRelationship.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", Number)
@@ -26,6 +34,16 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], FriendsRelationship.prototype, "friend_id", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.Users),
+    (0, typeorm_1.JoinColumn)({ name: 'user_id' }),
+    __metadata("design:type", user_entity_1.Users)
+], FriendsRelationship.prototype, "user", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.Users),
+    (0, typeorm_1.JoinColumn)({ name: 'friend_id' }),
+    __metadata("design:type", user_entity_1.Users)
+], FriendsRelationship.prototype, "friend", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)

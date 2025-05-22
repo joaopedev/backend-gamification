@@ -117,22 +117,30 @@ private async checkAndReward(userId: number, totalFriends: number): Promise<bool
     return this.friendsRepo.save(relationship);
   }
 
-  async getFriends(userId: number) {
-    const sent = await this.friendsRepo.find({
-      where: { user_id: userId, is_accepted: true, is_blocked: false },
-    });
+  async getFriends(userId: number): Promise<FriendsRelationship[]> {
+  const sent = await this.friendsRepo.find({
+    where: {
+      user_id: userId,
+      is_accepted: true,
+      is_blocked: false,
+    },
+    relations: ['friend'], // Popula o amigo
+    order: { id: 'ASC' },
+  });
 
-    const received = await this.friendsRepo.find({
-      where: { friend_id: userId, is_accepted: true, is_blocked: false },
-    });
+  const received = await this.friendsRepo.find({
+    where: {
+      friend_id: userId,
+      is_accepted: true,
+      is_blocked: false,
+    },
+    relations: ['user'], // Popula o solicitante
+    order: { id: 'ASC' },
+  });
 
-    const friendIds = [
-      ...sent.map((rel) => rel.friend_id),
-      ...received.map((rel) => rel.user_id),
-    ];
-
-    return friendIds; // Pode buscar os usuários depois com esses IDs
-  }
+  // Junta os dois resultados para manter a estrutura completa
+  return [...sent, ...received];
+}
 
   async getPendingRequests(userId: number) {
     return this.friendsRepo.find({
