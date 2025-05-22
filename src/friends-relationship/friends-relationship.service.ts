@@ -2,12 +2,15 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FriendsRelationship } from './entities/friends-relationship.entity';
+import { Users } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class FriendsRelationshipService {
   constructor(
     @InjectRepository(FriendsRelationship)
     private readonly friendsRepo: Repository<FriendsRelationship>,
+    @InjectRepository(Users)
+    private readonly usersRepo: Repository<Users>,
   ) {}
 
   async sendRequest(userId: number, friendId: number) {
@@ -31,17 +34,66 @@ export class FriendsRelationshipService {
   }
 
   async acceptRequest(userId: number, requesterId: number) {
-    const relationship = await this.friendsRepo.findOne({
-      where: { user_id: requesterId, friend_id: userId },
-    });
+  const relationship = await this.friendsRepo.findOne({
+    where: { user_id: requesterId, friend_id: userId },
+    relations: ['user', 'friend'],
+  });
 
-    if (!relationship) {
-      throw new NotFoundException('Friend request not found.');
-    }
-
-    relationship.is_accepted = true;
-    return this.friendsRepo.save(relationship);
+  if (!relationship) {
+    throw new NotFoundException('Friend request not found.');
   }
+
+  if (relationship.is_accepted) {
+    throw new BadRequestException('Request already accepted.');
+  }
+
+  relationship.is_accepted = true;
+  await this.friendsRepo.save(relationship);
+
+  const [userFriends, requesterFriends] = await Promise.all([
+    this.getFriendsCount(userId),
+    this.getFriendsCount(requesterId),
+  ]);
+
+  const userRewarded = await this.checkAndReward(userId, userFriends);
+  const requesterRewarded = await this.checkAndReward(requesterId, requesterFriends);
+
+  return {
+    coinsRewarded: userRewarded || requesterRewarded,
+  };
+}
+
+private async getFriendsCount(userId: number): Promise<number> {
+  const [sent, received] = await Promise.all([
+    this.friendsRepo.count({ where: { user_id: userId, is_accepted: true, is_blocked: false } }),
+    this.friendsRepo.count({ where: { friend_id: userId, is_accepted: true, is_blocked: false } }),
+  ]);
+  return sent + received;
+}
+
+private async checkAndReward(userId: number, totalFriends: number): Promise<boolean> {
+  const milestones = [
+    { count: 5, coins: 50 },
+    { count: 15, coins: 80 },
+    { count: 25, coins: 120 },
+  ];
+
+  const user = await this.usersRepo.findOneBy({ id: userId });
+  if (!user) return false;
+
+  let rewarded = false;
+
+  for (const milestone of milestones) {
+    if (totalFriends === milestone.count) {
+      user.coins += milestone.coins;
+      await this.usersRepo.save(user);
+      rewarded = true;
+      break;
+    }
+  }
+
+  return rewarded;
+}
 
   async blockUser(userId: number, targetId: number) {
     const relationship = await this.friendsRepo.findOne({
