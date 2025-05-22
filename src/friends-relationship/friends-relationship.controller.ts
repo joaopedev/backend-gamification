@@ -23,11 +23,12 @@ export class FriendsRelationshipController {
 
   // PATCH /friends/accept/:userId/:requesterId
   @Patch('accept/:userId/:requesterId')
-  acceptRequest(
+  async acceptRequest(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('requesterId', ParseIntPipe) requesterId: number,
   ) {
-    return this.service.acceptRequest(userId, requesterId);
+    const result = await this.service.acceptRequest(userId, requesterId);
+    return { coinsRewarded: result.coinsRewarded ?? false };
   }
 
   // PATCH /friends/block/:userId/:targetId
@@ -53,7 +54,10 @@ export class FriendsRelationshipController {
 
   // DELETE /friends/:userId/:targetId
   @Delete(':userId/:targetId')
-  remove(@Param('userId', ParseIntPipe) userId: number, @Param('targetId', ParseIntPipe) targetId: number) {
+  remove(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('targetId', ParseIntPipe) targetId: number,
+  ) {
     return this.service.removeRelationship(userId, targetId);
   }
 }
