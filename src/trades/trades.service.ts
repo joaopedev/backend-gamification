@@ -72,7 +72,7 @@ export class TradesService {
         { requester: { id: userId } },
         { receiver: { id: userId } },
       ],
-      relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
+      relations: ['requester', 'offeredSticker', 'requestedSticker'],
     });
     return trades.map((trade) => {
       return trade;
