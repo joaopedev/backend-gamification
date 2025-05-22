@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FriendsRelationship = void 0;
 const user_entity_1 = require("../../users/entities/user.entity");
 const typeorm_1 = require("typeorm");
+const friends_relationshipEnum_1 = require("./friends-relationshipEnum");
 let FriendsRelationship = class FriendsRelationship {
     id;
     user_id;
@@ -20,6 +21,7 @@ let FriendsRelationship = class FriendsRelationship {
     friend;
     is_accepted;
     is_blocked;
+    status;
 };
 exports.FriendsRelationship = FriendsRelationship;
 __decorate([
@@ -52,6 +54,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], FriendsRelationship.prototype, "is_blocked", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: friends_relationshipEnum_1.FriendsRelationshipStatus, default: 'PENDING' }),
+    __metadata("design:type", String)
+], FriendsRelationship.prototype, "status", void 0);
 exports.FriendsRelationship = FriendsRelationship = __decorate([
     (0, typeorm_1.Entity)()
 ], FriendsRelationship);

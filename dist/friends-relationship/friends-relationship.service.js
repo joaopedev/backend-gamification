@@ -18,6 +18,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const friends_relationship_entity_1 = require("./entities/friends-relationship.entity");
 const user_entity_1 = require("../users/entities/user.entity");
+const friends_relationshipEnum_1 = require("./entities/friends-relationshipEnum");
 let FriendsRelationshipService = class FriendsRelationshipService {
     friendsRepo;
     usersRepo;
@@ -38,7 +39,10 @@ let FriendsRelationshipService = class FriendsRelationshipService {
         if (existing) {
             throw new common_1.BadRequestException('Friendship already exists or pending.');
         }
-        const relationship = this.friendsRepo.create({ user_id: userId, friend_id: friendId });
+        const relationship = this.friendsRepo.create({
+            user_id: userId,
+            friend_id: friendId,
+        });
         return this.friendsRepo.save(relationship);
     }
     async acceptRequest(userId, requesterId) {
@@ -66,8 +70,12 @@ let FriendsRelationshipService = class FriendsRelationshipService {
     }
     async getFriendsCount(userId) {
         const [sent, received] = await Promise.all([
-            this.friendsRepo.count({ where: { user_id: userId, is_accepted: true, is_blocked: false } }),
-            this.friendsRepo.count({ where: { friend_id: userId, is_accepted: true, is_blocked: false } }),
+            this.friendsRepo.count({
+                where: { user_id: userId, is_accepted: true, is_blocked: false },
+            }),
+            this.friendsRepo.count({
+                where: { friend_id: userId, is_accepted: true, is_blocked: false },
+            }),
         ]);
         return sent + received;
     }
@@ -111,20 +119,47 @@ let FriendsRelationshipService = class FriendsRelationshipService {
     }
     async getFriends(userId) {
         const sent = await this.friendsRepo.find({
-            where: { user_id: userId, is_accepted: true, is_blocked: false },
+            where: {
+                user_id: userId,
+                is_accepted: true,
+                is_blocked: false,
+            },
+            relations: ['friend'],
+            order: { id: 'ASC' },
         });
         const received = await this.friendsRepo.find({
-            where: { friend_id: userId, is_accepted: true, is_blocked: false },
+            where: {
+                friend_id: userId,
+                is_accepted: true,
+                is_blocked: false,
+            },
+            relations: ['user'],
+            order: { id: 'ASC' },
         });
-        const friendIds = [
-            ...sent.map((rel) => rel.friend_id),
-            ...received.map((rel) => rel.user_id),
-        ];
-        return friendIds;
+        return [...sent, ...received];
     }
     async getPendingRequests(userId) {
         return this.friendsRepo.find({
-            where: { friend_id: userId, is_accepted: false, is_blocked: false },
+            where: {
+                friend_id: userId,
+                is_accepted: false,
+                is_blocked: false,
+                status: friends_relationshipEnum_1.FriendsRelationshipStatus.PENDING,
+            },
+            relations: ['friend'],
+            order: { id: 'ASC' },
+        });
+    }
+    async getPendingRequestsSentByUser(userId) {
+        return this.friendsRepo.find({
+            where: {
+                user_id: userId,
+                is_accepted: false,
+                is_blocked: false,
+                status: friends_relationshipEnum_1.FriendsRelationshipStatus.PENDING,
+            },
+            relations: ['friend'],
+            order: { id: 'ASC' },
         });
     }
     async removeRelationship(userId, targetId) {

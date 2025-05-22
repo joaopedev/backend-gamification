@@ -1,4 +1,5 @@
 import { Users } from 'src/users/entities/user.entity';
+import { FriendsRelationshipStatus } from './friends-relationshipEnum';
 export declare class FriendsRelationship {
     id: number;
     user_id: number;
@@ -7,4 +8,5 @@ export declare class FriendsRelationship {
     friend: Users;
     is_accepted: boolean;
     is_blocked: boolean;
+    status: FriendsRelationshipStatus;
 }
