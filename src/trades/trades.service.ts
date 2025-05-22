@@ -74,7 +74,7 @@ export class TradesService {
   async findAllTradesByUserId(userId: number) {
     const trades = await this.tradeRepository.find({
       where: [{ requester: { id: userId } }, { receiver: { id: userId } }],
-      relations: ['requester', 'offeredSticker', 'requestedSticker'],
+      relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
     });
     return trades
   }
