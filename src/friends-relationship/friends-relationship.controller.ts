@@ -47,9 +47,9 @@ export class FriendsRelationshipController {
   }
 
   // GET /friends/pending/:userId
-  @Get('pending/:userId')
-  getPendingRequests(@Param('userId', ParseIntPipe) userId: number) {
-    return this.service.getPendingRequests(userId);
+  @Get('sent-pending/:userId')
+  getPendingRequestsSentByUser(@Param('userId', ParseIntPipe) userId: number) {
+    return this.service.getPendingRequestsSentByUser(userId);
   }
 
   // DELETE /friends/:userId/:targetId
