@@ -94,8 +94,8 @@ export class TradesService {
   async findTradeHistoryByUserId(userId: number) {
     const trades = await this.tradeRepository.find({
       where: [
-        { requester: { id: userId }, status: Not(TradeStatus.PENDING) },
-        { receiver: { id: userId }, status: Not(TradeStatus.PENDING) },
+        { requester: { id: userId }},
+        { receiver: { id: userId }},
       ],
       relations: [
         'requester',
