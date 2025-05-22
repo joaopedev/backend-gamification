@@ -76,9 +76,7 @@ export class TradesService {
       where: [{ requester: { id: userId } }, { receiver: { id: userId } }],
       relations: ['requester', 'offeredSticker', 'requestedSticker'],
     });
-    return trades.map((trade) => {
-      return trade;
-    });
+    return trades
   }
 
   async findAllReceivedTradesByUserId(userId: number) {
