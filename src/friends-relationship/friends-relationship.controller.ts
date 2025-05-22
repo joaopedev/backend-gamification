@@ -31,13 +31,13 @@ export class FriendsRelationshipController {
     return { coinsRewarded: result.coinsRewarded ?? false };
   }
 
-  // PATCH /friends/block/:userId/:targetId
-  @Patch('block/:userId/:targetId')
+  // PATCH /friends/rejected/:userId/:targetId
+  @Patch('rejected/:userId/:targetId')
   blockUser(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('targetId', ParseIntPipe) targetId: number,
   ) {
-    return this.service.blockUser(userId, targetId);
+    return this.service.rejectedUserFriendRequest(userId, targetId);
   }
 
   // GET /friends/:userId
