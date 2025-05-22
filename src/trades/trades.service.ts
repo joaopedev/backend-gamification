@@ -73,10 +73,15 @@ export class TradesService {
 
   async findAllTradesByUserId(userId: number) {
     const trades = await this.tradeRepository.find({
-      where: [{ requester: { id: userId } }, { receiver: { id: userId } }],
-      relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
+      where: { requester: { id: userId } },
+      relations: [
+        'requester',
+        'receiver',
+        'offeredSticker',
+        'requestedSticker',
+      ],
     });
-    return trades
+    return trades;
   }
 
   async findAllReceivedTradesByUserId(userId: number) {
@@ -84,17 +89,19 @@ export class TradesService {
       where: {
         receiver: { id: userId },
       },
-      relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
+      relations: [
+        'requester',
+        'receiver',
+        'offeredSticker',
+        'requestedSticker',
+      ],
     });
     return trades;
   }
 
   async findTradeHistoryByUserId(userId: number) {
     const trades = await this.tradeRepository.find({
-      where: [
-        { requester: { id: userId }},
-        { receiver: { id: userId }},
-      ],
+      where: [{ requester: { id: userId } }, { receiver: { id: userId } }],
       relations: [
         'requester',
         'receiver',
