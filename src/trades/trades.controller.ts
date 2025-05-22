@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TradesService } from './trades.service';
 import { CreateTradeDTO } from './dto/create-trade.dto';
 import { UpdateTradeDto } from './dto/update-trade.dto';
@@ -25,6 +33,16 @@ export class TradesController {
   @Get('user/:userId')
   findAllTradesByUserId(@Param('userId') userId: string) {
     return this.tradesService.findAllTradesByUserId(+userId);
+  }
+
+  @Get('user/:userId/received')
+  findAllReceivedTradesByUserId(@Param('userId') userId: string) {
+    return this.tradesService.findAllReceivedTradesByUserId(+userId);
+  }
+
+  @Get('user/:userId/history')
+  findTradeHistoryByUserId(@Param('userId') userId: string) {
+    return this.tradesService.findTradeHistoryByUserId(+userId);
   }
 
   @Patch(':id')
