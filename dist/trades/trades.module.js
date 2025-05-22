@@ -12,12 +12,15 @@ const trades_service_1 = require("./trades.service");
 const trades_controller_1 = require("./trades.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const trade_entity_1 = require("./entities/trade.entity");
+const user_entity_1 = require("../users/entities/user.entity");
+const user_sticker_entity_1 = require("../user-stickers/entities/user-sticker.entity");
+const sticker_entity_1 = require("../stickers/entities/sticker.entity");
 let TradesModule = class TradesModule {
 };
 exports.TradesModule = TradesModule;
 exports.TradesModule = TradesModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([trade_entity_1.Trade])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([trade_entity_1.Trade, user_entity_1.Users, user_sticker_entity_1.UserSticker, sticker_entity_1.Sticker])],
         controllers: [trades_controller_1.TradesController],
         providers: [trades_service_1.TradesService],
     })

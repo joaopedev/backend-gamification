@@ -24,8 +24,9 @@ let FriendsRelationshipController = class FriendsRelationshipController {
     sendRequest(dto) {
         return this.service.sendRequest(dto.user_id, dto.friend_id);
     }
-    acceptRequest(userId, requesterId) {
-        return this.service.acceptRequest(userId, requesterId);
+    async acceptRequest(userId, requesterId) {
+        const result = await this.service.acceptRequest(userId, requesterId);
+        return { coinsRewarded: result.coinsRewarded ?? false };
     }
     blockUser(userId, targetId) {
         return this.service.blockUser(userId, targetId);
@@ -54,7 +55,7 @@ __decorate([
     __param(1, (0, common_1.Param)('requesterId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], FriendsRelationshipController.prototype, "acceptRequest", null);
 __decorate([
     (0, common_1.Patch)('block/:userId/:targetId'),

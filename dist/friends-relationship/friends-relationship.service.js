@@ -17,10 +17,13 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const friends_relationship_entity_1 = require("./entities/friends-relationship.entity");
+const user_entity_1 = require("../users/entities/user.entity");
 let FriendsRelationshipService = class FriendsRelationshipService {
     friendsRepo;
-    constructor(friendsRepo) {
+    usersRepo;
+    constructor(friendsRepo, usersRepo) {
         this.friendsRepo = friendsRepo;
+        this.usersRepo = usersRepo;
     }
     async sendRequest(userId, friendId) {
         if (userId === friendId) {
@@ -41,12 +44,52 @@ let FriendsRelationshipService = class FriendsRelationshipService {
     async acceptRequest(userId, requesterId) {
         const relationship = await this.friendsRepo.findOne({
             where: { user_id: requesterId, friend_id: userId },
+            relations: ['user', 'friend'],
         });
         if (!relationship) {
             throw new common_1.NotFoundException('Friend request not found.');
         }
+        if (relationship.is_accepted) {
+            throw new common_1.BadRequestException('Request already accepted.');
+        }
         relationship.is_accepted = true;
-        return this.friendsRepo.save(relationship);
+        await this.friendsRepo.save(relationship);
+        const [userFriends, requesterFriends] = await Promise.all([
+            this.getFriendsCount(userId),
+            this.getFriendsCount(requesterId),
+        ]);
+        const userRewarded = await this.checkAndReward(userId, userFriends);
+        const requesterRewarded = await this.checkAndReward(requesterId, requesterFriends);
+        return {
+            coinsRewarded: userRewarded || requesterRewarded,
+        };
+    }
+    async getFriendsCount(userId) {
+        const [sent, received] = await Promise.all([
+            this.friendsRepo.count({ where: { user_id: userId, is_accepted: true, is_blocked: false } }),
+            this.friendsRepo.count({ where: { friend_id: userId, is_accepted: true, is_blocked: false } }),
+        ]);
+        return sent + received;
+    }
+    async checkAndReward(userId, totalFriends) {
+        const milestones = [
+            { count: 5, coins: 50 },
+            { count: 15, coins: 80 },
+            { count: 25, coins: 120 },
+        ];
+        const user = await this.usersRepo.findOneBy({ id: userId });
+        if (!user)
+            return false;
+        let rewarded = false;
+        for (const milestone of milestones) {
+            if (totalFriends === milestone.count) {
+                user.coins += milestone.coins;
+                await this.usersRepo.save(user);
+                rewarded = true;
+                break;
+            }
+        }
+        return rewarded;
     }
     async blockUser(userId, targetId) {
         const relationship = await this.friendsRepo.findOne({
@@ -101,6 +144,8 @@ exports.FriendsRelationshipService = FriendsRelationshipService;
 exports.FriendsRelationshipService = FriendsRelationshipService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(friends_relationship_entity_1.FriendsRelationship)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.Users)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], FriendsRelationshipService);
 //# sourceMappingURL=friends-relationship.service.js.map
