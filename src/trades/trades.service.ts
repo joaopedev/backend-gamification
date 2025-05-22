@@ -3,7 +3,7 @@ import { CreateTradeDTO } from './dto/create-trade.dto';
 import { UpdateTradeDto } from './dto/update-trade.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Trade } from './entities/trade.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, Not, Repository } from 'typeorm';
 import { TradeStatus } from './entities/tradeEnum';
 import { Users } from 'src/users/entities/user.entity';
 import { Sticker } from 'src/stickers/entities/sticker.entity';
@@ -21,35 +21,40 @@ export class TradesService {
     private readonly stickerRepository: Repository<Sticker>,
   ) {}
   async create(createTradeDto: CreateTradeDTO): Promise<Trade> {
-  try {
-    const existingTrade = await this.tradeRepository.findOne({
-      where: {
-        requester: { id: createTradeDto.requesterId },
-        receiver: { id: createTradeDto.receiverId },
-        offeredSticker: { id: createTradeDto.offeredStickerId },
-        requestedSticker: { id: createTradeDto.requestedStickerId },
-        status: TradeStatus.PENDING,
-      },
-      relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
-    });
+    try {
+      const existingTrade = await this.tradeRepository.findOne({
+        where: {
+          requester: { id: createTradeDto.requesterId },
+          receiver: { id: createTradeDto.receiverId },
+          offeredSticker: { id: createTradeDto.offeredStickerId },
+          requestedSticker: { id: createTradeDto.requestedStickerId },
+          status: TradeStatus.PENDING,
+        },
+        relations: [
+          'requester',
+          'receiver',
+          'offeredSticker',
+          'requestedSticker',
+        ],
+      });
 
-    if (existingTrade) {
-      throw new Error('Já existe uma troca pendente com esses dados');
+      if (existingTrade) {
+        throw new Error('Já existe uma troca pendente com esses dados');
+      }
+
+      const trade = this.tradeRepository.create({
+        requester: { id: createTradeDto.requesterId } as Users,
+        receiver: { id: createTradeDto.receiverId } as Users,
+        offeredSticker: { id: createTradeDto.offeredStickerId } as Sticker,
+        requestedSticker: { id: createTradeDto.requestedStickerId } as Sticker,
+        status: createTradeDto.status ?? TradeStatus.PENDING,
+      });
+
+      return await this.tradeRepository.save(trade);
+    } catch (error) {
+      throw new Error(`Erro ao criar trade: ${error.message}`);
     }
-
-    const trade = this.tradeRepository.create({
-      requester: { id: createTradeDto.requesterId } as Users,
-      receiver: { id: createTradeDto.receiverId } as Users,
-      offeredSticker: { id: createTradeDto.offeredStickerId } as Sticker,
-      requestedSticker: { id: createTradeDto.requestedStickerId } as Sticker,
-      status: createTradeDto.status ?? TradeStatus.PENDING,
-    });
-
-    return await this.tradeRepository.save(trade);
-  } catch (error) {
-    throw new Error(`Erro ao criar trade: ${error.message}`);
   }
-}
 
   async findAll() {
     const trades = await this.tradeRepository.find();
@@ -68,15 +73,38 @@ export class TradesService {
 
   async findAllTradesByUserId(userId: number) {
     const trades = await this.tradeRepository.find({
-      where: [
-        { requester: { id: userId } },
-        { receiver: { id: userId } },
-      ],
+      where: [{ requester: { id: userId } }, { receiver: { id: userId } }],
       relations: ['requester', 'offeredSticker', 'requestedSticker'],
     });
     return trades.map((trade) => {
       return trade;
     });
+  }
+
+  async findAllReceivedTradesByUserId(userId: number) {
+    const trades = await this.tradeRepository.find({
+      where: {
+        receiver: { id: userId },
+      },
+      relations: ['requester', 'offeredSticker', 'requestedSticker'],
+    });
+    return trades;
+  }
+
+  async findTradeHistoryByUserId(userId: number) {
+    const trades = await this.tradeRepository.find({
+      where: [
+        { requester: { id: userId }, status: Not(TradeStatus.PENDING) },
+        { receiver: { id: userId }, status: Not(TradeStatus.PENDING) },
+      ],
+      relations: [
+        'requester',
+        'receiver',
+        'offeredSticker',
+        'requestedSticker',
+      ],
+    });
+    return trades;
   }
 
   // async findAllTradesByUserIdAndStatus(userId: number, status: TradeStatus) {
