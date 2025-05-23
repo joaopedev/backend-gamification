@@ -29,7 +29,7 @@ let FriendsRelationshipController = class FriendsRelationshipController {
         return { coinsRewarded: result.coinsRewarded ?? false };
     }
     blockUser(userId, targetId) {
-        return this.service.blockUser(userId, targetId);
+        return this.service.rejectedUserFriendRequest(userId, targetId);
     }
     getFriends(userId) {
         return this.service.getFriends(userId);
@@ -58,7 +58,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FriendsRelationshipController.prototype, "acceptRequest", null);
 __decorate([
-    (0, common_1.Patch)('block/:userId/:targetId'),
+    (0, common_1.Patch)('rejected/:userId/:targetId'),
     __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Param)('targetId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),

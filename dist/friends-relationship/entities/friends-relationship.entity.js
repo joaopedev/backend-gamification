@@ -20,7 +20,7 @@ let FriendsRelationship = class FriendsRelationship {
     user;
     friend;
     is_accepted;
-    is_blocked;
+    is_rejected;
     status;
 };
 exports.FriendsRelationship = FriendsRelationship;
@@ -53,7 +53,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
-], FriendsRelationship.prototype, "is_blocked", void 0);
+], FriendsRelationship.prototype, "is_rejected", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'enum', enum: friends_relationshipEnum_1.FriendsRelationshipStatus, default: 'PENDING' }),
     __metadata("design:type", String)

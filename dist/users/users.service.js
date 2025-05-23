@@ -42,7 +42,6 @@ let UsersService = class UsersService {
             ...createUserDto,
             password: hashedPassword,
         });
-        console.log('User saved:', user);
         await this.userRepository.save(user);
         const { password: _, ...userWithoutPassword } = user;
         return userWithoutPassword;

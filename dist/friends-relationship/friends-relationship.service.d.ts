@@ -11,7 +11,7 @@ export declare class FriendsRelationshipService {
     }>;
     private getFriendsCount;
     private checkAndReward;
-    blockUser(userId: number, targetId: number): Promise<FriendsRelationship>;
+    rejectedUserFriendRequest(userId: number, targetId: number): Promise<FriendsRelationship>;
     getFriends(userId: number): Promise<FriendsRelationship[]>;
     getPendingRequests(userId: number): Promise<FriendsRelationship[]>;
     getPendingRequestsSentByUser(userId: number): Promise<FriendsRelationship[]>;

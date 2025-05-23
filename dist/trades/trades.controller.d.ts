@@ -8,6 +8,8 @@ export declare class TradesController {
     findAll(): Promise<import("./entities/trade.entity").Trade[]>;
     findOne(id: string): Promise<string>;
     findAllTradesByUserId(userId: string): Promise<import("./entities/trade.entity").Trade[]>;
+    findAllReceivedTradesByUserId(userId: string): Promise<import("./entities/trade.entity").Trade[]>;
+    findTradeHistoryByUserId(userId: string): Promise<import("./entities/trade.entity").Trade[]>;
     update(id: string, updateTradeDto: UpdateTradeDto): Promise<import("./entities/trade.entity").Trade>;
     remove(id: string): string;
 }

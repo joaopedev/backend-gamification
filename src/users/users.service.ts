@@ -40,7 +40,6 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    console.log('User saved:', user);
     await this.userRepository.save(user);
 
     const { password: _, ...userWithoutPassword } = user;

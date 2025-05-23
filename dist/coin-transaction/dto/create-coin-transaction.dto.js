@@ -15,6 +15,7 @@ class CreateCoinTransactionDTO {
     type;
     coins;
     userId;
+    isReceived;
 }
 exports.CreateCoinTransactionDTO = CreateCoinTransactionDTO;
 __decorate([
@@ -30,4 +31,8 @@ __decorate([
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], CreateCoinTransactionDTO.prototype, "userId", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateCoinTransactionDTO.prototype, "isReceived", void 0);
 //# sourceMappingURL=create-coin-transaction.dto.js.map

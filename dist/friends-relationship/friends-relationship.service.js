@@ -47,16 +47,19 @@ let FriendsRelationshipService = class FriendsRelationshipService {
     }
     async acceptRequest(userId, requesterId) {
         const relationship = await this.friendsRepo.findOne({
-            where: { user_id: requesterId, friend_id: userId },
+            where: {
+                user_id: requesterId,
+                friend_id: userId,
+            },
             relations: ['user', 'friend'],
         });
         if (!relationship) {
             throw new common_1.NotFoundException('Friend request not found.');
         }
-        if (relationship.is_accepted) {
+        if (relationship.status === friends_relationshipEnum_1.FriendsRelationshipStatus.ACCEPTED) {
             throw new common_1.BadRequestException('Request already accepted.');
         }
-        relationship.is_accepted = true;
+        relationship.status = friends_relationshipEnum_1.FriendsRelationshipStatus.ACCEPTED;
         await this.friendsRepo.save(relationship);
         const [userFriends, requesterFriends] = await Promise.all([
             this.getFriendsCount(userId),
@@ -71,10 +74,10 @@ let FriendsRelationshipService = class FriendsRelationshipService {
     async getFriendsCount(userId) {
         const [sent, received] = await Promise.all([
             this.friendsRepo.count({
-                where: { user_id: userId, is_accepted: true, is_blocked: false },
+                where: { user_id: userId, is_accepted: true, is_rejected: false },
             }),
             this.friendsRepo.count({
-                where: { friend_id: userId, is_accepted: true, is_blocked: false },
+                where: { friend_id: userId, is_accepted: true, is_rejected: false },
             }),
         ]);
         return sent + received;
@@ -99,7 +102,7 @@ let FriendsRelationshipService = class FriendsRelationshipService {
         }
         return rewarded;
     }
-    async blockUser(userId, targetId) {
+    async rejectedUserFriendRequest(userId, targetId) {
         const relationship = await this.friendsRepo.findOne({
             where: [
                 { user_id: userId, friend_id: targetId },
@@ -110,11 +113,12 @@ let FriendsRelationshipService = class FriendsRelationshipService {
             const newRel = this.friendsRepo.create({
                 user_id: userId,
                 friend_id: targetId,
-                is_blocked: true,
+                is_rejected: true,
             });
             return this.friendsRepo.save(newRel);
         }
-        relationship.is_blocked = true;
+        relationship.is_rejected = true;
+        relationship.status = friends_relationshipEnum_1.FriendsRelationshipStatus.REJECTED;
         return this.friendsRepo.save(relationship);
     }
     async getFriends(userId) {
@@ -122,7 +126,7 @@ let FriendsRelationshipService = class FriendsRelationshipService {
             where: {
                 user_id: userId,
                 is_accepted: true,
-                is_blocked: false,
+                is_rejected: false,
             },
             relations: ['friend'],
             order: { id: 'ASC' },
@@ -131,7 +135,7 @@ let FriendsRelationshipService = class FriendsRelationshipService {
             where: {
                 friend_id: userId,
                 is_accepted: true,
-                is_blocked: false,
+                is_rejected: false,
             },
             relations: ['user'],
             order: { id: 'ASC' },
@@ -143,7 +147,7 @@ let FriendsRelationshipService = class FriendsRelationshipService {
             where: {
                 friend_id: userId,
                 is_accepted: false,
-                is_blocked: false,
+                is_rejected: false,
                 status: friends_relationshipEnum_1.FriendsRelationshipStatus.PENDING,
             },
             relations: ['friend'],
@@ -155,7 +159,7 @@ let FriendsRelationshipService = class FriendsRelationshipService {
             where: {
                 user_id: userId,
                 is_accepted: false,
-                is_blocked: false,
+                is_rejected: false,
                 status: friends_relationshipEnum_1.FriendsRelationshipStatus.PENDING,
             },
             relations: ['friend'],

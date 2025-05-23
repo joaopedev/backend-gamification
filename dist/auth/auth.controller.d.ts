@@ -12,6 +12,9 @@ export declare class AuthController {
     requestReset(dto: RequestPasswordResetDto): Promise<{
         message: string;
     }>;
+    validateResetToken(token: string): Promise<{
+        message: string;
+    }>;
     resetPassword(dto: ResetPasswordDto): Promise<{
         message: string;
     }>;

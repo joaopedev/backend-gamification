@@ -7,6 +7,6 @@ export declare class FriendsRelationship {
     user: Users;
     friend: Users;
     is_accepted: boolean;
-    is_blocked: boolean;
+    is_rejected: boolean;
     status: FriendsRelationshipStatus;
 }

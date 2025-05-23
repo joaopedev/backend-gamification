@@ -34,6 +34,12 @@ let TradesController = class TradesController {
     findAllTradesByUserId(userId) {
         return this.tradesService.findAllTradesByUserId(+userId);
     }
+    findAllReceivedTradesByUserId(userId) {
+        return this.tradesService.findAllReceivedTradesByUserId(+userId);
+    }
+    findTradeHistoryByUserId(userId) {
+        return this.tradesService.findTradeHistoryByUserId(+userId);
+    }
     update(id, updateTradeDto) {
         return this.tradesService.update(+id, updateTradeDto);
     }
@@ -69,6 +75,20 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], TradesController.prototype, "findAllTradesByUserId", null);
+__decorate([
+    (0, common_1.Get)('user/:userId/received'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TradesController.prototype, "findAllReceivedTradesByUserId", null);
+__decorate([
+    (0, common_1.Get)('user/:userId/history'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TradesController.prototype, "findTradeHistoryByUserId", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),

@@ -13,6 +13,8 @@ export declare class TradesService {
     findAll(): Promise<Trade[]>;
     findOne(id: number): Promise<string>;
     findAllTradesByUserId(userId: number): Promise<Trade[]>;
+    findAllReceivedTradesByUserId(userId: number): Promise<Trade[]>;
+    findTradeHistoryByUserId(userId: number): Promise<Trade[]>;
     update(id: number, updateTradeDto: UpdateTradeDto): Promise<Trade>;
     remove(id: number): string;
 }

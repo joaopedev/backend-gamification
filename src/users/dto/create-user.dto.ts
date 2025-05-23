@@ -1,6 +1,7 @@
 import {
   IsAlphanumeric,
   IsEmail,
+  IsEmpty,
   IsNotEmpty,
   IsString,
   Matches,
@@ -46,4 +47,8 @@ export class CreateUserDto {
       one special character`,
   })
   confirm_password: string;
+
+  @IsEmpty()
+  @IsString()
+  image_url: string;
 }

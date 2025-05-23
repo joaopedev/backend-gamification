@@ -39,7 +39,12 @@ let TradesService = class TradesService {
                     requestedSticker: { id: createTradeDto.requestedStickerId },
                     status: tradeEnum_1.TradeStatus.PENDING,
                 },
-                relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
+                relations: [
+                    'requester',
+                    'receiver',
+                    'offeredSticker',
+                    'requestedSticker',
+                ],
             });
             if (existingTrade) {
                 throw new Error('Já existe uma troca pendente com esses dados');
@@ -72,15 +77,41 @@ let TradesService = class TradesService {
     }
     async findAllTradesByUserId(userId) {
         const trades = await this.tradeRepository.find({
-            where: [
-                { requester: { id: userId } },
-                { receiver: { id: userId } },
+            where: { requester: { id: userId } },
+            relations: [
+                'requester',
+                'receiver',
+                'offeredSticker',
+                'requestedSticker',
             ],
-            relations: ['requester', 'receiver', 'offeredSticker', 'requestedSticker'],
         });
-        return trades.map((trade) => {
-            return trade;
+        return trades;
+    }
+    async findAllReceivedTradesByUserId(userId) {
+        const trades = await this.tradeRepository.find({
+            where: {
+                receiver: { id: userId },
+            },
+            relations: [
+                'requester',
+                'receiver',
+                'offeredSticker',
+                'requestedSticker',
+            ],
         });
+        return trades;
+    }
+    async findTradeHistoryByUserId(userId) {
+        const trades = await this.tradeRepository.find({
+            where: [{ requester: { id: userId } }, { receiver: { id: userId } }],
+            relations: [
+                'requester',
+                'receiver',
+                'offeredSticker',
+                'requestedSticker',
+            ],
+        });
+        return trades;
     }
     async update(id, updateTradeDto) {
         const trade = await this.tradeRepository.findOne({ where: { id } });

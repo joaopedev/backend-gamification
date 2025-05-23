@@ -4,4 +4,5 @@ export declare class CreateUserDto {
     email: string;
     password: string;
     confirm_password: string;
+    image_url: string;
 }

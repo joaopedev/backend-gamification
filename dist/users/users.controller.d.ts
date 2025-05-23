@@ -10,7 +10,7 @@ export declare class UsersController {
         username: string;
         confirm_password: string;
         email: string;
-        image_url?: string;
+        image_url: string;
         updated_at: Date;
         created_at: Date;
         deleted_at?: Date | null;
@@ -35,7 +35,7 @@ export declare class UsersController {
         username: string;
         confirm_password: string;
         email: string;
-        image_url?: string;
+        image_url: string;
         updated_at: Date;
         created_at: Date;
         deleted_at?: Date | null;
@@ -60,7 +60,7 @@ export declare class UsersController {
         username: string;
         confirm_password: string;
         email: string;
-        image_url?: string;
+        image_url: string;
         updated_at: Date;
         created_at: Date;
         deleted_at?: Date | null;
@@ -85,7 +85,7 @@ export declare class UsersController {
         username: string;
         confirm_password: string;
         email: string;
-        image_url?: string;
+        image_url: string;
         updated_at: Date;
         created_at: Date;
         deleted_at?: Date | null;
