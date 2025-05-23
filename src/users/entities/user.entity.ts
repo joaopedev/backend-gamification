@@ -32,7 +32,7 @@ export class Users {
   email: string;
 
   @Column({ type: 'varchar', length: 300, nullable: true })
-  image_url?: string;
+  image_url: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
