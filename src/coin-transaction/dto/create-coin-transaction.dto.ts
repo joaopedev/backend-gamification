@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsInt, Min } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsString, Min } from 'class-validator';
 
 export class CreateCoinTransactionDTO {
   @IsEnum(['TASK', 'QR_CODE'])
@@ -13,4 +13,7 @@ export class CreateCoinTransactionDTO {
 
   @IsBoolean()
   isReceived: boolean;
+
+  @IsString()
+  qrCodeId?: string;
 }

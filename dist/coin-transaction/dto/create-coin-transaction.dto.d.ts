@@ -3,4 +3,5 @@ export declare class CreateCoinTransactionDTO {
     coins: number;
     userId: number;
     isReceived: boolean;
+    qrCodeId?: string;
 }

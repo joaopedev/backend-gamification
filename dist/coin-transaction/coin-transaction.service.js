@@ -26,16 +26,29 @@ let CoinTransactionService = class CoinTransactionService {
         this.usersRepo = usersRepo;
     }
     async create(createCoinTransactionDto) {
-        const { userId, coins, type } = createCoinTransactionDto;
+        const { userId, coins, type, qrCodeId } = createCoinTransactionDto;
         const user = await this.usersRepo.findOne({ where: { id: userId } });
         if (!user)
             throw new common_1.NotFoundException('Usuário não encontrado');
+        if (type === 'QR_CODE') {
+            if (!qrCodeId) {
+                throw new common_1.BadRequestException('QR Code ID é obrigatório para transações do tipo QR_CODE');
+            }
+            const existing = await this.coinTransactionRepo.findOne({
+                where: { user: { id: userId }, type: 'QR_CODE', qrCodeId },
+            });
+            if (existing) {
+                throw new common_1.BadRequestException('Este QR Code já foi utilizado por este usuário');
+            }
+        }
         user.coins += coins;
         await this.usersRepo.save(user);
         const transaction = this.coinTransactionRepo.create({
             user,
             coins,
             type,
+            isReceived: true,
+            qrCodeId: qrCodeId ?? undefined,
         });
         await this.coinTransactionRepo.save(transaction);
         return transaction;
