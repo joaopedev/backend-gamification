@@ -16,4 +16,5 @@ export declare class FriendsRelationshipService {
     getPendingRequests(userId: number): Promise<FriendsRelationship[]>;
     getPendingRequestsSentByUser(userId: number): Promise<FriendsRelationship[]>;
     removeRelationship(userId: number, targetId: number): Promise<FriendsRelationship>;
+    getRejectedRelationships(userId: number): Promise<FriendsRelationship[]>;
 }

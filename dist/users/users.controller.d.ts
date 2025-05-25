@@ -1,6 +1,7 @@
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserLevelDto } from './dto/update-user-level.dto';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
@@ -80,6 +81,31 @@ export declare class UsersController {
         albums: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
     }>;
     update(id: number, updateUserDto: UpdateUserDto): Promise<{
+        id: number;
+        name: string;
+        username: string;
+        confirm_password: string;
+        email: string;
+        image_url: string;
+        updated_at: Date;
+        created_at: Date;
+        deleted_at?: Date | null;
+        stickers_number: number;
+        coins: number;
+        conquests: number;
+        transactions: import("../coin-transaction/entities/coin-transaction.entity").CoinTransaction[];
+        initiatedTrades: import("../trades/entities/trade.entity").Trade[];
+        receivedTrades: import("../trades/entities/trade.entity").Trade[];
+        last_login?: Date | null;
+        level: number;
+        friends: import("./entities/user.entity").Users[];
+        stickerPacks: import("../sticker-pack/entities/sticker-pack.entity").StickerPack[];
+        userStickers: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
+        resetPasswordToken: string;
+        resetPasswordExpires: Date;
+        albums: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
+    }>;
+    updateLevel(id: number, dto: UpdateUserLevelDto): Promise<{
         id: number;
         name: string;
         username: string;

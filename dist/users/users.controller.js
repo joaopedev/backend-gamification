@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
 const update_user_dto_1 = require("./dto/update-user.dto");
+const update_user_level_dto_1 = require("./dto/update-user-level.dto");
 let UsersController = class UsersController {
     usersService;
     constructor(usersService) {
@@ -33,6 +34,9 @@ let UsersController = class UsersController {
     }
     update(id, updateUserDto) {
         return this.usersService.update(id, updateUserDto);
+    }
+    async updateLevel(id, dto) {
+        return await this.usersService.update(id, dto);
     }
     remove(id) {
         return this.usersService.remove(id);
@@ -67,6 +71,14 @@ __decorate([
     __metadata("design:paramtypes", [Number, update_user_dto_1.UpdateUserDto]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "update", null);
+__decorate([
+    (0, common_1.Patch)('level/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_user_level_dto_1.UpdateUserLevelDto]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "updateLevel", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

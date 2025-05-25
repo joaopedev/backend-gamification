@@ -121,7 +121,7 @@ let TradesService = class TradesService {
         await this.tradeRepository.update(id, updateTradeDto);
         const updatedTrade = await this.tradeRepository.findOne({ where: { id } });
         if (!updatedTrade) {
-            throw new Error('Trade not found after update');
+            throw new Error('Negociação não encontrada após atualização');
         }
         return updatedTrade;
     }

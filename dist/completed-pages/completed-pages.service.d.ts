@@ -16,7 +16,18 @@ export declare class CompletedPagesService {
         pageIndex: number;
         ticket: string;
     }[]>;
-    findOne(id: number): string;
-    update(id: number, updateCompletedPageDto: UpdateCompletedPageDto): string;
-    remove(id: number): string;
+    private checkAndReward;
+    findOne(id: number): Promise<{
+        id: number;
+        userId: number;
+        pageIndex: number;
+        ticket: string;
+    }>;
+    update(id: number, updateCompletedPageDto: UpdateCompletedPageDto): Promise<{
+        message: string;
+        updated: CompletedPage;
+    }>;
+    remove(id: number): Promise<{
+        message: string;
+    }>;
 }

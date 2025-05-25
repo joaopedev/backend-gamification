@@ -37,6 +37,9 @@ let FriendsRelationshipController = class FriendsRelationshipController {
     getPendingRequestsSentByUser(userId) {
         return this.service.getPendingRequestsSentByUser(userId);
     }
+    getRejectedRelationships(userId) {
+        return this.service.getRejectedRelationships(userId);
+    }
     remove(userId, targetId) {
         return this.service.removeRelationship(userId, targetId);
     }
@@ -79,6 +82,13 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], FriendsRelationshipController.prototype, "getPendingRequestsSentByUser", null);
+__decorate([
+    (0, common_1.Get)('rejected/:userId'),
+    __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], FriendsRelationshipController.prototype, "getRejectedRelationships", null);
 __decorate([
     (0, common_1.Delete)(':userId/:targetId'),
     __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),

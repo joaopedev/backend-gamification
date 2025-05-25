@@ -23,7 +23,11 @@ let CompletedPagesController = class CompletedPagesController {
         this.completedPagesService = completedPagesService;
     }
     async completePage(dto) {
-        return this.completedPagesService.create(dto.userId, dto);
+        const result = await this.completedPagesService.create(dto.userId, dto);
+        return {
+            ticket: result.ticket,
+            coinsRewarded: result.ticket ?? false,
+        };
     }
     findAll() {
         return this.completedPagesService.findAll();

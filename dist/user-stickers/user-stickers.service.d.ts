@@ -14,13 +14,12 @@ export declare class UserStickersService {
     findOne(id: number): Promise<UserSticker>;
     findByUser(userId: number): Promise<UserSticker[]>;
     update(id: number, updateUserStickerDto: UpdateUserStickerDto, userId: number): Promise<UserSticker>;
-    updatePasted(id: number, pasted: boolean): Promise<UserSticker>;
+    private checkAndReward;
     remove(id: number): Promise<{
         message: string;
     }>;
     addStickerToUser(userId: number, stickerId: number, sponsor?: string): Promise<UserSticker>;
     pasteSticker(userId: number, stickerId: number, sponsor?: string): Promise<UserSticker>;
-    getUserStickers(userId: number): Promise<UserSticker[]>;
     removeSticker(userId: number, stickerId: number, sponsor?: string): Promise<{
         message: string;
     }>;

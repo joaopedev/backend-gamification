@@ -28,7 +28,7 @@ let FriendsRelationshipService = class FriendsRelationshipService {
     }
     async sendRequest(userId, friendId) {
         if (userId === friendId) {
-            throw new common_1.BadRequestException("You can't send a friend request to yourself.");
+            throw new common_1.BadRequestException("Você não pode enviar uma solicitação de amizade para si mesmo.");
         }
         const existing = await this.friendsRepo.findOne({
             where: [
@@ -37,7 +37,10 @@ let FriendsRelationshipService = class FriendsRelationshipService {
             ],
         });
         if (existing) {
-            throw new common_1.BadRequestException('Friendship already exists or pending.');
+            if (existing.is_rejected) {
+                throw new common_1.BadRequestException('A solicitação de amizade foi rejeitada. Não é possível reenviar.');
+            }
+            throw new common_1.BadRequestException('A amizade já existe ou está pendente.');
         }
         const relationship = this.friendsRepo.create({
             user_id: userId,
@@ -54,10 +57,10 @@ let FriendsRelationshipService = class FriendsRelationshipService {
             relations: ['user', 'friend'],
         });
         if (!relationship) {
-            throw new common_1.NotFoundException('Friend request not found.');
+            throw new common_1.NotFoundException('Solicitação de amizade não encontrada.');
         }
         if (relationship.status === friends_relationshipEnum_1.FriendsRelationshipStatus.ACCEPTED) {
-            throw new common_1.BadRequestException('Request already accepted.');
+            throw new common_1.BadRequestException('Pedido já aceito.');
         }
         relationship.status = friends_relationshipEnum_1.FriendsRelationshipStatus.ACCEPTED;
         await this.friendsRepo.save(relationship);
@@ -174,9 +177,18 @@ let FriendsRelationshipService = class FriendsRelationshipService {
             ],
         });
         if (!relationship) {
-            throw new common_1.NotFoundException('Friend relationship not found.');
+            throw new common_1.NotFoundException('Relação de amizade não encontrada.');
         }
         return this.friendsRepo.remove(relationship);
+    }
+    async getRejectedRelationships(userId) {
+        return this.friendsRepo.find({
+            where: [
+                { user_id: userId, is_rejected: true },
+                { friend_id: userId, is_rejected: true },
+            ],
+            relations: ['user', 'friend'],
+        });
     }
 };
 exports.FriendsRelationshipService = FriendsRelationshipService;

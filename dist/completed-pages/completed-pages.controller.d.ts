@@ -6,6 +6,7 @@ export declare class CompletedPagesController {
     constructor(completedPagesService: CompletedPagesService);
     completePage(dto: CompletePageDto): Promise<{
         ticket: number;
+        coinsRewarded: number;
     }>;
     findAll(): Promise<{
         id: number;
@@ -13,7 +14,17 @@ export declare class CompletedPagesController {
         pageIndex: number;
         ticket: string;
     }[]>;
-    findOne(id: string): string;
-    update(id: string, updateCompletedPageDto: UpdateCompletedPageDto): string;
-    remove(id: string): string;
+    findOne(id: string): Promise<{
+        id: number;
+        userId: number;
+        pageIndex: number;
+        ticket: string;
+    }>;
+    update(id: string, updateCompletedPageDto: UpdateCompletedPageDto): Promise<{
+        message: string;
+        updated: import("./entities/completed-page.entity").CompletedPage;
+    }>;
+    remove(id: string): Promise<{
+        message: string;
+    }>;
 }
