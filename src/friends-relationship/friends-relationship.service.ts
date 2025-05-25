@@ -21,7 +21,7 @@ export class FriendsRelationshipService {
   async sendRequest(userId: number, friendId: number) {
     if (userId === friendId) {
       throw new BadRequestException(
-        "You can't send a friend request to yourself.",
+        "Você não pode enviar uma solicitação de amizade para si mesmo.",
       );
     }
 
@@ -35,10 +35,10 @@ export class FriendsRelationshipService {
     if (existing) {
       if (existing.is_rejected) {
         throw new BadRequestException(
-          'Friend request was rejected. Cannot resend.',
+          'A solicitação de amizade foi rejeitada. Não é possível reenviar.',
         );
       }
-      throw new BadRequestException('Friendship already exists or pending.');
+      throw new BadRequestException('A amizade já existe ou está pendente.');
     }
 
     const relationship = this.friendsRepo.create({
@@ -58,11 +58,11 @@ export class FriendsRelationshipService {
     });
 
     if (!relationship) {
-      throw new NotFoundException('Friend request not found.');
+      throw new NotFoundException('Solicitação de amizade não encontrada.');
     }
 
     if (relationship.status === FriendsRelationshipStatus.ACCEPTED) {
-      throw new BadRequestException('Request already accepted.');
+      throw new BadRequestException('Pedido já aceito.');
     }
 
     relationship.status = FriendsRelationshipStatus.ACCEPTED;
@@ -133,7 +133,6 @@ export class FriendsRelationshipService {
     });
 
     if (!relationship) {
-      // Cria o relacionamento se ainda não existir
       const newRel = this.friendsRepo.create({
         user_id: userId,
         friend_id: targetId,
@@ -154,7 +153,7 @@ export class FriendsRelationshipService {
         is_accepted: true,
         is_rejected: false,
       },
-      relations: ['friend'], // Popula o amigo
+      relations: ['friend'], 
       order: { id: 'ASC' },
     });
 
@@ -164,11 +163,10 @@ export class FriendsRelationshipService {
         is_accepted: true,
         is_rejected: false,
       },
-      relations: ['user'], // Popula o solicitante
+      relations: ['user'], 
       order: { id: 'ASC' },
     });
 
-    // Junta os dois resultados para manter a estrutura completa
     return [...sent, ...received];
   }
 
@@ -180,7 +178,7 @@ export class FriendsRelationshipService {
         is_rejected: false,
         status: FriendsRelationshipStatus.PENDING,
       },
-      relations: ['friend'], // Popula os dados de quem enviou o pedido
+      relations: ['friend'], 
       order: { id: 'ASC' },
     });
   }
@@ -195,7 +193,7 @@ export class FriendsRelationshipService {
         is_rejected: false,
         status: FriendsRelationshipStatus.PENDING,
       },
-      relations: ['friend'], // Traz o usuário para quem ele mandou o pedido
+      relations: ['friend'],
       order: { id: 'ASC' },
     });
   }
@@ -209,7 +207,7 @@ export class FriendsRelationshipService {
     });
 
     if (!relationship) {
-      throw new NotFoundException('Friend relationship not found.');
+      throw new NotFoundException('Relação de amizade não encontrada.');
     }
 
     return this.friendsRepo.remove(relationship);

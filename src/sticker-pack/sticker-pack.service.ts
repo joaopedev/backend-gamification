@@ -37,7 +37,7 @@ export class StickerPackService {
     };
 
     if (![1, 3, 5].includes(quantity)) {
-      throw new BadRequestException('Invalid quantity. Must be 1, 3 or 5.');
+      throw new BadRequestException('Quantidade inválida. Deve ser 1, 3 ou 5.');
     }
 
     const PACK_COST = priceTable[quantity];
@@ -45,11 +45,11 @@ export class StickerPackService {
     const user = await this.userRepo.findOne({
       where: { id: userId },
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('Usuário não encontrado');
 
     if (user.coins < PACK_COST) {
       throw new BadRequestException(
-        'Not enough coins to purchase sticker packs',
+        'Não há moedas suficientes para comprar pacotes de figurinhas',
       );
     }
 
@@ -76,7 +76,7 @@ export class StickerPackService {
     }
 
     if (allSelectedStickers.length < quantity * STICKER_COUNT) {
-      throw new BadRequestException('Could not find enough eligible stickers');
+      throw new BadRequestException('Não foi possível encontrar figurinhas qualificados suficientes');
     }
 
     const userStickers: UserSticker[] = [];
@@ -132,7 +132,7 @@ export class StickerPackService {
 
   async remove(id: number) {
     const pack = await this.stickerPackRepo.findOne({ where: { id } });
-    if (!pack) throw new Error('Sticker pack not found');
+    if (!pack) throw new Error('Pacote de figurinhas não encontrado');
     return this.stickerPackRepo.remove(pack);
   }
 }

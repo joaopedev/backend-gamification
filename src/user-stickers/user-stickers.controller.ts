@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Req,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserStickersService } from './user-stickers.service';
 import { CreateUserStickerDTO } from './dto/create-user-sticker.dto';
@@ -49,14 +50,24 @@ export class UserStickersController {
   }
 
   @Put(':id/paste')
-  async updatePasted(
-    @Param('id', ParseIntPipe) id: number,
+  async pasteSticker(
+    @Param('id', ParseIntPipe) stickerId: number,
+    @Req() req,
     @Body() body: UpdatePastedDto,
   ) {
-    const result = await this.userStickersService.updatePasted(id, body.pasted);
+    const userId = req.user.id;
+
+    if (!body.pasted) {
+      throw new BadRequestException('Use a rota de remoção para descolar os figurinhas');
+    }
+
+    const result = await this.userStickersService.pasteSticker(
+      userId,
+      stickerId,
+    );
     return {
-      userSticker: result.albums,
-      coinsRewarded: result.user.coins ?? false,
+      message: 'Figurinhas colado com sucesso',
+      userSticker: result,
     };
   }
 

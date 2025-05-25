@@ -83,7 +83,7 @@ export class UserStickersService {
   ) {
     const sticker = await this.findOne(id);
     if (sticker.user.id !== userId) {
-      throw new BadRequestException('You cannot update this sticker');
+      throw new BadRequestException('Você não pode atualizar este adesivo');
     }
 
     if (updateUserStickerDto.userId) {
@@ -91,7 +91,7 @@ export class UserStickersService {
         id: updateUserStickerDto.userId,
       });
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('Usuário não encontrado');
       }
       sticker.user = user;
     }
@@ -101,38 +101,12 @@ export class UserStickersService {
         id: updateUserStickerDto.stickerId,
       });
       if (!stickerToUpdate) {
-        throw new NotFoundException('Sticker not found');
+        throw new NotFoundException('Adesivo não encontrado');
       }
       sticker.sticker = stickerToUpdate;
     }
     Object.assign(sticker, updateUserStickerDto);
     return this.userStickerRepo.save(sticker);
-  }
-
-  async updatePasted(id: number, pasted: boolean) {
-    const userSticker = await this.findOne(id);
-
-    if (userSticker.pasted === pasted) {
-      return userSticker; // Nenhuma mudança necessária
-    }
-
-    userSticker.pasted = pasted;
-    await this.userStickerRepo.save(userSticker);
-
-    if (pasted) {
-      // Conta quantas figurinhas coladas o usuário tem após essa
-      const totalPasted = await this.userStickerRepo.count({
-        where: {
-          user: { id: userSticker.user.id },
-          pasted: true,
-        },
-      });
-
-      // Chama verificação de recompensa
-      await this.checkAndReward(userSticker.user.id, totalPasted);
-    }
-
-    return userSticker;
   }
 
   private async checkAndReward(
@@ -165,7 +139,7 @@ export class UserStickersService {
   async remove(id: number) {
     const sticker = await this.findOne(id);
     await this.userStickerRepo.remove(sticker);
-    return { message: 'UserSticker removed successfully' };
+    return { message: 'UserSticker removido com sucesso' };
   }
 
   async addStickerToUser(
@@ -177,7 +151,7 @@ export class UserStickersService {
     const sticker = await this.stickerRepo.findOneBy({ id: stickerId });
 
     if (!user || !sticker) {
-      throw new NotFoundException('User or Sticker not found');
+      throw new NotFoundException('Usuário ou adesivo não encontrado');
     }
 
     const existing = await this.userStickerRepo.findOne({
@@ -207,22 +181,27 @@ export class UserStickersService {
   ) {
     const userSticker = await this.userStickerRepo.findOne({
       where: { user: { id: userId }, sticker: { id: stickerId }, sponsor },
+      relations: ['user'],
     });
 
     if (!userSticker)
-      throw new NotFoundException('User does not own this sticker');
+      throw new NotFoundException('O usuário não possui este adesivo');
     if (userSticker.pasted)
-      throw new BadRequestException('Sticker already pasted');
+      throw new BadRequestException('Adesivo já colado');
 
     userSticker.pasted = true;
-    return this.userStickerRepo.save(userSticker);
-  }
+    await this.userStickerRepo.save(userSticker);
 
-  async getUserStickers(userId: number) {
-    return this.userStickerRepo.find({
-      where: { user: { id: userId } },
-      relations: ['sticker'],
+    const user = userSticker.user;
+    user.level += 1;
+    await this.usersRepo.save(user);
+
+    const totalPasted = await this.userStickerRepo.count({
+      where: { user: { id: userId }, pasted: true },
     });
+    await this.checkAndReward(userId, totalPasted);
+
+    return userSticker;
   }
 
   async removeSticker(
@@ -234,10 +213,10 @@ export class UserStickersService {
       where: { user: { id: userId }, sticker: { id: stickerId }, sponsor },
     });
 
-    if (!userSticker) throw new NotFoundException('Sticker not found for user');
+    if (!userSticker) throw new NotFoundException('Adesivo não encontrado para o usuário');
 
     await this.userStickerRepo.remove(userSticker);
-    return { message: 'Sticker removed' };
+    return { message: 'Adesivo removido' };
   }
 
   async getAlbumProgress(userId: number) {

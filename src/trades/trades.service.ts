@@ -133,7 +133,7 @@ export class TradesService {
     await this.tradeRepository.update(id, updateTradeDto as DeepPartial<Trade>);
     const updatedTrade = await this.tradeRepository.findOne({ where: { id } });
     if (!updatedTrade) {
-      throw new Error('Trade not found after update');
+      throw new Error('Negociação não encontrada após atualização');
     }
     return updatedTrade; // Return the updated trade object
   }
