@@ -57,6 +57,18 @@ export class FriendsRelationshipController {
     return this.service.getRejectedRelationships(userId);
   }
 
+  @Get('received-pending/:userId')
+  async getReceivedPendingRequests(
+    @Param('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.service.getPendingRequestsReceivedByUser(userId);
+  }
+
+  @Get('history/:userId')
+  async getFriendRequestHistory(@Param('userId', ParseIntPipe) userId: number) {
+    return this.service.findFriendRelationsHistoryByUserId(userId);
+  }
+
   // DELETE /friends/:userId/:targetId
   @Delete(':userId/:targetId')
   remove(
