@@ -21,7 +21,7 @@ export class FriendsRelationshipService {
   async sendRequest(userId: number, friendId: number) {
     if (userId === friendId) {
       throw new BadRequestException(
-        "Você não pode enviar uma solicitação de amizade para si mesmo.",
+        'Você não pode enviar uma solicitação de amizade para si mesmo.',
       );
     }
 
@@ -83,6 +83,31 @@ export class FriendsRelationshipService {
     return {
       coinsRewarded: userRewarded || requesterRewarded,
     };
+  }
+
+  async findFriendRelationsHistoryByUserId(userId: number) {
+    const relations = await this.friendsRepo.find({
+      where: [{ user_id: userId }, { friend_id: userId }],
+      relations: ['user', 'friend'],
+      order: { id: 'DESC' },
+    });
+
+    return relations;
+  }
+
+  async getPendingRequestsReceivedByUser(
+    userId: number,
+  ): Promise<FriendsRelationship[]> {
+    return this.friendsRepo.find({
+      where: {
+        friend_id: userId,
+        is_accepted: false,
+        is_rejected: false,
+        status: FriendsRelationshipStatus.PENDING,
+      },
+      relations: ['user'],
+      order: { id: 'ASC' },
+    });
   }
 
   private async getFriendsCount(userId: number): Promise<number> {
@@ -153,7 +178,7 @@ export class FriendsRelationshipService {
         is_accepted: true,
         is_rejected: false,
       },
-      relations: ['friend'], 
+      relations: ['friend'],
       order: { id: 'ASC' },
     });
 
@@ -163,7 +188,7 @@ export class FriendsRelationshipService {
         is_accepted: true,
         is_rejected: false,
       },
-      relations: ['user'], 
+      relations: ['user'],
       order: { id: 'ASC' },
     });
 
@@ -178,7 +203,7 @@ export class FriendsRelationshipService {
         is_rejected: false,
         status: FriendsRelationshipStatus.PENDING,
       },
-      relations: ['friend'], 
+      relations: ['friend'],
       order: { id: 'ASC' },
     });
   }
