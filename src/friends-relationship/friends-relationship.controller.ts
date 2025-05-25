@@ -52,6 +52,11 @@ export class FriendsRelationshipController {
     return this.service.getPendingRequestsSentByUser(userId);
   }
 
+  @Get('rejected/:userId')
+  getRejectedRelationships(@Param('userId', ParseIntPipe) userId: number) {
+    return this.service.getRejectedRelationships(userId);
+  }
+
   // DELETE /friends/:userId/:targetId
   @Delete(':userId/:targetId')
   remove(
