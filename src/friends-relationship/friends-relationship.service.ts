@@ -33,6 +33,11 @@ export class FriendsRelationshipService {
     });
 
     if (existing) {
+      if (existing.is_rejected) {
+        throw new BadRequestException(
+          'Friend request was rejected. Cannot resend.',
+        );
+      }
       throw new BadRequestException('Friendship already exists or pending.');
     }
 
@@ -208,5 +213,17 @@ export class FriendsRelationshipService {
     }
 
     return this.friendsRepo.remove(relationship);
+  }
+
+  async getRejectedRelationships(
+    userId: number,
+  ): Promise<FriendsRelationship[]> {
+    return this.friendsRepo.find({
+      where: [
+        { user_id: userId, is_rejected: true },
+        { friend_id: userId, is_rejected: true },
+      ],
+      relations: ['user', 'friend'],
+    });
   }
 }
