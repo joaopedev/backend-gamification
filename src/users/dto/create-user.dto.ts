@@ -13,38 +13,41 @@ const passwordRegEx =
 
 export class CreateUserDto {
   @IsString()
-  @MinLength(2, { message: 'Name must have atleast 2 characters.' })
+  @MinLength(2, { message: 'O nome deve ter pelo menos 2 caracteres.' })
   @IsNotEmpty()
   name: string;
 
   @IsNotEmpty()
-  @MinLength(3, { message: 'Username must have atleast 3 characters.' })
+  @MinLength(3, {
+    message: 'O nome de usuário deve ter pelo menos 3 caracteres.',
+  })
   @IsAlphanumeric(undefined, {
-    message: 'Username does not allow other than alpha numeric chars.',
+    message:
+      'O nome de usuário não permite outros caracteres além dos alfanuméricos.',
   })
   username: string;
 
   @IsNotEmpty()
-  @IsEmail(undefined, { message: 'Please provide valid Email.' })
+  @IsEmail(undefined, { message: 'Forneça um e-mail válido.' })
   email: string;
 
   @IsNotEmpty()
   @Matches(passwordRegEx, {
-    message: `Password must contain Minimum 8 and maximum 20 characters, 
-      at least one uppercase letter, 
-      one lowercase letter, 
-      one number and 
-      one special character`,
+    message: `A senha deve conter no mínimo 8 e no máximo 20 caracteres,
+pelo menos uma letra maiúscula,
+uma letra minúscula,
+um número e
+um caractere especial`,
   })
   password: string;
 
   @IsNotEmpty()
   @Matches(passwordRegEx, {
-    message: `Password must contain Minimum 8 and maximum 20 characters, 
-      at least one uppercase letter, 
-      one lowercase letter, 
-      one number and 
-      one special character`,
+    message: `A senha deve conter no mínimo 8 e no máximo 20 caracteres,
+pelo menos uma letra maiúscula,
+uma letra minúscula,
+um número e
+um caractere especial`,
   })
   confirm_password: string;
 
