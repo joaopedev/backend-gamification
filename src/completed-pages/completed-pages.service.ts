@@ -32,7 +32,6 @@ export class CompletedPagesService {
       throw new ConflictException('Página já foi completada');
     }
 
-    // lógica do ticket crescente que falamos antes
     const lastEntry = await this.completedPageRepo.findOne({
       order: { ticket: 'DESC' },
     });
@@ -59,15 +58,84 @@ export class CompletedPagesService {
     }));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} completedPage`;
+  private async checkAndReward(
+    userId: number,
+    totalCompleted: number,
+  ): Promise<boolean> {
+    const milestones = [
+      { count: 5, coins: 30 },
+      { count: 10, coins: 60 },
+      { count: 20, coins: 100 },
+    ];
+
+    const user = await this.usersRepo.findOneBy({ id: userId });
+    if (!user) return false;
+
+    let rewarded = false;
+
+    for (const milestone of milestones) {
+      if (totalCompleted === milestone.count) {
+        user.coins += milestone.coins;
+        await this.usersRepo.save(user);
+        rewarded = true;
+        break;
+      }
+    }
+
+    return rewarded;
   }
 
-  update(id: number, updateCompletedPageDto: UpdateCompletedPageDto) {
-    return `This action updates a #${id} completedPage`;
+  async findOne(id: number) {
+    const completedPage = await this.completedPageRepo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!completedPage) {
+      throw new NotFoundException(
+        `Página completada com ID ${id} não encontrada`,
+      );
+    }
+
+    return {
+      id: completedPage.id,
+      userId: completedPage.user.id,
+      pageIndex: completedPage.page_index,
+      ticket: completedPage.ticket,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} completedPage`;
+  async update(id: number, updateCompletedPageDto: UpdateCompletedPageDto) {
+    const page = await this.completedPageRepo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!page) {
+      throw new NotFoundException(
+        `Página completada com ID ${id} não encontrada`,
+      );
+    }
+
+    Object.assign(page, updateCompletedPageDto);
+    await this.completedPageRepo.save(page);
+
+    return {
+      message: 'Página atualizada com sucesso',
+      updated: page,
+    };
+  }
+
+  async remove(id: number) {
+    const page = await this.completedPageRepo.findOne({ where: { id } });
+
+    if (!page) {
+      throw new NotFoundException(
+        `Página completada com ID ${id} não encontrada`,
+      );
+    }
+
+    await this.completedPageRepo.remove(page);
+    return { message: 'Página removida com sucesso' };
   }
 }

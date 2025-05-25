@@ -76,7 +76,11 @@ export class UserStickersService {
     return userStickers;
   }
 
-  async update(id: number, updateUserStickerDto: UpdateUserStickerDto, userId: number) {
+  async update(
+    id: number,
+    updateUserStickerDto: UpdateUserStickerDto,
+    userId: number,
+  ) {
     const sticker = await this.findOne(id);
     if (sticker.user.id !== userId) {
       throw new BadRequestException('You cannot update this sticker');
@@ -100,7 +104,7 @@ export class UserStickersService {
         throw new NotFoundException('Sticker not found');
       }
       sticker.sticker = stickerToUpdate;
-    }  
+    }
     Object.assign(sticker, updateUserStickerDto);
     return this.userStickerRepo.save(sticker);
   }
@@ -108,8 +112,54 @@ export class UserStickersService {
   async updatePasted(id: number, pasted: boolean) {
     const userSticker = await this.findOne(id);
 
+    if (userSticker.pasted === pasted) {
+      return userSticker; // Nenhuma mudança necessária
+    }
+
     userSticker.pasted = pasted;
-    return this.userStickerRepo.save(userSticker);
+    await this.userStickerRepo.save(userSticker);
+
+    if (pasted) {
+      // Conta quantas figurinhas coladas o usuário tem após essa
+      const totalPasted = await this.userStickerRepo.count({
+        where: {
+          user: { id: userSticker.user.id },
+          pasted: true,
+        },
+      });
+
+      // Chama verificação de recompensa
+      await this.checkAndReward(userSticker.user.id, totalPasted);
+    }
+
+    return userSticker;
+  }
+
+  private async checkAndReward(
+    userId: number,
+    totalPasted: number,
+  ): Promise<boolean> {
+    const milestones = [
+      { count: 5, coins: 50 },
+      { count: 15, coins: 80 },
+      { count: 25, coins: 120 },
+    ];
+
+    const user = await this.usersRepo.findOneBy({ id: userId });
+    if (!user) return false;
+
+    let rewarded = false;
+
+    for (const milestone of milestones) {
+      if (totalPasted === milestone.count) {
+        user.coins += milestone.coins;
+        await this.usersRepo.save(user);
+        rewarded = true;
+        break;
+      }
+    }
+
+    return rewarded;
   }
 
   async remove(id: number) {

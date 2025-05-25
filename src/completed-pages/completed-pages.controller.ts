@@ -18,7 +18,11 @@ export class CompletedPagesController {
   // Ajuste da rota para incluir userId como parâmetro
   @Post()
   async completePage(@Body() dto: CompletePageDto) {
-    return this.completedPagesService.create(dto.userId, dto);
+    const result = await this.completedPagesService.create(dto.userId, dto);
+    return {
+      ticket: result.ticket,
+      coinsRewarded: result.ticket ?? false,
+    };
   }
 
   @Get()

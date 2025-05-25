@@ -49,11 +49,15 @@ export class UserStickersController {
   }
 
   @Put(':id/paste')
-  updatePasted(
+  async updatePasted(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdatePastedDto,
   ) {
-    return this.userStickersService.updatePasted(id, body.pasted);
+    const result = await this.userStickersService.updatePasted(id, body.pasted);
+    return {
+      userSticker: result.albums,
+      coinsRewarded: result.user.coins ?? false,
+    };
   }
 
   @Get('progress')
