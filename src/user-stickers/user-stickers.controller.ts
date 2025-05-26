@@ -52,14 +52,8 @@ export class UserStickersController {
   @Put(':id/paste')
   async pasteSticker(
     @Param('id', ParseIntPipe) stickerId: number,
-    @Req() req,
-    @Body() body: UpdatePastedDto,
-  ) {
+    @Req() req ) {
     const userId = req.user.id;
-
-    if (!body.pasted) {
-      throw new BadRequestException('Use a rota de remoção para descolar os figurinhas');
-    }
 
     const result = await this.userStickersService.pasteSticker(
       userId,

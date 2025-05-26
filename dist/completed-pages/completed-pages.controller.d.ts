@@ -6,7 +6,7 @@ export declare class CompletedPagesController {
     constructor(completedPagesService: CompletedPagesService);
     completePage(dto: CompletePageDto): Promise<{
         ticket: number;
-        coinsRewarded: number;
+        message: string;
     }>;
     findAll(): Promise<{
         id: number;

@@ -28,7 +28,7 @@ let FriendsRelationshipService = class FriendsRelationshipService {
     }
     async sendRequest(userId, friendId) {
         if (userId === friendId) {
-            throw new common_1.BadRequestException("Você não pode enviar uma solicitação de amizade para si mesmo.");
+            throw new common_1.BadRequestException('Você não pode enviar uma solicitação de amizade para si mesmo.');
         }
         const existing = await this.friendsRepo.findOne({
             where: [
@@ -73,6 +73,26 @@ let FriendsRelationshipService = class FriendsRelationshipService {
         return {
             coinsRewarded: userRewarded || requesterRewarded,
         };
+    }
+    async findFriendRelationsHistoryByUserId(userId) {
+        const relations = await this.friendsRepo.find({
+            where: [{ user_id: userId }, { friend_id: userId }],
+            relations: ['user', 'friend'],
+            order: { id: 'DESC' },
+        });
+        return relations;
+    }
+    async getPendingRequestsReceivedByUser(userId) {
+        return this.friendsRepo.find({
+            where: {
+                friend_id: userId,
+                is_accepted: false,
+                is_rejected: false,
+                status: friends_relationshipEnum_1.FriendsRelationshipStatus.PENDING,
+            },
+            relations: ['user'],
+            order: { id: 'ASC' },
+        });
     }
     async getFriendsCount(userId) {
         const [sent, received] = await Promise.all([

@@ -19,31 +19,58 @@ export class CompletedPagesService {
     private readonly usersRepo: Repository<Users>,
   ) {}
 
-  async create(userId: number, createCompletedPageDto: CompletePageDto) {
+  async create(
+    userId: number,
+    createCompletedPageDto: CompletePageDto,
+  ): Promise<{ ticket: string }> {
     const { pageIndex } = createCompletedPageDto;
-    const user = await this.usersRepo.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('Usuário não encontrado');
-    }
-    const existing = await this.completedPageRepo.findOne({
+
+    const existingPage = await this.completedPageRepo.findOne({
       where: { user: { id: userId }, page_index: pageIndex },
     });
-    if (existing) {
-      throw new ConflictException('Página já foi completada');
+
+    if (existingPage) {
+      throw new ConflictException(
+        `Página ${pageIndex} já completada por este usuário.`,
+      );
     }
 
-    const lastEntry = await this.completedPageRepo.findOne({
-      order: { ticket: 'DESC' },
-    });
-    const nextTicket = lastEntry ? Number(lastEntry.ticket) + 1 : 1;
+    const ticket = `ticket-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 
-    const newEntry = this.completedPageRepo.create({
-      user,
+    const completedPage = this.completedPageRepo.create({
+      user: { id: userId },
       page_index: pageIndex,
-      ticket: String(nextTicket),
+      ticket,
     });
-    await this.completedPageRepo.save(newEntry);
-    return { ticket: nextTicket };
+
+    await this.completedPageRepo.save(completedPage);
+
+    const totalCompleted = await this.completedPageRepo.count({
+      where: { user: { id: userId } },
+    });
+
+    const rewarded = await this.checkAndReward(userId, totalCompleted);
+    if (rewarded) {
+      console.log(
+        `Usuário ${userId} recebeu uma recompensa por completar a página ${pageIndex}.`,
+      );
+    }
+
+    const lastTicket = await this.completedPageRepo
+      .createQueryBuilder('completed-page')
+      .where('completed-page.user.id = :userId', { userId })
+      .leftJoin('completed.user', 'user')
+      .orderBy('completed-page.completed_at', 'DESC')
+      .getOne();
+    if (!lastTicket) {
+      throw new NotFoundException(
+        `Página completada mais recente não encontrada para o usuário ${userId}.`,
+      );
+    }
+
+    return {
+      ticket: lastTicket?.ticket || completedPage.ticket,
+    };
   }
 
   async findAll() {

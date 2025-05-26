@@ -32,15 +32,28 @@ let CompletedPagesService = class CompletedPagesService {
             throw new common_1.NotFoundException('Usuário não encontrado');
         }
         const existing = await this.completedPageRepo.findOne({
-            where: { user: { id: userId }, page_index: pageIndex },
+            where: {
+                user: { id: userId },
+                page_index: pageIndex,
+            },
         });
         if (existing) {
             throw new common_1.ConflictException('Página já foi completada');
         }
         const lastEntry = await this.completedPageRepo.findOne({
+            where: { user: { id: userId } },
             order: { ticket: 'DESC' },
+            select: ['ticket'],
         });
         const nextTicket = lastEntry ? Number(lastEntry.ticket) + 1 : 1;
+        const totalCompleted = await this.completedPageRepo.count({
+            where: { user: { id: userId } },
+        });
+        const rewarded = await this.checkAndReward(userId, totalCompleted + 1);
+        if (rewarded) {
+            user.coins += 10;
+            await this.usersRepo.save(user);
+        }
         const newEntry = this.completedPageRepo.create({
             user,
             page_index: pageIndex,

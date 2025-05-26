@@ -21,8 +21,7 @@ export class CompletedPagesController {
     const result = await this.completedPagesService.create(dto.userId, dto);
     return {
       ticket: result.ticket,
-      coinsRewarded: result.ticket ?? false,
-    };
+      message: 'Página completada com sucesso',};
   }
 
   @Get()

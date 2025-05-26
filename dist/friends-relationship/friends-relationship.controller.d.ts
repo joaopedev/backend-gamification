@@ -11,5 +11,7 @@ export declare class FriendsRelationshipController {
     getFriends(userId: number): Promise<import("./entities/friends-relationship.entity").FriendsRelationship[]>;
     getPendingRequestsSentByUser(userId: number): Promise<import("./entities/friends-relationship.entity").FriendsRelationship[]>;
     getRejectedRelationships(userId: number): Promise<import("./entities/friends-relationship.entity").FriendsRelationship[]>;
+    getReceivedPendingRequests(userId: number): Promise<import("./entities/friends-relationship.entity").FriendsRelationship[]>;
+    getFriendRequestHistory(userId: number): Promise<import("./entities/friends-relationship.entity").FriendsRelationship[]>;
     remove(userId: number, targetId: number): Promise<import("./entities/friends-relationship.entity").FriendsRelationship>;
 }

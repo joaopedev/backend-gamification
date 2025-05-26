@@ -9,6 +9,8 @@ export declare class FriendsRelationshipService {
     acceptRequest(userId: number, requesterId: number): Promise<{
         coinsRewarded: boolean;
     }>;
+    findFriendRelationsHistoryByUserId(userId: number): Promise<FriendsRelationship[]>;
+    getPendingRequestsReceivedByUser(userId: number): Promise<FriendsRelationship[]>;
     private getFriendsCount;
     private checkAndReward;
     rejectedUserFriendRequest(userId: number, targetId: number): Promise<FriendsRelationship>;
