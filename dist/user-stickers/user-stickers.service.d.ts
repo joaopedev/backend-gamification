@@ -19,7 +19,7 @@ export declare class UserStickersService {
         message: string;
     }>;
     addStickerToUser(userId: number, stickerId: number, sponsor?: string): Promise<UserSticker>;
-    pasteSticker(userId: number, stickerId: number, sponsor?: string): Promise<UserSticker>;
+    pasteStickerByUserStickerId(userStickerId: number): Promise<UserSticker>;
     removeSticker(userId: number, stickerId: number, sponsor?: string): Promise<{
         message: string;
     }>;

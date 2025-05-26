@@ -34,6 +34,7 @@ __decorate([
     __metadata("design:type", Number)
 ], CompletedPage.prototype, "page_index", void 0);
 __decorate([
+    (0, typeorm_1.Index)({ unique: true }),
     (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
     __metadata("design:type", String)
 ], CompletedPage.prototype, "ticket", void 0);

@@ -8,7 +8,7 @@ export declare class CompletedPagesService {
     private readonly usersRepo;
     constructor(completedPageRepo: Repository<CompletedPage>, usersRepo: Repository<Users>);
     create(userId: number, createCompletedPageDto: CompletePageDto): Promise<{
-        ticket: number;
+        ticket: string;
     }>;
     findAll(): Promise<{
         id: number;

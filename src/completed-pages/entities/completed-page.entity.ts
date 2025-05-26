@@ -7,8 +7,8 @@ import {
   JoinColumn,
   Unique,
   CreateDateColumn,
+  Index,
 } from 'typeorm';
-
 
 @Entity('completed_pages')
 @Unique(['user', 'page_index']) // Garante 1 ticket por página por usuário
@@ -23,6 +23,7 @@ export class CompletedPage {
   @Column({ type: 'int' })
   page_index: number;
 
+  @Index({ unique: true })
   @Column({ type: 'varchar', length: 100 })
   ticket: string;
 

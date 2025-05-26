@@ -17,7 +17,6 @@ const common_1 = require("@nestjs/common");
 const user_stickers_service_1 = require("./user-stickers.service");
 const create_user_sticker_dto_1 = require("./dto/create-user-sticker.dto");
 const update_user_sticker_dto_1 = require("./dto/update-user-sticker.dto");
-const update_pasted_dto_1 = require("./dto/update-pasted.dto");
 let UserStickersController = class UserStickersController {
     userStickersService;
     constructor(userStickersService) {
@@ -38,14 +37,10 @@ let UserStickersController = class UserStickersController {
     findByUser(userId) {
         return this.userStickersService.findByUser(userId);
     }
-    async pasteSticker(stickerId, req, body) {
-        const userId = req.user.id;
-        if (!body.pasted) {
-            throw new common_1.BadRequestException('Use a rota de remoção para descolar os figurinhas');
-        }
-        const result = await this.userStickersService.pasteSticker(userId, stickerId);
+    async pasteStickerById(id) {
+        const result = await this.userStickersService.pasteStickerByUserStickerId(id);
         return {
-            message: 'Figurinhas colado com sucesso',
+            message: 'Figurinha colada com sucesso',
             userSticker: result,
         };
     }
@@ -97,12 +92,10 @@ __decorate([
 __decorate([
     (0, common_1.Put)(':id/paste'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Req)()),
-    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object, update_pasted_dto_1.UpdatePastedDto]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], UserStickersController.prototype, "pasteSticker", null);
+], UserStickersController.prototype, "pasteStickerById", null);
 __decorate([
     (0, common_1.Get)('progress'),
     __param(0, (0, common_1.Req)()),

@@ -5,7 +5,7 @@ export declare class CompletedPagesController {
     private readonly completedPagesService;
     constructor(completedPagesService: CompletedPagesService);
     completePage(dto: CompletePageDto): Promise<{
-        ticket: number;
+        ticket: string;
         message: string;
     }>;
     findAll(): Promise<{

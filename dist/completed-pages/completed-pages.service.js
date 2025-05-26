@@ -27,40 +27,43 @@ let CompletedPagesService = class CompletedPagesService {
     }
     async create(userId, createCompletedPageDto) {
         const { pageIndex } = createCompletedPageDto;
-        const user = await this.usersRepo.findOne({ where: { id: userId } });
-        if (!user) {
-            throw new common_1.NotFoundException('Usuário não encontrado');
-        }
-        const existing = await this.completedPageRepo.findOne({
-            where: {
-                user: { id: userId },
-                page_index: pageIndex,
-            },
+        const existingPage = await this.completedPageRepo.findOne({
+            where: { user: { id: userId }, page_index: pageIndex },
         });
-        if (existing) {
-            throw new common_1.ConflictException('Página já foi completada');
+        if (existingPage) {
+            throw new common_1.ConflictException(`Página ${pageIndex} já completada por este usuário.`);
         }
-        const lastEntry = await this.completedPageRepo.findOne({
-            where: { user: { id: userId } },
-            order: { ticket: 'DESC' },
-            select: ['ticket'],
+        const lastTicketEntry = await this.completedPageRepo
+            .createQueryBuilder('completedPage')
+            .select('completedPage.ticket')
+            .orderBy('completedPage.id', 'DESC')
+            .limit(1)
+            .getOne();
+        let nextTicketNumber = 1;
+        if (lastTicketEntry?.ticket) {
+            const match = lastTicketEntry.ticket.match(/ticket-(\d{6})/);
+            if (match) {
+                const lastNumber = parseInt(match[1], 10);
+                nextTicketNumber = lastNumber + 1;
+            }
+        }
+        const ticket = `ticket-${nextTicketNumber.toString().padStart(6, '0')}`;
+        const completedPage = this.completedPageRepo.create({
+            user: { id: userId },
+            page_index: pageIndex,
+            ticket,
         });
-        const nextTicket = lastEntry ? Number(lastEntry.ticket) + 1 : 1;
+        await this.completedPageRepo.save(completedPage);
         const totalCompleted = await this.completedPageRepo.count({
             where: { user: { id: userId } },
         });
-        const rewarded = await this.checkAndReward(userId, totalCompleted + 1);
+        const rewarded = await this.checkAndReward(userId, totalCompleted);
         if (rewarded) {
-            user.coins += 10;
-            await this.usersRepo.save(user);
+            console.log(`Usuário ${userId} recebeu uma recompensa por completar a página ${pageIndex}.`);
         }
-        const newEntry = this.completedPageRepo.create({
-            user,
-            page_index: pageIndex,
-            ticket: String(nextTicket),
-        });
-        await this.completedPageRepo.save(newEntry);
-        return { ticket: nextTicket };
+        return {
+            ticket: completedPage.ticket,
+        };
     }
     async findAll() {
         const completedPages = await this.completedPageRepo.find({

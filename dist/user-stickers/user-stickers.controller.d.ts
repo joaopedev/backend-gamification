@@ -1,7 +1,6 @@
 import { UserStickersService } from './user-stickers.service';
 import { CreateUserStickerDTO } from './dto/create-user-sticker.dto';
 import { UpdateUserStickerDto } from './dto/update-user-sticker.dto';
-import { UpdatePastedDto } from './dto/update-pasted.dto';
 export declare class UserStickersController {
     private readonly userStickersService;
     constructor(userStickersService: UserStickersService);
@@ -10,7 +9,7 @@ export declare class UserStickersController {
     findOne(id: number): Promise<import("./entities/user-sticker.entity").UserSticker>;
     update(id: number, updateUserStickerDto: UpdateUserStickerDto, userId: number): Promise<import("./entities/user-sticker.entity").UserSticker>;
     findByUser(userId: number): Promise<import("./entities/user-sticker.entity").UserSticker[]>;
-    pasteSticker(stickerId: number, req: any, body: UpdatePastedDto): Promise<{
+    pasteStickerById(id: number): Promise<{
         message: string;
         userSticker: import("./entities/user-sticker.entity").UserSticker;
     }>;

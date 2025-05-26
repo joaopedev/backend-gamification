@@ -50,17 +50,11 @@ export class UserStickersController {
   }
 
   @Put(':id/paste')
-  async pasteSticker(
-    @Param('id', ParseIntPipe) stickerId: number,
-    @Req() req ) {
-    const userId = req.user.id;
-
-    const result = await this.userStickersService.pasteSticker(
-      userId,
-      stickerId,
-    );
+  async pasteStickerById(@Param('id', ParseIntPipe) id: number) {
+    const result =
+      await this.userStickersService.pasteStickerByUserStickerId(id);
     return {
-      message: 'Figurinhas colado com sucesso',
+      message: 'Figurinha colada com sucesso',
       userSticker: result,
     };
   }

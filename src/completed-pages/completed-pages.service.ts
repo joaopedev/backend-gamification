@@ -35,7 +35,25 @@ export class CompletedPagesService {
       );
     }
 
-    const ticket = `ticket-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+    // Busca o maior número de ticket já existente
+    const lastTicketEntry = await this.completedPageRepo
+      .createQueryBuilder('completedPage')
+      .select('completedPage.ticket')
+      .orderBy('completedPage.id', 'DESC')
+      .limit(1)
+      .getOne();
+
+    let nextTicketNumber = 1;
+
+    if (lastTicketEntry?.ticket) {
+      const match = lastTicketEntry.ticket.match(/ticket-(\d{6})/);
+      if (match) {
+        const lastNumber = parseInt(match[1], 10);
+        nextTicketNumber = lastNumber + 1;
+      }
+    }
+
+    const ticket = `ticket-${nextTicketNumber.toString().padStart(6, '0')}`;
 
     const completedPage = this.completedPageRepo.create({
       user: { id: userId },
@@ -56,20 +74,8 @@ export class CompletedPagesService {
       );
     }
 
-    const lastTicket = await this.completedPageRepo
-      .createQueryBuilder('completed-page')
-      .where('completed-page.user.id = :userId', { userId })
-      .leftJoin('completed.user', 'user')
-      .orderBy('completed-page.completed_at', 'DESC')
-      .getOne();
-    if (!lastTicket) {
-      throw new NotFoundException(
-        `Página completada mais recente não encontrada para o usuário ${userId}.`,
-      );
-    }
-
     return {
-      ticket: lastTicket?.ticket || completedPage.ticket,
+      ticket: completedPage.ticket,
     };
   }
 

@@ -142,13 +142,13 @@ let UserStickersService = class UserStickersService {
         });
         return this.userStickerRepo.save(newUserSticker);
     }
-    async pasteSticker(userId, stickerId, sponsor = 'DEFAULT') {
+    async pasteStickerByUserStickerId(userStickerId) {
         const userSticker = await this.userStickerRepo.findOne({
-            where: { user: { id: userId }, sticker: { id: stickerId }, sponsor },
+            where: { id: userStickerId },
             relations: ['user'],
         });
         if (!userSticker)
-            throw new common_1.NotFoundException('O usuário não possui este adesivo');
+            throw new common_1.NotFoundException('UserSticker não encontrado');
         if (userSticker.pasted)
             throw new common_1.BadRequestException('Adesivo já colado');
         userSticker.pasted = true;
@@ -157,9 +157,9 @@ let UserStickersService = class UserStickersService {
         user.level += 1;
         await this.usersRepo.save(user);
         const totalPasted = await this.userStickerRepo.count({
-            where: { user: { id: userId }, pasted: true },
+            where: { user: { id: user.id }, pasted: true },
         });
-        await this.checkAndReward(userId, totalPasted);
+        await this.checkAndReward(user.id, totalPasted);
         return userSticker;
     }
     async removeSticker(userId, stickerId, sponsor = 'DEFAULT') {

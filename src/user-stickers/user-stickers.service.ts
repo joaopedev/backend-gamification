@@ -174,20 +174,15 @@ export class UserStickersService {
     return this.userStickerRepo.save(newUserSticker);
   }
 
-  async pasteSticker(
-    userId: number,
-    stickerId: number,
-    sponsor: string = 'DEFAULT',
-  ) {
+  async pasteStickerByUserStickerId(userStickerId: number) {
     const userSticker = await this.userStickerRepo.findOne({
-      where: { user: { id: userId }, sticker: { id: stickerId }, sponsor },
+      where: { id: userStickerId },
       relations: ['user'],
     });
 
-    if (!userSticker)
-      throw new NotFoundException('O usuário não possui este adesivo');
-    if (userSticker.pasted)
-      throw new BadRequestException('Adesivo já colado');
+    if (!userSticker) throw new NotFoundException('UserSticker não encontrado');
+
+    if (userSticker.pasted) throw new BadRequestException('Adesivo já colado');
 
     userSticker.pasted = true;
     await this.userStickerRepo.save(userSticker);
@@ -197,9 +192,10 @@ export class UserStickersService {
     await this.usersRepo.save(user);
 
     const totalPasted = await this.userStickerRepo.count({
-      where: { user: { id: userId }, pasted: true },
+      where: { user: { id: user.id }, pasted: true },
     });
-    await this.checkAndReward(userId, totalPasted);
+
+    await this.checkAndReward(user.id, totalPasted);
 
     return userSticker;
   }
@@ -213,7 +209,8 @@ export class UserStickersService {
       where: { user: { id: userId }, sticker: { id: stickerId }, sponsor },
     });
 
-    if (!userSticker) throw new NotFoundException('Adesivo não encontrado para o usuário');
+    if (!userSticker)
+      throw new NotFoundException('Adesivo não encontrado para o usuário');
 
     await this.userStickerRepo.remove(userSticker);
     return { message: 'Adesivo removido' };
