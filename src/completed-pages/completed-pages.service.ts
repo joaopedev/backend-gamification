@@ -17,7 +17,7 @@ export class CompletedPagesService {
     private readonly completedPageRepo: Repository<CompletedPage>,
     @InjectRepository(Users)
     private readonly usersRepo: Repository<Users>,
-  ) {}
+  ) { }
 
   async create(
     userId: number,
@@ -96,9 +96,9 @@ export class CompletedPagesService {
     totalCompleted: number,
   ): Promise<boolean> {
     const milestones = [
-      { count: 5, coins: 30 },
-      { count: 10, coins: 60 },
-      { count: 20, coins: 100 },
+      { count: 3, coins: 50 },
+      { count: 5, coins: 120 },
+      { count: 10, coins: 180 },
     ];
 
     const user = await this.usersRepo.findOneBy({ id: userId });
@@ -135,6 +135,34 @@ export class CompletedPagesService {
       userId: completedPage.user.id,
       pageIndex: completedPage.page_index,
       ticket: completedPage.ticket,
+    };
+  }
+
+  async findByUser(userId: number) {
+    const pages = await this.completedPageRepo.find({
+      where: { user: { id: userId } },
+      order: { id: 'ASC' },
+    });
+
+    const totalCompleted = pages.length;
+
+    const milestones = [
+      { count: 3, coins: 50 },
+      { count: 5, coins: 120 },
+      { count: 10, coins: 180 },
+    ];
+
+    const rewardsUnlocked = milestones
+      .filter(m => totalCompleted >= m.count)
+      .map(m => ({ count: m.count, coins: m.coins }));
+
+    return {
+      pages: pages.map(page => ({
+        pageIndex: page.page_index,
+        ticket: page.ticket,
+      })),
+      totalCompleted,
+      rewardsUnlocked,
     };
   }
 
