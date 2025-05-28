@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsEmpty,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MinLength,
@@ -51,7 +52,7 @@ um caractere especial`,
   })
   confirm_password: string;
 
-  @IsEmpty()
+  @IsOptional()
   @IsString()
-  image_url: string;
+  image_url?: string;
 }
