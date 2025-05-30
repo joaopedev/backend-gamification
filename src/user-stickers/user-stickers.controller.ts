@@ -1,7 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Req,
+  Put,
+  BadRequestException,
+} from '@nestjs/common';
 import { UserStickersService } from './user-stickers.service';
 import { CreateUserStickerDTO } from './dto/create-user-sticker.dto';
 import { UpdateUserStickerDto } from './dto/update-user-sticker.dto';
+import { UpdatePastedDto } from './dto/update-pasted.dto';
 
 @Controller('user-stickers')
 export class UserStickersController {
@@ -18,17 +31,42 @@ export class UserStickersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userStickersService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.userStickersService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserStickerDto: UpdateUserStickerDto) {
-    return this.userStickersService.update(+id, updateUserStickerDto);
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserStickerDto: UpdateUserStickerDto,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.userStickersService.update(id, updateUserStickerDto, userId);
+  }
+
+  @Get('user/:userId')
+  findByUser(@Param('userId', ParseIntPipe) userId: number) {
+    return this.userStickersService.findByUser(userId);
+  }
+
+  @Put(':id/paste')
+  async pasteStickerById(@Param('id', ParseIntPipe) id: number) {
+    const result =
+      await this.userStickersService.pasteStickerByUserStickerId(id);
+    return {
+      message: 'Figurinha colada com sucesso',
+      userSticker: result,
+    };
+  }
+
+  @Get('progress')
+  getAlbumProgress(@Req() req) {
+    const userId = req.user.id;
+    return this.userStickersService.getAlbumProgress(userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userStickersService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.userStickersService.remove(id);
   }
 }

@@ -43,6 +43,9 @@ let StickersController = class StickersController {
     remove(id) {
         return this.stickersService.remove(+id);
     }
+    async deleteAll(body) {
+        return this.stickersService.removeByIds(body.ids);
+    }
 };
 exports.StickersController = StickersController;
 __decorate([
@@ -91,12 +94,19 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], StickersController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)('deleteUser/:id'),
+    (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], StickersController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Delete)('delete-by-ids'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StickersController.prototype, "deleteAll", null);
 exports.StickersController = StickersController = __decorate([
     (0, common_1.Controller)('stickers'),
     __metadata("design:paramtypes", [stickers_service_1.StickersService])

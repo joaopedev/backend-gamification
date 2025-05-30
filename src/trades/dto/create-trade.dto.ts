@@ -1,4 +1,5 @@
 import { IsInt, IsEnum } from 'class-validator';
+import { TradeStatus } from '../entities/tradeEnum';
 
 export class CreateTradeDTO {
   @IsInt()
@@ -13,6 +14,6 @@ export class CreateTradeDTO {
   @IsInt()
   requestedStickerId: number;
 
-  @IsEnum(['PENDING', 'ACCEPTED', 'REJECTED'])
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  @IsEnum(TradeStatus)
+  status: TradeStatus;
 }

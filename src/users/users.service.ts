@@ -24,14 +24,14 @@ export class UsersService {
       where: { username },
     });
     if (existingUser) {
-      throw new ConflictException('Username already exists');
+      throw new ConflictException('O nome de usuário já existe');
     }
 
     const existingEmail = await this.userRepository.findOne({
       where: { email },
     });
     if (existingEmail) {
-      throw new ConflictException('Email already exists');
+      throw new ConflictException('O e-mail já existe');
     }
 
     const hashedPassword = encodePassword(password);
@@ -40,7 +40,6 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    console.log('User saved:', user);
     await this.userRepository.save(user);
 
     const { password: _, ...userWithoutPassword } = user;
@@ -54,7 +53,7 @@ export class UsersService {
 
   async findOne(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new BadRequestException('Usuário não encontrado');
 
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
@@ -68,13 +67,13 @@ export class UsersService {
   async remove(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     console.log('User found:', id, user);
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new BadRequestException('Usuário não encontrado');
     try {
       await this.userRepository.remove(user);
-      return { message: 'User removed successfully' };
+      return { message: 'Usuário removido com sucesso' };
     } catch (error) {
-      console.error('Error removing user:', error);
-      throw new BadRequestException('Error removing user');
+      console.error('Erro ao remover usuário:', error);
+      throw new BadRequestException('Erro ao remover usuário');
     }
   }
 }

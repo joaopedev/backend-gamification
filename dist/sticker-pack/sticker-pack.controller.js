@@ -20,11 +20,8 @@ let StickerPackController = class StickerPackController {
     constructor(service) {
         this.service = service;
     }
-    createFromActivity(userId, title) {
-        return this.service.createFromActivity(userId, title);
-    }
-    createFromQRCode(userId, title, stickerIds) {
-        return this.service.createFromQRCode(userId, title, stickerIds);
+    createFromCoins(userId, title, quantity) {
+        return this.service.createFromCoins(userId, title, quantity);
     }
     findAll() {
         return this.service.findAll();
@@ -38,22 +35,14 @@ let StickerPackController = class StickerPackController {
 };
 exports.StickerPackController = StickerPackController;
 __decorate([
-    (0, common_1.Post)('activity'),
+    (0, common_1.Post)('coins'),
     __param(0, (0, common_1.Body)('userId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)('title')),
+    __param(2, (0, common_1.Body)('quantity', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:paramtypes", [Number, String, Number]),
     __metadata("design:returntype", void 0)
-], StickerPackController.prototype, "createFromActivity", null);
-__decorate([
-    (0, common_1.Post)('qrcode'),
-    __param(0, (0, common_1.Body)('userId', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)('title')),
-    __param(2, (0, common_1.Body)('stickerIds')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, Array]),
-    __metadata("design:returntype", void 0)
-], StickerPackController.prototype, "createFromQRCode", null);
+], StickerPackController.prototype, "createFromCoins", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

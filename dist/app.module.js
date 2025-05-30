@@ -25,6 +25,8 @@ const path_1 = require("path");
 const mail_service_1 = require("./mail/mail.service");
 const file_module_1 = require("./file.module");
 const config_1 = require("@nestjs/config");
+const albuns_module_1 = require("./albuns/albuns.module");
+const completed_pages_module_1 = require("./completed-pages/completed-pages.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -80,6 +82,8 @@ exports.AppModule = AppModule = __decorate([
             friends_relationship_module_1.FriendsRelationshipModule,
             auth_module_1.AuthModule,
             file_module_1.FileModule,
+            albuns_module_1.AlbunsModule,
+            completed_pages_module_1.CompletedPagesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, mail_service_1.CustomMailService],

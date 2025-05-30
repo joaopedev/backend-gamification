@@ -20,4 +20,7 @@ export declare class AuthService {
     resetPassword(data: ResetPasswordDto): Promise<{
         message: string;
     }>;
+    validateToken(token: string): Promise<{
+        message: string;
+    }>;
 }

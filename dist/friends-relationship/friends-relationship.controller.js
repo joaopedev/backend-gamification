@@ -24,17 +24,27 @@ let FriendsRelationshipController = class FriendsRelationshipController {
     sendRequest(dto) {
         return this.service.sendRequest(dto.user_id, dto.friend_id);
     }
-    acceptRequest(userId, requesterId) {
-        return this.service.acceptRequest(userId, requesterId);
+    async acceptRequest(userId, requesterId) {
+        const result = await this.service.acceptRequest(userId, requesterId);
+        return { coinsRewarded: result.coinsRewarded ?? false };
     }
     blockUser(userId, targetId) {
-        return this.service.blockUser(userId, targetId);
+        return this.service.rejectedUserFriendRequest(userId, targetId);
     }
     getFriends(userId) {
         return this.service.getFriends(userId);
     }
-    getPendingRequests(userId) {
-        return this.service.getPendingRequests(userId);
+    getPendingRequestsSentByUser(userId) {
+        return this.service.getPendingRequestsSentByUser(userId);
+    }
+    getRejectedRelationships(userId) {
+        return this.service.getRejectedRelationships(userId);
+    }
+    async getReceivedPendingRequests(userId) {
+        return this.service.getPendingRequestsReceivedByUser(userId);
+    }
+    async getFriendRequestHistory(userId) {
+        return this.service.findFriendRelationsHistoryByUserId(userId);
     }
     remove(userId, targetId) {
         return this.service.removeRelationship(userId, targetId);
@@ -54,10 +64,10 @@ __decorate([
     __param(1, (0, common_1.Param)('requesterId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], FriendsRelationshipController.prototype, "acceptRequest", null);
 __decorate([
-    (0, common_1.Patch)('block/:userId/:targetId'),
+    (0, common_1.Patch)('rejected/:userId/:targetId'),
     __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Param)('targetId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
@@ -72,12 +82,33 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FriendsRelationshipController.prototype, "getFriends", null);
 __decorate([
-    (0, common_1.Get)('pending/:userId'),
+    (0, common_1.Get)('sent-pending/:userId'),
     __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
-], FriendsRelationshipController.prototype, "getPendingRequests", null);
+], FriendsRelationshipController.prototype, "getPendingRequestsSentByUser", null);
+__decorate([
+    (0, common_1.Get)('rejected/:userId'),
+    __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], FriendsRelationshipController.prototype, "getRejectedRelationships", null);
+__decorate([
+    (0, common_1.Get)('received-pending/:userId'),
+    __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], FriendsRelationshipController.prototype, "getReceivedPendingRequests", null);
+__decorate([
+    (0, common_1.Get)('history/:userId'),
+    __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], FriendsRelationshipController.prototype, "getFriendRequestHistory", null);
 __decorate([
     (0, common_1.Delete)(':userId/:targetId'),
     __param(0, (0, common_1.Param)('userId', common_1.ParseIntPipe)),

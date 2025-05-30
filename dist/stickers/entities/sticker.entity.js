@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sticker = void 0;
 const sticker_pack_entity_1 = require("../../sticker-pack/entities/sticker-pack.entity");
+const user_sticker_entity_1 = require("../../user-stickers/entities/user-sticker.entity");
 const typeorm_1 = require("typeorm");
 let Sticker = class Sticker {
     id;
@@ -23,6 +24,7 @@ let Sticker = class Sticker {
     section;
     sub_category;
     links;
+    userStickers;
 };
 exports.Sticker = Sticker;
 __decorate([
@@ -47,24 +49,28 @@ __decorate([
 ], Sticker.prototype, "description", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => sticker_pack_entity_1.StickerPack, (stickerPack) => stickerPack.stickers),
-    __metadata("design:type", Array)
+    __metadata("design:type", sticker_pack_entity_1.StickerPack)
 ], Sticker.prototype, "stickerPack", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
     __metadata("design:type", String)
 ], Sticker.prototype, "category", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "section", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "sub_category", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'simple-json', nullable: true }),
     __metadata("design:type", Array)
 ], Sticker.prototype, "links", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => user_sticker_entity_1.UserSticker, (us) => us.sticker),
+    __metadata("design:type", Array)
+], Sticker.prototype, "userStickers", void 0);
 exports.Sticker = Sticker = __decorate([
     (0, typeorm_1.Entity)('stickers')
 ], Sticker);

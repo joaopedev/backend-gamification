@@ -17,54 +17,95 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const sticker_pack_entity_1 = require("./entities/sticker-pack.entity");
+const user_sticker_entity_1 = require("../user-stickers/entities/user-sticker.entity");
+const user_entity_1 = require("../users/entities/user.entity");
 const sticker_entity_1 = require("../stickers/entities/sticker.entity");
 let StickerPackService = class StickerPackService {
     stickerPackRepo;
+    userStickerRepo;
+    userRepo;
     stickerRepo;
-    constructor(stickerPackRepo, stickerRepo) {
+    constructor(stickerPackRepo, userStickerRepo, userRepo, stickerRepo) {
         this.stickerPackRepo = stickerPackRepo;
+        this.userStickerRepo = userStickerRepo;
+        this.userRepo = userRepo;
         this.stickerRepo = stickerRepo;
     }
-    async createFromActivity(userId, title) {
-        const stickers = await this.stickerRepo.find({
-            where: {
-                user: { id: userId },
-                sponsor: (0, typeorm_2.Not)('SPECIAL'),
-            },
-            take: 4,
-        });
-        if (stickers.length < 4) {
-            throw new Error('Not enough stickers available for activity-based pack');
+    async createFromCoins(userId, title, quantity) {
+        const STICKER_COUNT = 4;
+        const MAX_ATTEMPTS = 100;
+        const priceTable = {
+            1: 50,
+            3: 120,
+            5: 180,
+        };
+        if (![1, 3, 5].includes(quantity)) {
+            throw new common_1.BadRequestException('Quantidade inválida. Deve ser 1, 3 ou 5.');
         }
-        const pack = this.stickerPackRepo.create({
-            title,
-            user: { id: userId },
-            stickers,
+        const PACK_COST = priceTable[quantity];
+        const user = await this.userRepo.findOne({
+            where: { id: userId },
         });
-        return this.stickerPackRepo.save(pack);
-    }
-    async createFromQRCode(userId, title, stickerIds) {
-        const stickers = await this.stickerRepo.findByIds(stickerIds);
-        if (!stickers.length) {
-            throw new Error('No stickers found for QR code');
+        if (!user)
+            throw new common_1.NotFoundException('Usuário não encontrado');
+        if (user.coins < PACK_COST) {
+            throw new common_1.BadRequestException('Não há moedas suficientes para comprar pacotes de figurinhas');
         }
-        const pack = this.stickerPackRepo.create({
-            title,
-            user: { id: userId },
-            stickers,
-        });
-        return this.stickerPackRepo.save(pack);
+        const allSelectedStickers = [];
+        let attempts = 0;
+        while (allSelectedStickers.length < quantity * STICKER_COUNT &&
+            attempts < MAX_ATTEMPTS * quantity) {
+            const randomId = Math.floor(Math.random() * 260) + 1;
+            const sticker = await this.stickerRepo.findOne({
+                where: { id: randomId },
+            });
+            if (!sticker || sticker.sponsor === 'SPECIAL') {
+                attempts++;
+                continue;
+            }
+            allSelectedStickers.push(sticker);
+            attempts++;
+        }
+        if (allSelectedStickers.length < quantity * STICKER_COUNT) {
+            throw new common_1.BadRequestException('Não foi possível encontrar figurinhas qualificados suficientes');
+        }
+        const userStickers = [];
+        const packs = [];
+        for (let i = 0; i < quantity; i++) {
+            const packStickers = allSelectedStickers.slice(i * STICKER_COUNT, (i + 1) * STICKER_COUNT);
+            const newUserStickers = packStickers.map((sticker) => this.userStickerRepo.create({
+                user,
+                sticker,
+                quantity: 1,
+                sponsor: sticker.sponsor,
+                pasted: false,
+            }));
+            userStickers.push(...newUserStickers);
+            const pack = this.stickerPackRepo.create({
+                title: `${title} ${i + 1}`,
+                user,
+                stickers: packStickers,
+            });
+            packs.push(pack);
+        }
+        await this.userStickerRepo.save(userStickers);
+        user.coins -= PACK_COST;
+        await this.userRepo.save(user);
+        return this.stickerPackRepo.save(packs);
     }
     findAll() {
         return this.stickerPackRepo.find({ relations: ['stickers'] });
     }
     findOne(id) {
-        return this.stickerPackRepo.findOne({ where: { id }, relations: ['stickers'] });
+        return this.stickerPackRepo.findOne({
+            where: { id },
+            relations: ['stickers'],
+        });
     }
     async remove(id) {
         const pack = await this.stickerPackRepo.findOne({ where: { id } });
         if (!pack)
-            throw new Error('Sticker pack not found');
+            throw new Error('Pacote de figurinhas não encontrado');
         return this.stickerPackRepo.remove(pack);
     }
 };
@@ -72,8 +113,12 @@ exports.StickerPackService = StickerPackService;
 exports.StickerPackService = StickerPackService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(sticker_pack_entity_1.StickerPack)),
-    __param(1, (0, typeorm_1.InjectRepository)(sticker_entity_1.Sticker)),
+    __param(1, (0, typeorm_1.InjectRepository)(user_sticker_entity_1.UserSticker)),
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.Users)),
+    __param(3, (0, typeorm_1.InjectRepository)(sticker_entity_1.Sticker)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], StickerPackService);
 //# sourceMappingURL=sticker-pack.service.js.map

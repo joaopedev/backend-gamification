@@ -14,12 +14,13 @@ const typeorm_1 = require("@nestjs/typeorm");
 const sticker_entity_1 = require("../stickers/entities/sticker.entity");
 const user_entity_1 = require("../users/entities/user.entity");
 const sticker_pack_entity_1 = require("./entities/sticker-pack.entity");
+const user_sticker_entity_1 = require("../user-stickers/entities/user-sticker.entity");
 let StickerPackModule = class StickerPackModule {
 };
 exports.StickerPackModule = StickerPackModule;
 exports.StickerPackModule = StickerPackModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([sticker_entity_1.Sticker, user_entity_1.Users, sticker_pack_entity_1.StickerPack])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([sticker_entity_1.Sticker, user_entity_1.Users, sticker_pack_entity_1.StickerPack, user_sticker_entity_1.UserSticker])],
         controllers: [sticker_pack_controller_1.StickerPackController],
         providers: [sticker_pack_service_1.StickerPackService],
         exports: [sticker_pack_service_1.StickerPackService]

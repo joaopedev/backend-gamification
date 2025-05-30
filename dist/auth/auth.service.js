@@ -19,7 +19,6 @@ const bcrypt = require("bcrypt");
 const user_entity_1 = require("../users/entities/user.entity");
 const jwt_1 = require("@nestjs/jwt");
 const typeorm_2 = require("typeorm");
-const crypto_1 = require("crypto");
 const mail_service_1 = require("../mail/mail.service");
 let AuthService = class AuthService {
     userRepo;
@@ -46,12 +45,12 @@ let AuthService = class AuthService {
         if (!user) {
             throw new common_1.NotFoundException('Email não encontrado');
         }
-        const token = (0, crypto_1.randomBytes)(32).toString('hex');
+        const token = Math.floor(10000000 + Math.random() * 90000000).toString();
         const expires = new Date(Date.now() + 3600000);
         user.resetPasswordToken = token;
         user.resetPasswordExpires = expires;
         await this.userRepo.save(user);
-        this.mailService.sendResetPasswordEmail(user.email, token);
+        await this.mailService.sendResetPasswordEmail(user.email, token);
         return { message: 'Token de recuperação enviado para o email' };
     }
     async resetPassword(data) {
@@ -72,6 +71,18 @@ let AuthService = class AuthService {
         user.resetPasswordExpires = expires;
         await this.mailService.sendResetPasswordEmail(user.email, token);
         return { message: 'Código de recuperação enviado para o email' };
+    }
+    async validateToken(token) {
+        const user = await this.userRepo.findOne({
+            where: {
+                resetPasswordToken: token,
+                resetPasswordExpires: (0, typeorm_2.MoreThan)(new Date()),
+            },
+        });
+        if (!user) {
+            throw new common_1.BadRequestException('Token inválido ou expirado');
+        }
+        return { message: 'Token válido' };
     }
 };
 exports.AuthService = AuthService;

@@ -59,12 +59,20 @@ export class StickersController {
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: string, @Body() updateStickerDto: UpdateStickerDto) {
+  update(
+    @Param('id', ParseIntPipe) id: string,
+    @Body() updateStickerDto: UpdateStickerDto,
+  ) {
     return this.stickersService.update(+id, updateStickerDto);
   }
 
-  @Delete('deleteUser/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.stickersService.remove(+id);
+  }
+
+  @Delete('delete-by-ids')
+  async deleteAll(@Body() body: { ids: number[] }) {
+    return this.stickersService.removeByIds(body.ids);
   }
 }

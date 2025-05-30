@@ -42,19 +42,18 @@ export class AuthService {
       throw new NotFoundException('Email não encontrado');
     }
 
-    const token = randomBytes(32).toString('hex');
+    const token = Math.floor(10000000 + Math.random() * 90000000).toString(); // 8 dígitos
     const expires = new Date(Date.now() + 3600000); // 1 hora
 
     user.resetPasswordToken = token;
     user.resetPasswordExpires = expires;
     await this.userRepo.save(user);
 
-    
-    this.mailService.sendResetPasswordEmail(user.email, token);
+    await this.mailService.sendResetPasswordEmail(user.email, token);
 
     return { message: 'Token de recuperação enviado para o email' };
   }
-
+  
   async resetPassword(data: ResetPasswordDto) {
     const user = await this.userRepo.findOne({
       where: {
@@ -76,5 +75,20 @@ export class AuthService {
     await this.mailService.sendResetPasswordEmail(user.email, token);
 
     return { message: 'Código de recuperação enviado para o email' };
+  }
+
+  async validateToken(token: string) {
+    const user = await this.userRepo.findOne({
+      where: {
+        resetPasswordToken: token,
+        resetPasswordExpires: MoreThan(new Date()),
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Token inválido ou expirado');
+    }
+
+    return { message: 'Token válido' };
   }
 }

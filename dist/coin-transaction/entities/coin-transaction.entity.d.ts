@@ -5,4 +5,6 @@ export declare class CoinTransaction {
     coins: number;
     user: Users;
     createdAt: Date;
+    isReceived: boolean;
+    qrCodeId?: string;
 }

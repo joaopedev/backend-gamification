@@ -17,36 +17,56 @@ class CreateUserDto {
     username;
     email;
     password;
+    confirm_password;
+    image_url;
 }
 exports.CreateUserDto = CreateUserDto;
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(2, { message: 'Name must have atleast 2 characters.' }),
+    (0, class_validator_1.MinLength)(2, { message: 'O nome deve ter pelo menos 2 caracteres.' }),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.MinLength)(3, { message: 'Username must have atleast 3 characters.' }),
+    (0, class_validator_1.MinLength)(3, {
+        message: 'O nome de usuário deve ter pelo menos 3 caracteres.',
+    }),
     (0, class_validator_1.IsAlphanumeric)(undefined, {
-        message: 'Username does not allow other than alpha numeric chars.',
+        message: 'O nome de usuário não permite outros caracteres além dos alfanuméricos.',
     }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "username", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsEmail)(undefined, { message: 'Please provide valid Email.' }),
+    (0, class_validator_1.IsEmail)(undefined, { message: 'Forneça um e-mail válido.' }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.Matches)(passwordRegEx, {
-        message: `Password must contain Minimum 8 and maximum 20 characters, 
-      at least one uppercase letter, 
-      one lowercase letter, 
-      one number and 
-      one special character`,
+        message: `A senha deve conter no mínimo 8 e no máximo 20 caracteres,
+pelo menos uma letra maiúscula,
+uma letra minúscula,
+um número e
+um caractere especial`,
     }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Matches)(passwordRegEx, {
+        message: `A senha deve conter no mínimo 8 e no máximo 20 caracteres,
+pelo menos uma letra maiúscula,
+uma letra minúscula,
+um número e
+um caractere especial`,
+    }),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "confirm_password", void 0);
+__decorate([
+    (0, class_validator_1.IsEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "image_url", void 0);
 //# sourceMappingURL=create-user.dto.js.map

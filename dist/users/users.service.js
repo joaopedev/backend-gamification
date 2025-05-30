@@ -29,20 +29,19 @@ let UsersService = class UsersService {
             where: { username },
         });
         if (existingUser) {
-            throw new common_1.ConflictException('Username already exists');
+            throw new common_1.ConflictException('O nome de usuário já existe');
         }
         const existingEmail = await this.userRepository.findOne({
             where: { email },
         });
         if (existingEmail) {
-            throw new common_1.ConflictException('Email already exists');
+            throw new common_1.ConflictException('O e-mail já existe');
         }
         const hashedPassword = (0, bcrypt_1.encodePassword)(password);
         const user = this.userRepository.create({
             ...createUserDto,
             password: hashedPassword,
         });
-        console.log('User saved:', user);
         await this.userRepository.save(user);
         const { password: _, ...userWithoutPassword } = user;
         return userWithoutPassword;
@@ -54,7 +53,7 @@ let UsersService = class UsersService {
     async findOne(id) {
         const user = await this.userRepository.findOne({ where: { id } });
         if (!user)
-            throw new common_1.BadRequestException('User not found');
+            throw new common_1.BadRequestException('Usuário não encontrado');
         const { password, ...userWithoutPassword } = user;
         return userWithoutPassword;
     }
@@ -66,14 +65,14 @@ let UsersService = class UsersService {
         const user = await this.userRepository.findOne({ where: { id } });
         console.log('User found:', id, user);
         if (!user)
-            throw new common_1.BadRequestException('User not found');
+            throw new common_1.BadRequestException('Usuário não encontrado');
         try {
             await this.userRepository.remove(user);
-            return { message: 'User removed successfully' };
+            return { message: 'Usuário removido com sucesso' };
         }
         catch (error) {
-            console.error('Error removing user:', error);
-            throw new common_1.BadRequestException('Error removing user');
+            console.error('Erro ao remover usuário:', error);
+            throw new common_1.BadRequestException('Erro ao remover usuário');
         }
     }
 };

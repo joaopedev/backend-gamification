@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateTradeDTO = void 0;
 const class_validator_1 = require("class-validator");
+const tradeEnum_1 = require("../entities/tradeEnum");
 class CreateTradeDTO {
     requesterId;
     receiverId;
@@ -36,7 +37,7 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateTradeDTO.prototype, "requestedStickerId", void 0);
 __decorate([
-    (0, class_validator_1.IsEnum)(['PENDING', 'ACCEPTED', 'REJECTED']),
+    (0, class_validator_1.IsEnum)(tradeEnum_1.TradeStatus),
     __metadata("design:type", String)
 ], CreateTradeDTO.prototype, "status", void 0);
 //# sourceMappingURL=create-trade.dto.js.map

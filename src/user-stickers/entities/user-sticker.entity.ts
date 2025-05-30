@@ -1,24 +1,44 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
-import { Users } from '../../users/entities/user.entity'; // Import the User entity
-import { Sticker } from '../../stickers/entities/sticker.entity'; // Import the Sticker entity
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Column,
+  JoinColumn,
+} from 'typeorm';
+import { Users } from '../../users/entities/user.entity';
+import { Sticker } from '../../stickers/entities/sticker.entity';
 
-@Entity()
+@Entity('user_stickers')
 export class UserSticker {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Users, (user) => user.stickers_number)
+  @ManyToOne(() => Users, (user) => user.userStickers, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
   user: Users;
 
-  @ManyToOne(() => Sticker, (sticker) => sticker.id)
+  @ManyToOne(() => Sticker, (sticker) => sticker.userStickers, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'sticker_id' })
   sticker: Sticker;
 
   @Column({ default: 1 })
   quantity: number;
 
-  @Column({ default: 1 })
-  sponsor?: string;
+  @Column({ default: '' })
+  sponsor: string;
 
-  @Column({type: 'boolean', default: false})
-  pasted: boolean; 
+  @Column({ type: 'boolean', default: false })
+  pasted: boolean;
+
+  @ManyToOne(() => Users, (user) => user.userStickers, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  albums: Users;
 }

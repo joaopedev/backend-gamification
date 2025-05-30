@@ -12,12 +12,13 @@ const friends_relationship_service_1 = require("./friends-relationship.service")
 const friends_relationship_controller_1 = require("./friends-relationship.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const friends_relationship_entity_1 = require("./entities/friends-relationship.entity");
+const user_entity_1 = require("../users/entities/user.entity");
 let FriendsRelationshipModule = class FriendsRelationshipModule {
 };
 exports.FriendsRelationshipModule = FriendsRelationshipModule;
 exports.FriendsRelationshipModule = FriendsRelationshipModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([friends_relationship_entity_1.FriendsRelationship])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([friends_relationship_entity_1.FriendsRelationship, user_entity_1.Users])],
         controllers: [friends_relationship_controller_1.FriendsRelationshipController],
         providers: [friends_relationship_service_1.FriendsRelationshipService],
     })

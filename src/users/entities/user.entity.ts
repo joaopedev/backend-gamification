@@ -6,6 +6,7 @@ import {
   Column,
   Entity,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -24,11 +25,14 @@ export class Users {
   @Column({ type: 'varchar', length: 100 })
   password: string;
 
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  confirm_password: string;
+
   @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
   @Column({ type: 'varchar', length: 300, nullable: true })
-  image_url?: string;
+  image_url: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
@@ -37,12 +41,12 @@ export class Users {
   created_at: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  deleted_at?: Date | null; // Nullable field
+  deleted_at?: Date | null;
 
   @Column({ type: 'int', default: 0 })
   stickers_number: number;
 
-  @Column({ type: 'int', default: 0 })
+  @Column({ type: 'int', default: 120 })
   coins: number;
 
   @Column({ type: 'int', default: 0 })
@@ -51,9 +55,6 @@ export class Users {
   @OneToMany(() => CoinTransaction, (transaction) => transaction.user)
   transactions: CoinTransaction[];
 
-  @OneToMany(() => UserSticker, (userSticker) => userSticker.user)
-  userStickers: UserSticker[];
-
   @OneToMany(() => Trade, (trade) => trade.requester)
   initiatedTrades: Trade[];
 
@@ -61,20 +62,26 @@ export class Users {
   receivedTrades: Trade[];
 
   @Column({ type: 'timestamp', nullable: true })
-  last_login?: Date | null; // Nullable field
+  last_login?: Date | null;
 
   @Column({ type: 'int', default: 1 })
   level: number;
 
   @ManyToMany(() => Users, (user) => user.friends)
-  friends: Users[]; // Many-to-many relationship with other users (friends)
+  friends: Users[];
 
   @OneToMany(() => StickerPack, (pack) => pack.user)
   stickerPacks: StickerPack[];
+
+  @OneToMany(() => UserSticker, (us) => us.user)
+  userStickers: UserSticker[];
 
   @Column({ nullable: true })
   resetPasswordToken: string;
 
   @Column({ nullable: true, type: 'timestamp' })
   resetPasswordExpires: Date;
+
+  @ManyToOne(() => UserSticker, (us) => us.user)
+  albums: UserSticker[];
 }

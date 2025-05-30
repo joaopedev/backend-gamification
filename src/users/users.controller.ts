@@ -4,6 +4,7 @@ import {
   Post,
   Body,
   Put,
+  Patch,
   Param,
   Delete,
   ParseIntPipe,
@@ -11,6 +12,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserLevelDto } from './dto/update-user-level.dto';
 
 @Controller('users')
 export class UsersController {
@@ -37,6 +39,14 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.update(id, updateUserDto);
+  }
+
+  @Patch('level/:id')
+  async updateLevel(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserLevelDto,
+  ) {
+    return await this.usersService.update(id, dto as any);
   }
 
   @Delete(':id')

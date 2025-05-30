@@ -14,4 +14,9 @@ export declare class StickersController {
     remove(id: string): Promise<{
         message: string;
     }>;
+    deleteAll(body: {
+        ids: number[];
+    }): Promise<{
+        message: string;
+    }>;
 }

@@ -7,8 +7,9 @@ export declare class Users {
     name: string;
     username: string;
     password: string;
+    confirm_password: string;
     email: string;
-    image_url?: string;
+    image_url: string;
     updated_at: Date;
     created_at: Date;
     deleted_at?: Date | null;
@@ -16,13 +17,14 @@ export declare class Users {
     coins: number;
     conquests: number;
     transactions: CoinTransaction[];
-    userStickers: UserSticker[];
     initiatedTrades: Trade[];
     receivedTrades: Trade[];
     last_login?: Date | null;
     level: number;
     friends: Users[];
     stickerPacks: StickerPack[];
+    userStickers: UserSticker[];
     resetPasswordToken: string;
     resetPasswordExpires: Date;
+    albums: UserSticker[];
 }

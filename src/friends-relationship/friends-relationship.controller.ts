@@ -23,20 +23,21 @@ export class FriendsRelationshipController {
 
   // PATCH /friends/accept/:userId/:requesterId
   @Patch('accept/:userId/:requesterId')
-  acceptRequest(
+  async acceptRequest(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('requesterId', ParseIntPipe) requesterId: number,
   ) {
-    return this.service.acceptRequest(userId, requesterId);
+    const result = await this.service.acceptRequest(userId, requesterId);
+    return { coinsRewarded: result.coinsRewarded ?? false };
   }
 
-  // PATCH /friends/block/:userId/:targetId
-  @Patch('block/:userId/:targetId')
+  // PATCH /friends/rejected/:userId/:targetId
+  @Patch('rejected/:userId/:targetId')
   blockUser(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('targetId', ParseIntPipe) targetId: number,
   ) {
-    return this.service.blockUser(userId, targetId);
+    return this.service.rejectedUserFriendRequest(userId, targetId);
   }
 
   // GET /friends/:userId
@@ -46,14 +47,34 @@ export class FriendsRelationshipController {
   }
 
   // GET /friends/pending/:userId
-  @Get('pending/:userId')
-  getPendingRequests(@Param('userId', ParseIntPipe) userId: number) {
-    return this.service.getPendingRequests(userId);
+  @Get('sent-pending/:userId')
+  getPendingRequestsSentByUser(@Param('userId', ParseIntPipe) userId: number) {
+    return this.service.getPendingRequestsSentByUser(userId);
+  }
+
+  @Get('rejected/:userId')
+  getRejectedRelationships(@Param('userId', ParseIntPipe) userId: number) {
+    return this.service.getRejectedRelationships(userId);
+  }
+
+  @Get('received-pending/:userId')
+  async getReceivedPendingRequests(
+    @Param('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.service.getPendingRequestsReceivedByUser(userId);
+  }
+
+  @Get('history/:userId')
+  async getFriendRequestHistory(@Param('userId', ParseIntPipe) userId: number) {
+    return this.service.findFriendRelationsHistoryByUserId(userId);
   }
 
   // DELETE /friends/:userId/:targetId
   @Delete(':userId/:targetId')
-  remove(@Param('userId', ParseIntPipe) userId: number, @Param('targetId', ParseIntPipe) targetId: number) {
+  remove(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('targetId', ParseIntPipe) targetId: number,
+  ) {
     return this.service.removeRelationship(userId, targetId);
   }
 }

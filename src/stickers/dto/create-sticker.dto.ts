@@ -21,4 +21,7 @@ export class CreateStickerDTO {
 
   @IsString()
   sub_category?: string;
+
+  @IsString()
+  links?: string[];
 }

@@ -18,6 +18,8 @@ let CoinTransaction = class CoinTransaction {
     coins;
     user;
     createdAt;
+    isReceived;
+    qrCodeId;
 };
 exports.CoinTransaction = CoinTransaction;
 __decorate([
@@ -40,6 +42,14 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], CoinTransaction.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], CoinTransaction.prototype, "isReceived", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], CoinTransaction.prototype, "qrCodeId", void 0);
 exports.CoinTransaction = CoinTransaction = __decorate([
     (0, typeorm_1.Entity)()
 ], CoinTransaction);

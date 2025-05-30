@@ -24,19 +24,19 @@ export class StickersService {
     const files = fs.readdirSync(stickersDir);
 
     for (const file of files) {
-      const name = file.split('.')[0];
+      const image_url = `${process.env.API_LINK}sticker-images/${file}`;
 
-      const exists = await this.stickerRepo.findOne({ where: { name } });
+      const exists = await this.stickerRepo.findOne({ where: { image_url } });
       if (exists) continue;
 
       const newSticker = this.stickerRepo.create({
-        name,
+        name: 'default name',
         sponsor: 'default sponsor',
         description: 'default description',
         category: 'default category',
         section: 'default area',
         sub_category: 'default sub-category',
-        image_url: `http://localhost:3000/sticker-images/${file}`,
+        image_url: `${process.env.API_LINK}sticker-images/${file}`,
       });
 
       await this.stickerRepo.save(newSticker);
@@ -50,7 +50,7 @@ export class StickersService {
     const files = readdirSync(stickersDir);
 
     for (const file of files) {
-      const imageUrl = `http://localhost:3000/sticker-images/${file}`;
+      const imageUrl = `${process.env.API_LINK}sticker-images/${file}`;
       const name = file.split('.')[0];
 
       const existing = await this.stickerRepo.findOne({
@@ -102,7 +102,7 @@ export class StickersService {
       description,
       category,
       section,
-      image_url: `http://localhost:3000/sticker-images/${file.filename}`,
+      image_url: `${process.env.API_LINK}${file.filename}`,
     });
 
     return this.stickerRepo.save(newSticker);
@@ -113,7 +113,7 @@ export class StickersService {
   }
 
   findOne(id: number) {
-    return this.stickerRepo.findOne({ where: { id }});
+    return this.stickerRepo.findOne({ where: { id } });
   }
 
   async update(id: number, updateStickerDto: UpdateStickerDto) {
@@ -126,5 +126,25 @@ export class StickersService {
     if (!sticker) throw new NotFoundException('Sticker not found');
     await this.stickerRepo.delete(id);
     return { message: 'Sticker deleted' };
+  }
+
+  async removeByIds(ids: number[]) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw new BadRequestException('No IDs provided');
+    }
+
+    const validIds = ids.filter((id) => typeof id === 'number' && !isNaN(id));
+
+    if (validIds.length === 0) {
+      throw new BadRequestException('No valid numeric IDs provided');
+    }
+
+    const stickers = await this.stickerRepo.findByIds(validIds);
+    if (stickers.length === 0) {
+      throw new NotFoundException('No stickers found for the provided IDs');
+    }
+
+    await this.stickerRepo.delete(validIds);
+    return { message: 'Stickers deleted' };
   }
 }

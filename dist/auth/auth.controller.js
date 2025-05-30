@@ -29,6 +29,9 @@ let AuthController = class AuthController {
     requestReset(dto) {
         return this.authService.requestPasswordReset(dto);
     }
+    validateResetToken(token) {
+        return this.authService.validateToken(token);
+    }
     resetPassword(dto) {
         return this.authService.resetPassword(dto);
     }
@@ -48,6 +51,13 @@ __decorate([
     __metadata("design:paramtypes", [request_password_reset_dto_1.RequestPasswordResetDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "requestReset", null);
+__decorate([
+    (0, common_1.Get)('forgotWithToken/:token'),
+    __param(0, (0, common_1.Param)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "validateResetToken", null);
 __decorate([
     (0, common_1.Post)('reset-password'),
     __param(0, (0, common_1.Body)()),

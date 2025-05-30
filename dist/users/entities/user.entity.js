@@ -20,6 +20,7 @@ let Users = class Users {
     name;
     username;
     password;
+    confirm_password;
     email;
     image_url;
     updated_at;
@@ -29,15 +30,16 @@ let Users = class Users {
     coins;
     conquests;
     transactions;
-    userStickers;
     initiatedTrades;
     receivedTrades;
     last_login;
     level;
     friends;
     stickerPacks;
+    userStickers;
     resetPasswordToken;
     resetPasswordExpires;
+    albums;
 };
 exports.Users = Users;
 __decorate([
@@ -56,6 +58,10 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
     __metadata("design:type", String)
 ], Users.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", String)
+], Users.prototype, "confirm_password", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 100, unique: true }),
     __metadata("design:type", String)
@@ -81,7 +87,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Users.prototype, "stickers_number", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'int', default: 0 }),
+    (0, typeorm_1.Column)({ type: 'int', default: 120 }),
     __metadata("design:type", Number)
 ], Users.prototype, "coins", void 0);
 __decorate([
@@ -92,10 +98,6 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => coin_transaction_entity_1.CoinTransaction, (transaction) => transaction.user),
     __metadata("design:type", Array)
 ], Users.prototype, "transactions", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => user_sticker_entity_1.UserSticker, (userSticker) => userSticker.user),
-    __metadata("design:type", Array)
-], Users.prototype, "userStickers", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => trade_entity_1.Trade, (trade) => trade.requester),
     __metadata("design:type", Array)
@@ -121,6 +123,10 @@ __decorate([
     __metadata("design:type", Array)
 ], Users.prototype, "stickerPacks", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => user_sticker_entity_1.UserSticker, (us) => us.user),
+    __metadata("design:type", Array)
+], Users.prototype, "userStickers", void 0);
+__decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Users.prototype, "resetPasswordToken", void 0);
@@ -128,6 +134,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'timestamp' }),
     __metadata("design:type", Date)
 ], Users.prototype, "resetPasswordExpires", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_sticker_entity_1.UserSticker, (us) => us.user),
+    __metadata("design:type", Array)
+], Users.prototype, "albums", void 0);
 exports.Users = Users = __decorate([
     (0, typeorm_1.Entity)('users')
 ], Users);

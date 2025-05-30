@@ -17,4 +17,10 @@ export class CoinTransaction {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ default: false })
+  isReceived: boolean;
+
+  @Column({ nullable: true })
+  qrCodeId?: string;
 }
