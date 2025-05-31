@@ -41,9 +41,9 @@ import { CompletedPagesModule } from './completed-pages/completed-pages.module';
       synchronize: true,
       logging: true,
       entities: [__dirname + '/**/*.entity.js'],
-      // ssl:{
-      //   rejectUnauthorized: false,
-      // }
+      ssl:{
+        rejectUnauthorized: false,
+      }
     }),
     MailerModule.forRoot({
       transport: {
