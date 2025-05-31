@@ -13,7 +13,7 @@ import { CompletedPagesService } from './completed-pages.service';
 
 @Controller('completed-pages')
 export class CompletedPagesController {
-  constructor(private readonly completedPagesService: CompletedPagesService) {}
+  constructor(private readonly completedPagesService: CompletedPagesService) { }
 
   // Ajuste da rota para incluir userId como parâmetro
   @Post()
@@ -21,7 +21,8 @@ export class CompletedPagesController {
     const result = await this.completedPagesService.create(dto.userId, dto);
     return {
       ticket: result.ticket,
-      message: 'Página completada com sucesso',};
+      message: 'Página completada com sucesso',
+    };
   }
 
   @Get()
@@ -32,6 +33,11 @@ export class CompletedPagesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.completedPagesService.findOne(+id);
+  }
+
+  @Get('user/:userId')
+  findByUser(@Param('userId') userId: number) {
+    return this.completedPagesService.findByUser(+userId);
   }
 
   @Patch(':id')

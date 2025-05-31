@@ -182,7 +182,7 @@ export class UserStickersService {
 
     if (!userSticker) throw new NotFoundException('UserSticker não encontrado');
 
-    if (userSticker.pasted) throw new BadRequestException('Adesivo já colado');
+    if (userSticker.pasted) throw new BadRequestException('Essa figurinha já foi colada');
 
     userSticker.pasted = true;
     await this.userStickerRepo.save(userSticker);
