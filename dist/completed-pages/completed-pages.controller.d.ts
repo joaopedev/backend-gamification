@@ -20,6 +20,17 @@ export declare class CompletedPagesController {
         pageIndex: number;
         ticket: string;
     }>;
+    findByUser(userId: number): Promise<{
+        pages: {
+            pageIndex: number;
+            ticket: string;
+        }[];
+        totalCompleted: number;
+        rewardsUnlocked: {
+            count: number;
+            coins: number;
+        }[];
+    }>;
     update(id: string, updateCompletedPageDto: UpdateCompletedPageDto): Promise<{
         message: string;
         updated: import("./entities/completed-page.entity").CompletedPage;

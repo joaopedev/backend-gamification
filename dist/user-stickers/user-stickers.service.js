@@ -150,7 +150,7 @@ let UserStickersService = class UserStickersService {
         if (!userSticker)
             throw new common_1.NotFoundException('UserSticker não encontrado');
         if (userSticker.pasted)
-            throw new common_1.BadRequestException('Adesivo já colado');
+            throw new common_1.BadRequestException('Essa figurinha já foi colada');
         userSticker.pasted = true;
         await this.userStickerRepo.save(userSticker);
         const user = userSticker.user;
