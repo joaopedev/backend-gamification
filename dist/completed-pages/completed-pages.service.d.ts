@@ -23,6 +23,17 @@ export declare class CompletedPagesService {
         pageIndex: number;
         ticket: string;
     }>;
+    findByUser(userId: number): Promise<{
+        pages: {
+            pageIndex: number;
+            ticket: string;
+        }[];
+        totalCompleted: number;
+        rewardsUnlocked: {
+            count: number;
+            coins: number;
+        }[];
+    }>;
     update(id: number, updateCompletedPageDto: UpdateCompletedPageDto): Promise<{
         message: string;
         updated: CompletedPage;

@@ -65,7 +65,7 @@ um caractere especial`,
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "confirm_password", void 0);
 __decorate([
-    (0, class_validator_1.IsEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "image_url", void 0);
