@@ -46,7 +46,7 @@ export class Users {
   @Column({ type: 'int', default: 0 })
   stickers_number: number;
 
-  @Column({ type: 'int', default: 120 })
+  @Column({ type: 'int', default: 50 })
   coins: number;
 
   @Column({ type: 'int', default: 0 })
