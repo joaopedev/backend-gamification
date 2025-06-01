@@ -32,19 +32,19 @@ __decorate([
     __metadata("design:type", Number)
 ], Sticker.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "image_url", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "sponsor", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "description", void 0);
 __decorate([
@@ -52,15 +52,15 @@ __decorate([
     __metadata("design:type", sticker_pack_entity_1.StickerPack)
 ], Sticker.prototype, "stickerPack", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "category", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "section", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true }),
     __metadata("design:type", String)
 ], Sticker.prototype, "sub_category", void 0);
 __decorate([

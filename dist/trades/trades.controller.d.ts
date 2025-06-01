@@ -10,5 +10,5 @@ export declare class TradesController {
     findAllTradesByUserId(userId: string): Promise<import("./entities/trade.entity").Trade[]>;
     findAllReceivedTradesByUserId(userId: string): Promise<import("./entities/trade.entity").Trade[]>;
     findTradeHistoryByUserId(userId: string): Promise<import("./entities/trade.entity").Trade[]>;
-    update(id: string, updateTradeDto: UpdateTradeDto): Promise<import("./entities/trade.entity").Trade>;
+    update(id: string, updateTradeDto: UpdateTradeDto): Promise<import("./entities/trade.entity").Trade | null>;
 }

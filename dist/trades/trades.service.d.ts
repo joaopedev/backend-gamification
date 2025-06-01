@@ -16,6 +16,6 @@ export declare class TradesService {
     findAllTradesByUserId(userId: number): Promise<Trade[]>;
     findAllReceivedTradesByUserId(userId: number): Promise<Trade[]>;
     findTradeHistoryByUserId(userId: number): Promise<Trade[]>;
-    update(id: number, updateTradeDto: UpdateTradeDto): Promise<Trade>;
+    update(id: number, updateTradeDto: UpdateTradeDto): Promise<Trade | null>;
     remove(id: number): string;
 }
