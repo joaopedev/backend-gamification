@@ -156,11 +156,54 @@ let TradesService = class TradesService {
                     'receiver',
                 ],
             });
-            if (!trade) {
+            if (!trade)
                 throw new Error('Trade not found');
-            }
             await manager.update(trade_entity_1.Trade, id, updateTradeDto);
-            const updatedTrade = await manager.findOne(trade_entity_1.Trade, {
+            if (updateTradeDto.status !== tradeEnum_1.TradeStatus.ACCEPTED) {
+                return await manager.findOne(trade_entity_1.Trade, {
+                    where: { id },
+                    relations: [
+                        'offeredSticker',
+                        'requestedSticker',
+                        'requester',
+                        'receiver',
+                    ],
+                });
+            }
+            const { requester, receiver, offeredSticker, requestedSticker } = trade;
+            const updateSticker = async (fromUserId, toUserId, stickerId) => {
+                const fromUserSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
+                    where: {
+                        user: { id: fromUserId },
+                        sticker: { id: stickerId },
+                    },
+                });
+                if (!fromUserSticker || fromUserSticker.quantity < 1) {
+                    throw new Error(`User ${fromUserId} does not own sticker ${stickerId}`);
+                }
+                fromUserSticker.quantity -= 1;
+                await manager.save(user_sticker_entity_1.UserSticker, fromUserSticker);
+                let toUserSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
+                    where: {
+                        user: { id: toUserId },
+                        sticker: { id: stickerId },
+                    },
+                });
+                if (toUserSticker) {
+                    toUserSticker.quantity += 1;
+                }
+                else {
+                    toUserSticker = manager.create(user_sticker_entity_1.UserSticker, {
+                        user: { id: toUserId },
+                        sticker: { id: stickerId },
+                        quantity: 1,
+                    });
+                }
+                await manager.save(user_sticker_entity_1.UserSticker, toUserSticker);
+            };
+            await updateSticker(requester.id, receiver.id, offeredSticker.id);
+            await updateSticker(receiver.id, requester.id, requestedSticker.id);
+            return await manager.findOne(trade_entity_1.Trade, {
                 where: { id },
                 relations: [
                     'offeredSticker',
@@ -169,35 +212,6 @@ let TradesService = class TradesService {
                     'receiver',
                 ],
             });
-            if (!updatedTrade) {
-                throw new Error('Trade not found after update');
-            }
-            if (updateTradeDto.status === tradeEnum_1.TradeStatus.ACCEPTED) {
-                const offeredUserSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
-                    where: {
-                        user: { id: updatedTrade.requester.id },
-                        sticker: { id: updatedTrade.offeredSticker.id },
-                    },
-                });
-                const requestedUserSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
-                    where: {
-                        user: { id: updatedTrade.receiver.id },
-                        sticker: { id: updatedTrade.requestedSticker.id },
-                    },
-                });
-                if (!offeredUserSticker) {
-                    throw new Error('Requester does not own the offered sticker');
-                }
-                if (!requestedUserSticker) {
-                    throw new Error('Receiver does not own the requested sticker');
-                }
-                const tempUser = offeredUserSticker.user;
-                offeredUserSticker.user = requestedUserSticker.user;
-                requestedUserSticker.user = tempUser;
-                await manager.save(user_sticker_entity_1.UserSticker, offeredUserSticker);
-                await manager.save(user_sticker_entity_1.UserSticker, requestedUserSticker);
-            }
-            return updatedTrade;
         });
     }
     remove(id) {

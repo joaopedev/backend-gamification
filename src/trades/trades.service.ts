@@ -159,13 +159,67 @@ export class TradesService {
           'receiver',
         ],
       });
-
-      if (!trade) {
-        throw new Error('Trade not found');
-      }
+      if (!trade) throw new Error('Trade not found');
 
       await manager.update(Trade, id, updateTradeDto as DeepPartial<Trade>);
-      const updatedTrade = await manager.findOne(Trade, {
+
+      if (updateTradeDto.status !== TradeStatus.ACCEPTED) {
+        return await manager.findOne(Trade, {
+          where: { id },
+          relations: [
+            'offeredSticker',
+            'requestedSticker',
+            'requester',
+            'receiver',
+          ],
+        });
+      }
+
+      const { requester, receiver, offeredSticker, requestedSticker } = trade;
+
+      const updateSticker = async (
+        fromUserId: number,
+        toUserId: number,
+        stickerId: number,
+      ) => {
+        const fromUserSticker = await manager.findOne(UserSticker, {
+          where: {
+            user: { id: fromUserId },
+            sticker: { id: stickerId },
+          },
+        });
+        if (!fromUserSticker || fromUserSticker.quantity < 1) {
+          throw new Error(
+            `User ${fromUserId} does not own sticker ${stickerId}`,
+          );
+        }
+        fromUserSticker.quantity -= 1;
+        await manager.save(UserSticker, fromUserSticker);
+
+        let toUserSticker = await manager.findOne(UserSticker, {
+          where: {
+            user: { id: toUserId },
+            sticker: { id: stickerId },
+          },
+        });
+
+        if (toUserSticker) {
+          toUserSticker.quantity += 1;
+        } else {
+          toUserSticker = manager.create(UserSticker, {
+            user: { id: toUserId },
+            sticker: { id: stickerId },
+            quantity: 1,
+          });
+        }
+        await manager.save(UserSticker, toUserSticker);
+      };
+
+      // Efetuar a troca
+      await updateSticker(requester.id, receiver.id, offeredSticker.id);
+      await updateSticker(receiver.id, requester.id, requestedSticker.id);
+
+      return await manager.findOne(Trade, {
         where: { id },
         relations: [
           'offeredSticker',
@@ -174,42 +228,6 @@ export class TradesService {
           'receiver',
         ],
       });
-
-      if (!updatedTrade) {
-        throw new Error('Trade not found after update');
-      }
-
-      if (updateTradeDto.status === TradeStatus.ACCEPTED) {
-        const offeredUserSticker = await manager.findOne(UserSticker, {
-          where: {
-            user: { id: updatedTrade.requester.id },
-            sticker: { id: updatedTrade.offeredSticker.id },
-          },
-        });
-
-        const requestedUserSticker = await manager.findOne(UserSticker, {
-          where: {
-            user: { id: updatedTrade.receiver.id },
-            sticker: { id: updatedTrade.requestedSticker.id },
-          },
-        });
-
-        if (!offeredUserSticker) {
-          throw new Error('Requester does not own the offered sticker');
-        }
-        if (!requestedUserSticker) {
-          throw new Error('Receiver does not own the requested sticker');
-        }
-
-        const tempUser = offeredUserSticker.user;
-        offeredUserSticker.user = requestedUserSticker.user;
-        requestedUserSticker.user = tempUser;
-
-        await manager.save(UserSticker, offeredUserSticker);
-        await manager.save(UserSticker, requestedUserSticker);
-      }
-
-      return updatedTrade;
     });
   }
 
