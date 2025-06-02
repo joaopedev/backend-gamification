@@ -87,7 +87,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Users.prototype, "stickers_number", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'int', default: 120 }),
+    (0, typeorm_1.Column)({ type: 'int', default: 50 }),
     __metadata("design:type", Number)
 ], Users.prototype, "coins", void 0);
 __decorate([

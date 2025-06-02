@@ -215,7 +215,13 @@ let TradesService = class TradesService {
         });
     }
     remove(id) {
-        return `This action removes a #${id} trade`;
+        return this.dataSource.transaction(async (manager) => {
+            const trade = await manager.findOne(trade_entity_1.Trade, { where: { id } });
+            if (!trade)
+                throw new Error('Trade not found');
+            await manager.remove(trade_entity_1.Trade, trade);
+            return { message: 'Trade removed successfully' };
+        });
     }
 };
 exports.TradesService = TradesService;

@@ -43,6 +43,9 @@ let TradesController = class TradesController {
     update(id, updateTradeDto) {
         return this.tradesService.update(+id, updateTradeDto);
     }
+    remove(id) {
+        return this.tradesService.remove(+id);
+    }
 };
 exports.TradesController = TradesController;
 __decorate([
@@ -94,6 +97,13 @@ __decorate([
     __metadata("design:paramtypes", [String, update_trade_dto_1.UpdateTradeDto]),
     __metadata("design:returntype", void 0)
 ], TradesController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TradesController.prototype, "remove", null);
 exports.TradesController = TradesController = __decorate([
     (0, common_1.Controller)('trades'),
     __metadata("design:paramtypes", [trades_service_1.TradesService])
