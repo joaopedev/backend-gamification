@@ -42,9 +42,7 @@ export class StickerPackService {
 
     const PACK_COST = priceTable[quantity];
 
-    const user = await this.userRepo.findOne({
-      where: { id: userId },
-    });
+    const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
 
     if (user.coins < PACK_COST) {
@@ -53,31 +51,40 @@ export class StickerPackService {
       );
     }
 
+    const validStickers = await this.stickerRepo.find({
+      where: { sponsor: Not('SPECIAL') },
+    });
+
+    if (validStickers.length < quantity * STICKER_COUNT) {
+      throw new BadRequestException(
+        'Não há figurinhas válidas suficientes para montar os pacotes',
+      );
+    }
+
     const allSelectedStickers: Sticker[] = [];
+    const usedStickerIds = new Set<number>();
     let attempts = 0;
 
     while (
       allSelectedStickers.length < quantity * STICKER_COUNT &&
       attempts < MAX_ATTEMPTS * quantity
     ) {
-      const randomId = Math.floor(Math.random() * 260) + 1;
+      const randomIndex = Math.floor(Math.random() * validStickers.length);
+      const sticker = validStickers[randomIndex];
 
-      const sticker = await this.stickerRepo.findOne({
-        where: { id: randomId },
-      });
-
-      if (!sticker || !sticker.sponsor || sticker.sponsor === 'SPECIAL') {
+      if (!sticker || usedStickerIds.has(sticker.id)) {
         attempts++;
         continue;
       }
 
+      usedStickerIds.add(sticker.id);
       allSelectedStickers.push(sticker);
       attempts++;
     }
 
     if (allSelectedStickers.length < quantity * STICKER_COUNT) {
       throw new BadRequestException(
-        'Não foi possível encontrar figurinhas qualificados suficientes',
+        'Não foi possível encontrar figurinhas qualificadas suficientes',
       );
     }
 
@@ -90,7 +97,6 @@ export class StickerPackService {
         (i + 1) * STICKER_COUNT,
       );
 
-      // Cria e salva os UserStickers
       const newUserStickers = packStickers.map((sticker) =>
         this.userStickerRepo.create({
           user,
@@ -103,7 +109,6 @@ export class StickerPackService {
 
       userStickers.push(...newUserStickers);
 
-      // Cria o pacote
       const pack = this.stickerPackRepo.create({
         title: `${title} ${i + 1}`,
         user,

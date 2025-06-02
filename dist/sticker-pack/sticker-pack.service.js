@@ -43,31 +43,35 @@ let StickerPackService = class StickerPackService {
             throw new common_1.BadRequestException('Quantidade inválida. Deve ser 1, 3 ou 5.');
         }
         const PACK_COST = priceTable[quantity];
-        const user = await this.userRepo.findOne({
-            where: { id: userId },
-        });
+        const user = await this.userRepo.findOne({ where: { id: userId } });
         if (!user)
             throw new common_1.NotFoundException('Usuário não encontrado');
         if (user.coins < PACK_COST) {
             throw new common_1.BadRequestException('Não há moedas suficientes para comprar pacotes de figurinhas');
         }
+        const validStickers = await this.stickerRepo.find({
+            where: { sponsor: (0, typeorm_2.Not)('SPECIAL') },
+        });
+        if (validStickers.length < quantity * STICKER_COUNT) {
+            throw new common_1.BadRequestException('Não há figurinhas válidas suficientes para montar os pacotes');
+        }
         const allSelectedStickers = [];
+        const usedStickerIds = new Set();
         let attempts = 0;
         while (allSelectedStickers.length < quantity * STICKER_COUNT &&
             attempts < MAX_ATTEMPTS * quantity) {
-            const randomId = Math.floor(Math.random() * 260) + 1;
-            const sticker = await this.stickerRepo.findOne({
-                where: { id: randomId },
-            });
-            if (!sticker || !sticker.sponsor || sticker.sponsor === 'SPECIAL') {
+            const randomIndex = Math.floor(Math.random() * validStickers.length);
+            const sticker = validStickers[randomIndex];
+            if (!sticker || usedStickerIds.has(sticker.id)) {
                 attempts++;
                 continue;
             }
+            usedStickerIds.add(sticker.id);
             allSelectedStickers.push(sticker);
             attempts++;
         }
         if (allSelectedStickers.length < quantity * STICKER_COUNT) {
-            throw new common_1.BadRequestException('Não foi possível encontrar figurinhas qualificados suficientes');
+            throw new common_1.BadRequestException('Não foi possível encontrar figurinhas qualificadas suficientes');
         }
         const userStickers = [];
         const packs = [];
