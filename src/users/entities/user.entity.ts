@@ -81,7 +81,4 @@ export class Users {
 
   @Column({ nullable: true, type: 'timestamp' })
   resetPasswordExpires: Date;
-
-  @ManyToOne(() => UserSticker, (us) => us.user)
-  albums: UserSticker[];
 }
