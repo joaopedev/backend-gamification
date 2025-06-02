@@ -31,7 +31,7 @@ export class Users {
   @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'varchar', length: 500, nullable: true })
   image_url: string;  
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
