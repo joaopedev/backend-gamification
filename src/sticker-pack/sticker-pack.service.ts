@@ -66,7 +66,7 @@ export class StickerPackService {
         where: { id: randomId },
       });
 
-      if (!sticker || sticker.sponsor === 'SPECIAL') {
+      if (!sticker || !sticker.sponsor || sticker.sponsor === 'SPECIAL') {
         attempts++;
         continue;
       }
@@ -76,19 +76,62 @@ export class StickerPackService {
     }
 
     if (allSelectedStickers.length < quantity * STICKER_COUNT) {
-      throw new BadRequestException('Não foi possível encontrar figurinhas qualificados suficientes');
+      throw new BadRequestException(
+        'Não foi possível encontrar figurinhas qualificadas suficientes',
+      );
     }
 
     const userStickers: UserSticker[] = [];
     const packs: StickerPack[] = [];
 
     for (let i = 0; i < quantity; i++) {
-      const packStickers = allSelectedStickers.slice(
-        i * STICKER_COUNT,
-        (i + 1) * STICKER_COUNT,
-      );
+      const startIdx = i * STICKER_COUNT;
+      const endIdx = (i + 1) * STICKER_COUNT;
 
-      // Cria e salva os UserStickers
+      let packStickers: Sticker[] = [];
+      let retry = 0;
+
+      while (retry < MAX_ATTEMPTS) {
+        const candidateStickers = allSelectedStickers.slice(startIdx, endIdx);
+
+        const countMap = new Map<number, number>();
+        for (const sticker of candidateStickers) {
+          countMap.set(sticker.id, (countMap.get(sticker.id) || 0) + 1);
+        }
+
+        const hasTooManyDuplicates = [...countMap.values()].some(
+          (count) => count > 2,
+        );
+
+        if (!hasTooManyDuplicates) {
+          packStickers = candidateStickers;
+          break;
+        }
+
+        // Tenta substituir uma figurinha repetida
+        const newRandomId = Math.floor(Math.random() * 260) + 1;
+        const replacement = await this.stickerRepo.findOne({
+          where: { id: newRandomId },
+        });
+
+        if (
+          replacement &&
+          replacement.sponsor &&
+          replacement.sponsor !== 'SPECIAL' &&
+          !candidateStickers.find((s) => s.id === replacement.id)
+        ) {
+          allSelectedStickers[startIdx] = replacement;
+        }
+
+        retry++;
+      }
+
+      if (packStickers.length !== STICKER_COUNT) {
+        throw new BadRequestException(
+          'Falha ao gerar pacotes sem repetições excessivas.',
+        );
+      }
+
       const newUserStickers = packStickers.map((sticker) =>
         this.userStickerRepo.create({
           user,
@@ -101,7 +144,6 @@ export class StickerPackService {
 
       userStickers.push(...newUserStickers);
 
-      // Cria o pacote
       const pack = this.stickerPackRepo.create({
         title: `${title} ${i + 1}`,
         user,
