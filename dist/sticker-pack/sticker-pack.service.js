@@ -59,7 +59,7 @@ let StickerPackService = class StickerPackService {
             const sticker = await this.stickerRepo.findOne({
                 where: { id: randomId },
             });
-            if (!sticker || sticker.sponsor === 'SPECIAL') {
+            if (!sticker || !sticker.sponsor || sticker.sponsor === 'SPECIAL') {
                 attempts++;
                 continue;
             }
