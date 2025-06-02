@@ -26,5 +26,4 @@ export declare class Users {
     userStickers: UserSticker[];
     resetPasswordToken: string;
     resetPasswordExpires: Date;
-    albums: UserSticker[];
 }
