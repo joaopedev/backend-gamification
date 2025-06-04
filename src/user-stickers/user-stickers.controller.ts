@@ -3,18 +3,15 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   ParseIntPipe,
   Req,
   Put,
-  BadRequestException,
 } from '@nestjs/common';
 import { UserStickersService } from './user-stickers.service';
 import { CreateUserStickerDTO } from './dto/create-user-sticker.dto';
 import { UpdateUserStickerDto } from './dto/update-user-sticker.dto';
-import { UpdatePastedDto } from './dto/update-pasted.dto';
 
 @Controller('user-stickers')
 export class UserStickersController {
@@ -63,6 +60,11 @@ export class UserStickersController {
   getAlbumProgress(@Req() req) {
     const userId = req.user.id;
     return this.userStickersService.getAlbumProgress(userId);
+  }
+
+  @Post('sync-stickers-number')
+  async syncStickersNumber() {
+    return this.userStickersService.syncAllUsersStickerNumbers();
   }
 
   @Delete(':id')

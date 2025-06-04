@@ -19,13 +19,16 @@ const typeorm_2 = require("typeorm");
 const user_sticker_entity_1 = require("./entities/user-sticker.entity");
 const user_entity_1 = require("../users/entities/user.entity");
 const sticker_entity_1 = require("../stickers/entities/sticker.entity");
+const album_entity_1 = require("../album/entities/album.entity");
 let UserStickersService = class UserStickersService {
     userStickerRepo;
     usersRepo;
+    albumRepo;
     stickerRepo;
-    constructor(userStickerRepo, usersRepo, stickerRepo) {
+    constructor(userStickerRepo, usersRepo, albumRepo, stickerRepo) {
         this.userStickerRepo = userStickerRepo;
         this.usersRepo = usersRepo;
+        this.albumRepo = albumRepo;
         this.stickerRepo = stickerRepo;
     }
     async create(createUserStickerDto) {
@@ -115,6 +118,19 @@ let UserStickersService = class UserStickersService {
         }
         return rewarded;
     }
+    async syncAllUsersStickerNumbers() {
+        const users = await this.usersRepo.find();
+        for (const user of users) {
+            const pastedCount = await this.userStickerRepo.count({
+                where: { user: { id: user.id }, pasted: true },
+            });
+            user.stickers_number = pastedCount;
+            await this.usersRepo.save(user);
+        }
+        return {
+            message: 'Contagem de figurinhas coladas atualizada com sucesso.',
+        };
+    }
     async remove(id) {
         const sticker = await this.findOne(id);
         await this.userStickerRepo.remove(sticker);
@@ -159,7 +175,22 @@ let UserStickersService = class UserStickersService {
         const totalPasted = await this.userStickerRepo.count({
             where: { user: { id: user.id }, pasted: true },
         });
+        user.stickers_number += totalPasted;
         await this.checkAndReward(user.id, totalPasted);
+        await this.usersRepo.save(user);
+        if (totalPasted === 163) {
+            const existingAlbum = await this.albumRepo.findOne({
+                where: { user: { id: user.id } },
+            });
+            if (!existingAlbum) {
+                const newAlbum = this.albumRepo.create({
+                    user,
+                    completed: true,
+                    completed_at: new Date(),
+                });
+                await this.albumRepo.save(newAlbum);
+            }
+        }
         return userSticker;
     }
     async removeSticker(userId, stickerId, sponsor = 'DEFAULT') {
@@ -211,8 +242,10 @@ exports.UserStickersService = UserStickersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_sticker_entity_1.UserSticker)),
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.Users)),
-    __param(2, (0, typeorm_1.InjectRepository)(sticker_entity_1.Sticker)),
+    __param(2, (0, typeorm_1.InjectRepository)(album_entity_1.Album)),
+    __param(3, (0, typeorm_1.InjectRepository)(sticker_entity_1.Sticker)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])
 ], UserStickersService);

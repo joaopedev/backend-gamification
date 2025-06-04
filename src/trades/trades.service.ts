@@ -186,47 +186,32 @@ export class TradesService {
 
       const { requester, receiver, offeredSticker, requestedSticker } = trade;
 
-      const updateSticker = async (
+      const transferSticker = async (
         fromUserId: number,
         toUserId: number,
         stickerId: number,
       ) => {
-        const fromUserSticker = await manager.findOne(UserSticker, {
+        const userSticker = await manager.findOne(UserSticker, {
           where: {
             user: { id: fromUserId },
             sticker: { id: stickerId },
             pasted: false,
           },
         });
-        if (!fromUserSticker || fromUserSticker.quantity < 1) {
+
+        if (!userSticker) {
           throw new Error(
-            `Usuário ${fromUserId} não possui um adesivo válido (não colado) ${stickerId}`,
+            `Usuário ${fromUserId} não possui a figurinha ${stickerId} ou ele já está colado.`,
           );
         }
-        fromUserSticker.quantity -= 1;
-        await manager.save(UserSticker, fromUserSticker);
 
-        let toUserSticker = await manager.findOne(UserSticker, {
-          where: {
-            user: { id: toUserId },
-            sticker: { id: stickerId },
-          },
-        });
-
-        if (toUserSticker) {
-          toUserSticker.quantity += 1;
-        } else {
-          toUserSticker = manager.create(UserSticker, {
-            user: { id: toUserId },
-            sticker: { id: stickerId },
-            quantity: 1,
-          });
-        }
-        await manager.save(UserSticker, toUserSticker);
+        userSticker.user = { id: toUserId } as Users;
+        console.log(`Transferindo figurinha ${stickerId} de ${fromUserId} para ${toUserId}`);
+        await manager.save(UserSticker, userSticker);
       };
 
-      await updateSticker(requester.id, receiver.id, offeredSticker.id);
-      await updateSticker(receiver.id, requester.id, requestedSticker.id);
+      await transferSticker(requester.id, receiver.id, offeredSticker.id);
+      await transferSticker(receiver.id, requester.id, requestedSticker.id);
 
       return await manager.findOne(Trade, {
         where: { id },

@@ -48,6 +48,9 @@ let UserStickersController = class UserStickersController {
         const userId = req.user.id;
         return this.userStickersService.getAlbumProgress(userId);
     }
+    async syncStickersNumber() {
+        return this.userStickersService.syncAllUsersStickerNumbers();
+    }
     remove(id) {
         return this.userStickersService.remove(id);
     }
@@ -103,6 +106,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UserStickersController.prototype, "getAlbumProgress", null);
+__decorate([
+    (0, common_1.Post)('sync-stickers-number'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UserStickersController.prototype, "syncStickersNumber", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

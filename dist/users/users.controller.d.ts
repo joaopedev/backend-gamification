@@ -28,8 +28,10 @@ export declare class UsersController {
         userStickers: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
         resetPasswordToken: string;
         resetPasswordExpires: Date;
+        albumcompleted: import("../album/entities/album.entity").Album;
     }>;
     findAll(): Promise<{
+        album: import("../album/entities/album.entity").Album;
         id: number;
         name: string;
         username: string;
@@ -54,10 +56,10 @@ export declare class UsersController {
         resetPasswordExpires: Date;
     }[]>;
     findOne(id: number): Promise<{
+        album: import("../album/entities/album.entity").Album;
         id: number;
         name: string;
         username: string;
-        confirm_password: string;
         email: string;
         image_url: string;
         updated_at: Date;
@@ -76,12 +78,13 @@ export declare class UsersController {
         userStickers: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
         resetPasswordToken: string;
         resetPasswordExpires: Date;
+        albumcompleted: import("../album/entities/album.entity").Album;
     }>;
     update(id: number, updateUserDto: UpdateUserDto): Promise<{
+        album: import("../album/entities/album.entity").Album;
         id: number;
         name: string;
         username: string;
-        confirm_password: string;
         email: string;
         image_url: string;
         updated_at: Date;
@@ -100,12 +103,13 @@ export declare class UsersController {
         userStickers: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
         resetPasswordToken: string;
         resetPasswordExpires: Date;
+        albumcompleted: import("../album/entities/album.entity").Album;
     }>;
     updateLevel(id: number, dto: UpdateUserLevelDto): Promise<{
+        album: import("../album/entities/album.entity").Album;
         id: number;
         name: string;
         username: string;
-        confirm_password: string;
         email: string;
         image_url: string;
         updated_at: Date;
@@ -124,6 +128,7 @@ export declare class UsersController {
         userStickers: import("../user-stickers/entities/user-sticker.entity").UserSticker[];
         resetPasswordToken: string;
         resetPasswordExpires: Date;
+        albumcompleted: import("../album/entities/album.entity").Album;
     }>;
     remove(id: number): Promise<{
         message: string;

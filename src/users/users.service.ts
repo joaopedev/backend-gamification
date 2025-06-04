@@ -47,16 +47,21 @@ export class UsersService {
   }
 
   async findAll() {
-    const users = await this.userRepository.find();
-    return users.map(({ password, ...rest }) => rest);
+    const users = await this.userRepository.find({
+      relations: ['albumcompleted'],
+    });
+    return users.map(({ password, albumcompleted, ...rest }) => ({
+      ...rest,
+      album: albumcompleted || null,
+    }));
   }
 
   async findOne(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new BadRequestException('Usuário não encontrado');
 
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    const { password, confirm_password, ...userWithoutPassword } = user;
+    return { ...userWithoutPassword, album: user.albumcompleted || null };
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
