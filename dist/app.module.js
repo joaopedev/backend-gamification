@@ -26,6 +26,7 @@ const mail_service_1 = require("./mail/mail.service");
 const file_module_1 = require("./file.module");
 const config_1 = require("@nestjs/config");
 const completed_pages_module_1 = require("./completed-pages/completed-pages.module");
+const album_module_1 = require("./album/album.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -85,6 +86,7 @@ exports.AppModule = AppModule = __decorate([
             auth_module_1.AuthModule,
             file_module_1.FileModule,
             completed_pages_module_1.CompletedPagesModule,
+            album_module_1.AlbumModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, mail_service_1.CustomMailService],

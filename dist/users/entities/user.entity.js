@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Users = void 0;
+const album_entity_1 = require("../../album/entities/album.entity");
 const coin_transaction_entity_1 = require("../../coin-transaction/entities/coin-transaction.entity");
 const sticker_pack_entity_1 = require("../../sticker-pack/entities/sticker-pack.entity");
 const trade_entity_1 = require("../../trades/entities/trade.entity");
@@ -39,6 +40,7 @@ let Users = class Users {
     userStickers;
     resetPasswordToken;
     resetPasswordExpires;
+    albumcompleted;
 };
 exports.Users = Users;
 __decorate([
@@ -133,6 +135,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'timestamp' }),
     __metadata("design:type", Date)
 ], Users.prototype, "resetPasswordExpires", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => album_entity_1.Album, { nullable: true }),
+    __metadata("design:type", album_entity_1.Album)
+], Users.prototype, "albumcompleted", void 0);
 exports.Users = Users = __decorate([
     (0, typeorm_1.Entity)('users')
 ], Users);

@@ -17,6 +17,7 @@ import { CustomMailService } from './mail/mail.service';
 import { FileModule } from './file.module';
 import { ConfigModule } from '@nestjs/config';
 import { CompletedPagesModule } from './completed-pages/completed-pages.module';
+import { AlbumModule } from './album/album.module';
 
 @Module({
   imports: [  
@@ -73,6 +74,7 @@ import { CompletedPagesModule } from './completed-pages/completed-pages.module';
     AuthModule,
     FileModule,
     CompletedPagesModule,
+    AlbumModule,
   ],
   controllers: [AppController],
   providers: [AppService, CustomMailService],

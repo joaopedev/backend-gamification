@@ -10,6 +10,7 @@ import { CreateUserStickerDTO } from './dto/create-user-sticker.dto';
 import { UpdateUserStickerDto } from './dto/update-user-sticker.dto';
 import { Users } from 'src/users/entities/user.entity';
 import { Sticker } from 'src/stickers/entities/sticker.entity';
+import { Album } from 'src/album/entities/album.entity';
 
 @Injectable()
 export class UserStickersService {
@@ -19,6 +20,9 @@ export class UserStickersService {
 
     @InjectRepository(Users)
     private readonly usersRepo: Repository<Users>,
+
+    @InjectRepository(Album)
+    private readonly albumRepo: Repository<Album>,
 
     @InjectRepository(Sticker)
     private readonly stickerRepo: Repository<Sticker>,
@@ -136,6 +140,23 @@ export class UserStickersService {
     return rewarded;
   }
 
+  async syncAllUsersStickerNumbers() {
+    const users = await this.usersRepo.find();
+
+    for (const user of users) {
+      const pastedCount = await this.userStickerRepo.count({
+        where: { user: { id: user.id }, pasted: true },
+      });
+
+      user.stickers_number = pastedCount;
+      await this.usersRepo.save(user);
+    }
+
+    return {
+      message: 'Contagem de figurinhas coladas atualizada com sucesso.',
+    };
+  }
+
   async remove(id: number) {
     const sticker = await this.findOne(id);
     await this.userStickerRepo.remove(sticker);
@@ -182,7 +203,8 @@ export class UserStickersService {
 
     if (!userSticker) throw new NotFoundException('UserSticker não encontrado');
 
-    if (userSticker.pasted) throw new BadRequestException('Essa figurinha já foi colada');
+    if (userSticker.pasted)
+      throw new BadRequestException('Essa figurinha já foi colada');
 
     userSticker.pasted = true;
     await this.userStickerRepo.save(userSticker);
@@ -195,7 +217,26 @@ export class UserStickersService {
       where: { user: { id: user.id }, pasted: true },
     });
 
+    user.stickers_number += totalPasted;
+
     await this.checkAndReward(user.id, totalPasted);
+    await this.usersRepo.save(user);
+
+    if (totalPasted === 163) {
+      const existingAlbum = await this.albumRepo.findOne({
+        where: { user: { id: user.id } },
+      });
+
+      if (!existingAlbum) {
+        const newAlbum = this.albumRepo.create({
+          user,
+          completed: true,
+          completed_at: new Date(),
+        });
+
+        await this.albumRepo.save(newAlbum);
+      }
+    }
 
     return userSticker;
   }

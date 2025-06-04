@@ -1,3 +1,4 @@
+import { Album } from 'src/album/entities/album.entity';
 import { CoinTransaction } from 'src/coin-transaction/entities/coin-transaction.entity';
 import { StickerPack } from 'src/sticker-pack/entities/sticker-pack.entity';
 import { Trade } from 'src/trades/entities/trade.entity';
@@ -81,4 +82,7 @@ export class Users {
 
   @Column({ nullable: true, type: 'timestamp' })
   resetPasswordExpires: Date;
+
+  @ManyToOne(() => Album, { nullable: true })
+  albumcompleted: Album;
 }

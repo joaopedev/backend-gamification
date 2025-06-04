@@ -19,6 +19,9 @@ export declare class UserStickersController {
         missing: number;
         completed: boolean;
     }>;
+    syncStickersNumber(): Promise<{
+        message: string;
+    }>;
     remove(id: number): Promise<{
         message: string;
     }>;

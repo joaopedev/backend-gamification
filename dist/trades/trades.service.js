@@ -176,39 +176,23 @@ let TradesService = class TradesService {
                 return trade;
             }
             const { requester, receiver, offeredSticker, requestedSticker } = trade;
-            const updateSticker = async (fromUserId, toUserId, stickerId) => {
-                const fromUserSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
+            const transferSticker = async (fromUserId, toUserId, stickerId) => {
+                const userSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
                     where: {
                         user: { id: fromUserId },
                         sticker: { id: stickerId },
                         pasted: false,
                     },
                 });
-                if (!fromUserSticker || fromUserSticker.quantity < 1) {
-                    throw new Error(`Usuário ${fromUserId} não possui um adesivo válido (não colado) ${stickerId}`);
+                if (!userSticker) {
+                    throw new Error(`Usuário ${fromUserId} não possui a figurinha ${stickerId} ou ele já está colado.`);
                 }
-                fromUserSticker.quantity -= 1;
-                await manager.save(user_sticker_entity_1.UserSticker, fromUserSticker);
-                let toUserSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
-                    where: {
-                        user: { id: toUserId },
-                        sticker: { id: stickerId },
-                    },
-                });
-                if (toUserSticker) {
-                    toUserSticker.quantity += 1;
-                }
-                else {
-                    toUserSticker = manager.create(user_sticker_entity_1.UserSticker, {
-                        user: { id: toUserId },
-                        sticker: { id: stickerId },
-                        quantity: 1,
-                    });
-                }
-                await manager.save(user_sticker_entity_1.UserSticker, toUserSticker);
+                userSticker.user = { id: toUserId };
+                console.log(`Transferindo figurinha ${stickerId} de ${fromUserId} para ${toUserId}`);
+                await manager.save(user_sticker_entity_1.UserSticker, userSticker);
             };
-            await updateSticker(requester.id, receiver.id, offeredSticker.id);
-            await updateSticker(receiver.id, requester.id, requestedSticker.id);
+            await transferSticker(requester.id, receiver.id, offeredSticker.id);
+            await transferSticker(receiver.id, requester.id, requestedSticker.id);
             return await manager.findOne(trade_entity_1.Trade, {
                 where: { id },
                 relations: [
