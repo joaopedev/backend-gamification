@@ -31,8 +31,8 @@ export class TradesService {
     const receiver = await this.usersRepository.findOne({
       where: { id: createTradeDto.receiverId },
     });
-    if (!requester) throw new Error('Requester not found');
-    if (!receiver) throw new Error('Receiver not found');
+    if (!requester) throw new Error('Solicitante não encontrado');
+    if (!receiver) throw new Error('Receptor não encontrado');
 
     const offeredUserSticker = await this.stickerRepository.findOne({
       where: {
@@ -41,7 +41,7 @@ export class TradesService {
       },
     });
     if (!offeredUserSticker || offeredUserSticker.quantity < 1) {
-      throw new Error('Requester does not have the offered sticker');
+      throw new Error('O solicitante não possui o adesivo oferecido');
     }
 
     const requestedUserSticker = await this.stickerRepository.findOne({
@@ -51,7 +51,7 @@ export class TradesService {
       },
     });
     if (!requestedUserSticker || requestedUserSticker.quantity < 1) {
-      throw new Error('Receiver does not have the requested sticker');
+      throw new Error('O destinatário não possui o adesivo solicitado');
     }
 
     const existingTrade = await this.tradeRepository.findOne({
@@ -150,7 +150,7 @@ export class TradesService {
 
   async update(id: number, updateTradeDto: UpdateTradeDto) {
     return await this.dataSource.transaction(async (manager) => {
-      const trade = await manager.findOne(Trade, {
+      let trade = await manager.findOne(Trade, {
         where: { id },
         relations: [
           'offeredSticker',
@@ -159,20 +159,29 @@ export class TradesService {
           'receiver',
         ],
       });
-      if (!trade) throw new Error('Trade not found');
+
+      if (!trade) {
+        throw new Error('Negociação não encontrada');
+      }
 
       await manager.update(Trade, id, updateTradeDto as DeepPartial<Trade>);
 
-      if (updateTradeDto.status !== TradeStatus.ACCEPTED) {
-        return await manager.findOne(Trade, {
-          where: { id },
-          relations: [
-            'offeredSticker',
-            'requestedSticker',
-            'requester',
-            'receiver',
-          ],
-        });
+      trade = await manager.findOne(Trade, {
+        where: { id },
+        relations: [
+          'offeredSticker',
+          'requestedSticker',
+          'requester',
+          'receiver',
+        ],
+      });
+
+      if (!trade) {
+        throw new Error('Negociação não encontrada após atualização');
+      }
+
+      if (trade.status !== TradeStatus.ACCEPTED) {
+        return trade;
       }
 
       const { requester, receiver, offeredSticker, requestedSticker } = trade;
@@ -186,11 +195,12 @@ export class TradesService {
           where: {
             user: { id: fromUserId },
             sticker: { id: stickerId },
+            pasted: false,
           },
         });
         if (!fromUserSticker || fromUserSticker.quantity < 1) {
           throw new Error(
-            `User ${fromUserId} does not own sticker ${stickerId}`,
+            `Usuário ${fromUserId} não possui um adesivo válido (não colado) ${stickerId}`,
           );
         }
         fromUserSticker.quantity -= 1;
@@ -215,7 +225,6 @@ export class TradesService {
         await manager.save(UserSticker, toUserSticker);
       };
 
-      // Efetuar a troca
       await updateSticker(requester.id, receiver.id, offeredSticker.id);
       await updateSticker(receiver.id, requester.id, requestedSticker.id);
 
