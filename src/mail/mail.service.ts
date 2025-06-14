@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Users } from 'src/users/entities/user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class CustomMailService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(
+    private readonly mailerService: MailerService,
+    @InjectRepository(Users)
+    private readonly userRepository: Repository<Users>,
+  ) {}
 
   async sendWelcomeEmail(email: string, username: string): Promise<void> {
     await this.mailerService.sendMail({
@@ -20,14 +27,24 @@ export class CustomMailService {
     });
   }
 
-  async sendResetPasswordEmail(email: string, token: string): Promise<void> {
+  async sendResetPasswordEmail(email: string, token: string, name: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new Error('Usuário não encontrado para envio de e-mail');
+    }
+
+    const year = new Date().getFullYear();
+
     await this.mailerService.sendMail({
       to: email,
       sender: email,
       subject: 'Recuperação de senha',
       template: './reset-password',
       context: {
+        name: user.username,
         token,
+        year,
       },
       html: `
 
@@ -47,7 +64,7 @@ export class CustomMailService {
             </tr>
             <tr>
               <td style="padding: 30px 20px; text-align: center;">
-                <h2 style="color: #45a9b0; margin-bottom: 10px;">Olá, {{name}}!</h2>
+                <h2 style="color: #45a9b0; margin-bottom: 10px;">Olá, {{ name }}!</h2>
                 <p style="color: #444; font-size: 16px; margin-bottom: 10px;">
                   Recebemos uma solicitação para redefinir sua senha.
                 </p>
@@ -55,7 +72,7 @@ export class CustomMailService {
                   Para isso, insira este <strong>código de acesso</strong> no seu aplicativo:
                 </p>
                 <p style="font-size: 36px; font-weight: bold; color: #d1349b; margin: 0 0 20px 0;">
-                  {{token}}
+                  {{ token }}
                 </p>
                 <p style="color: #444; font-size: 14px; font-weight: bold; margin-bottom: 10px;">
                   Este código expira em 24 horas.
@@ -67,7 +84,7 @@ export class CustomMailService {
             </tr>
             <tr>
               <td style="padding: 20px; text-align: center; color: #999; font-size: 12px;">
-                © {{year}} Converge Que Cola. Todos os direitos reservados.
+                © {{ year }} Converge Que Cola. Todos os direitos reservados.
               </td>
             </tr>
           </table>

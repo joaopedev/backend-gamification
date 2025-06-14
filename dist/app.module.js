@@ -21,8 +21,6 @@ const friends_relationship_module_1 = require("./friends-relationship/friends-re
 const auth_module_1 = require("./auth/auth.module");
 const mailer_1 = require("@nestjs-modules/mailer");
 const handlebars_adapter_1 = require("@nestjs-modules/mailer/dist/adapters/handlebars.adapter");
-const path_1 = require("path");
-const mail_service_1 = require("./mail/mail.service");
 const file_module_1 = require("./file.module");
 const config_1 = require("@nestjs/config");
 const completed_pages_module_1 = require("./completed-pages/completed-pages.module");
@@ -53,9 +51,6 @@ exports.AppModule = AppModule = __decorate([
                 synchronize: true,
                 logging: true,
                 entities: [__dirname + '/**/*.entity.js'],
-                ssl: {
-                    rejectUnauthorized: false,
-                }
             }),
             mailer_1.MailerModule.forRoot({
                 transport: {
@@ -63,15 +58,15 @@ exports.AppModule = AppModule = __decorate([
                     port: 587,
                     secure: false,
                     auth: {
-                        user: process.env.EMAIL_USER,
-                        pass: process.env.EMAIL_PASS,
+                        user: "convergequecola@gmail.com",
+                        pass: "yfyabnfrrobnhana",
                     },
                 },
                 defaults: {
                     from: '"Gammification" <gammification@gmail.com>',
                 },
                 template: {
-                    dir: (0, path_1.join)(__dirname, 'templates'),
+                    dir: __dirname + '/templates',
                     adapter: new handlebars_adapter_1.HandlebarsAdapter(),
                     options: {
                         strict: true,
@@ -89,7 +84,7 @@ exports.AppModule = AppModule = __decorate([
             album_module_1.AlbumModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService, mail_service_1.CustomMailService],
+        providers: [app_service_1.AppService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

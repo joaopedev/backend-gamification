@@ -50,7 +50,7 @@ let AuthService = class AuthService {
         user.resetPasswordToken = token;
         user.resetPasswordExpires = expires;
         await this.userRepo.save(user);
-        await this.mailService.sendResetPasswordEmail(user.email, token);
+        await this.mailService.sendResetPasswordEmail(user.email, token, user.username);
         return { message: 'Token de recuperação enviado para o email' };
     }
     async resetPassword(data) {
@@ -69,7 +69,7 @@ let AuthService = class AuthService {
         user.password = hashedPassword;
         user.resetPasswordToken = token;
         user.resetPasswordExpires = expires;
-        await this.mailService.sendResetPasswordEmail(user.email, token);
+        await this.mailService.sendResetPasswordEmail(user.email, token, user.username);
         return { message: 'Código de recuperação enviado para o email' };
     }
     async validateToken(token) {

@@ -13,7 +13,6 @@ import { AuthModule } from './auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
-import { CustomMailService } from './mail/mail.service';
 import { FileModule } from './file.module';
 import { ConfigModule } from '@nestjs/config';
 import { CompletedPagesModule } from './completed-pages/completed-pages.module';
@@ -41,9 +40,9 @@ import { AlbumModule } from './album/album.module';
       synchronize: true,
       logging: true,
       entities: [__dirname + '/**/*.entity.js'],
-      ssl:{
-        rejectUnauthorized: false,
-      }
+      // ssl:{
+      //   rejectUnauthorized: false,
+      // }
     }),
     MailerModule.forRoot({
       transport: {
@@ -51,15 +50,15 @@ import { AlbumModule } from './album/album.module';
         port: 587,
         secure: false,
         auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
+          user: "convergequecola@gmail.com",
+          pass: "yfyabnfrrobnhana",
         },
       },
       defaults: {
         from: '"Gammification" <gammification@gmail.com>',
       },
       template: {
-        dir: join(__dirname, 'templates'),
+        dir: __dirname + '/templates', // pasta onde colocou o .hbs
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
@@ -77,7 +76,7 @@ import { AlbumModule } from './album/album.module';
     AlbumModule,
   ],
   controllers: [AppController],
-  providers: [AppService, CustomMailService],
+  providers: [AppService],
 
   
 })

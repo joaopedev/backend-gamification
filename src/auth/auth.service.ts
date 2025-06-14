@@ -11,7 +11,6 @@ import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { MoreThan, Repository } from 'typeorm';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
-import { randomBytes } from 'crypto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CustomMailService } from 'src/mail/mail.service';
 
@@ -49,7 +48,7 @@ export class AuthService {
     user.resetPasswordExpires = expires;
     await this.userRepo.save(user);
 
-    await this.mailService.sendResetPasswordEmail(user.email, token);
+    await this.mailService.sendResetPasswordEmail(user.email, token, user.username);
 
     return { message: 'Token de recuperação enviado para o email' };
   }
@@ -72,7 +71,7 @@ export class AuthService {
     user.password = hashedPassword;
     user.resetPasswordToken = token;
     user.resetPasswordExpires = expires;
-    await this.mailService.sendResetPasswordEmail(user.email, token);
+    await this.mailService.sendResetPasswordEmail(user.email, token, user.username);
 
     return { message: 'Código de recuperação enviado para o email' };
   }
