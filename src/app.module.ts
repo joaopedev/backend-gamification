@@ -40,9 +40,9 @@ import { AlbumModule } from './album/album.module';
       synchronize: true,
       logging: true,
       entities: [__dirname + '/**/*.entity.js'],
-      // ssl:{
-      //   rejectUnauthorized: false,
-      // }
+      ssl:{
+        rejectUnauthorized: false,
+      }
     }),
     MailerModule.forRoot({
       transport: {
@@ -50,8 +50,8 @@ import { AlbumModule } from './album/album.module';
         port: 587,
         secure: false,
         auth: {
-          user: "convergequecola@gmail.com",
-          pass: "yfyabnfrrobnhana",
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
         },
       },
       defaults: {
