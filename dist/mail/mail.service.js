@@ -8,14 +8,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CustomMailService = void 0;
 const common_1 = require("@nestjs/common");
 const mailer_1 = require("@nestjs-modules/mailer");
+const user_entity_1 = require("../users/entities/user.entity");
+const typeorm_1 = require("typeorm");
+const typeorm_2 = require("@nestjs/typeorm");
 let CustomMailService = class CustomMailService {
     mailerService;
-    constructor(mailerService) {
+    userRepository;
+    constructor(mailerService, userRepository) {
         this.mailerService = mailerService;
+        this.userRepository = userRepository;
     }
     async sendWelcomeEmail(email, username) {
         await this.mailerService.sendMail({
@@ -29,14 +37,21 @@ let CustomMailService = class CustomMailService {
             html: `<p>Olá ${username}, bem-vindo ao nosso serviço!</p>`,
         });
     }
-    async sendResetPasswordEmail(email, token) {
+    async sendResetPasswordEmail(email, token, name) {
+        const user = await this.userRepository.findOne({ where: { email } });
+        if (!user) {
+            throw new Error('Usuário não encontrado para envio de e-mail');
+        }
+        const year = new Date().getFullYear();
         await this.mailerService.sendMail({
             to: email,
             sender: email,
             subject: 'Recuperação de senha',
             template: './reset-password',
             context: {
+                name: user.username,
                 token,
+                year,
             },
             html: `
 
@@ -56,7 +71,7 @@ let CustomMailService = class CustomMailService {
             </tr>
             <tr>
               <td style="padding: 30px 20px; text-align: center;">
-                <h2 style="color: #45a9b0; margin-bottom: 10px;">Olá, {{name}}!</h2>
+                <h2 style="color: #45a9b0; margin-bottom: 10px;">Olá, {{ name }}!</h2>
                 <p style="color: #444; font-size: 16px; margin-bottom: 10px;">
                   Recebemos uma solicitação para redefinir sua senha.
                 </p>
@@ -64,7 +79,7 @@ let CustomMailService = class CustomMailService {
                   Para isso, insira este <strong>código de acesso</strong> no seu aplicativo:
                 </p>
                 <p style="font-size: 36px; font-weight: bold; color: #d1349b; margin: 0 0 20px 0;">
-                  {{token}}
+                  {{ token }}
                 </p>
                 <p style="color: #444; font-size: 14px; font-weight: bold; margin-bottom: 10px;">
                   Este código expira em 24 horas.
@@ -76,7 +91,7 @@ let CustomMailService = class CustomMailService {
             </tr>
             <tr>
               <td style="padding: 20px; text-align: center; color: #999; font-size: 12px;">
-                © {{year}} Converge Que Cola. Todos os direitos reservados.
+                © {{ year }} Converge Que Cola. Todos os direitos reservados.
               </td>
             </tr>
           </table>
@@ -91,6 +106,8 @@ let CustomMailService = class CustomMailService {
 exports.CustomMailService = CustomMailService;
 exports.CustomMailService = CustomMailService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [mailer_1.MailerService])
+    __param(1, (0, typeorm_2.InjectRepository)(user_entity_1.Users)),
+    __metadata("design:paramtypes", [mailer_1.MailerService,
+        typeorm_1.Repository])
 ], CustomMailService);
 //# sourceMappingURL=mail.service.js.map
