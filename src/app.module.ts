@@ -19,7 +19,7 @@ import { CompletedPagesModule } from './completed-pages/completed-pages.module';
 import { AlbumModule } from './album/album.module';
 
 @Module({
-  imports: [  
+  imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -30,7 +30,9 @@ import { AlbumModule } from './album/album.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST,
-      port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT) : 5432,
+      port: process.env.DATABASE_PORT
+        ? parseInt(process.env.DATABASE_PORT)
+        : 5432,
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD?.toString(),
       database: process.env.DATABASE_NAME,
@@ -40,9 +42,9 @@ import { AlbumModule } from './album/album.module';
       synchronize: true,
       logging: true,
       entities: [__dirname + '/**/*.entity.js'],
-      ssl:{
+      ssl: {
         rejectUnauthorized: false,
-      }
+      },
     }),
     MailerModule.forRoot({
       transport: {
@@ -58,7 +60,7 @@ import { AlbumModule } from './album/album.module';
         from: '"Gammification" <gammification@gmail.com>',
       },
       template: {
-        dir: __dirname + '/templates', // pasta onde colocou o .hbs
+        dir: join(process.cwd(), 'dist', 'mail', 'templates'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
@@ -77,7 +79,5 @@ import { AlbumModule } from './album/album.module';
   ],
   controllers: [AppController],
   providers: [AppService],
-
-  
 })
 export class AppModule {}

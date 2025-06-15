@@ -21,6 +21,7 @@ const friends_relationship_module_1 = require("./friends-relationship/friends-re
 const auth_module_1 = require("./auth/auth.module");
 const mailer_1 = require("@nestjs-modules/mailer");
 const handlebars_adapter_1 = require("@nestjs-modules/mailer/dist/adapters/handlebars.adapter");
+const path_1 = require("path");
 const file_module_1 = require("./file.module");
 const config_1 = require("@nestjs/config");
 const completed_pages_module_1 = require("./completed-pages/completed-pages.module");
@@ -41,7 +42,9 @@ exports.AppModule = AppModule = __decorate([
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
                 host: process.env.DATABASE_HOST,
-                port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT) : 5432,
+                port: process.env.DATABASE_PORT
+                    ? parseInt(process.env.DATABASE_PORT)
+                    : 5432,
                 username: process.env.DATABASE_USER,
                 password: process.env.DATABASE_PASSWORD?.toString(),
                 database: process.env.DATABASE_NAME,
@@ -51,9 +54,6 @@ exports.AppModule = AppModule = __decorate([
                 synchronize: true,
                 logging: true,
                 entities: [__dirname + '/**/*.entity.js'],
-                ssl: {
-                    rejectUnauthorized: false,
-                }
             }),
             mailer_1.MailerModule.forRoot({
                 transport: {
@@ -61,15 +61,15 @@ exports.AppModule = AppModule = __decorate([
                     port: 587,
                     secure: false,
                     auth: {
-                        user: process.env.MAIL_USER,
-                        pass: process.env.MAIL_PASS,
+                        user: "convergequecola@gmail.com",
+                        pass: "yfyabnfrrobnhana",
                     },
                 },
                 defaults: {
                     from: '"Gammification" <gammification@gmail.com>',
                 },
                 template: {
-                    dir: __dirname + '/templates',
+                    dir: (0, path_1.join)(process.cwd(), 'dist', 'mail', 'templates'),
                     adapter: new handlebars_adapter_1.HandlebarsAdapter(),
                     options: {
                         strict: true,
