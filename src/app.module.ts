@@ -42,9 +42,9 @@ import { AlbumModule } from './album/album.module';
       synchronize: true,
       logging: true,
       entities: [__dirname + '/**/*.entity.js'],
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      // ssl: {
+      //   rejectUnauthorized: false,
+      // },
     }),
     MailerModule.forRoot({
       transport: {

@@ -8,7 +8,7 @@
       {
         "include": "mail/templates/**/*.hbs",
 
-        "outDir": "./dist/mail/templates"
+        "outDir": "./dist"
       }
     ],
     "webpack": false,
