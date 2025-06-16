@@ -69,7 +69,7 @@ exports.AppModule = AppModule = __decorate([
                     from: '"Gammification" <gammification@gmail.com>',
                 },
                 template: {
-                    dir: (0, path_1.join)(process.cwd(), 'dist', 'mail', 'templates', 'mail', 'templates'),
+                    dir: (0, path_1.join)(process.cwd(), 'dist', 'mail', 'templates'),
                     adapter: new handlebars_adapter_1.HandlebarsAdapter(),
                     options: {
                         strict: true,
