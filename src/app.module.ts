@@ -60,7 +60,7 @@ import { AlbumModule } from './album/album.module';
         from: '"Gammification" <gammification@gmail.com>',
       },
       template: {
-        dir: join(process.cwd(), 'dist','src', 'mail', 'templates'),
+        dir: join(process.cwd(), 'dist', 'mail', 'templates'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
