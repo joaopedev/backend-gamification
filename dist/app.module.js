@@ -54,6 +54,9 @@ exports.AppModule = AppModule = __decorate([
                 synchronize: true,
                 logging: true,
                 entities: [__dirname + '/**/*.entity.js'],
+                ssl: {
+                    rejectUnauthorized: false,
+                },
             }),
             mailer_1.MailerModule.forRoot({
                 transport: {
@@ -61,15 +64,15 @@ exports.AppModule = AppModule = __decorate([
                     port: 587,
                     secure: false,
                     auth: {
-                        user: "convergequecola@gmail.com",
-                        pass: "yfyabnfrrobnhana",
+                        user: process.env.MAIL_USER,
+                        pass: process.env.MAIL_PASS,
                     },
                 },
                 defaults: {
                     from: '"Gammification" <gammification@gmail.com>',
                 },
                 template: {
-                    dir: (0, path_1.join)(process.cwd(), 'dist', 'mail', 'templates'),
+                    dir: (0, path_1.join)(process.cwd(), 'dist', 'src', 'mail', 'templates'),
                     adapter: new handlebars_adapter_1.HandlebarsAdapter(),
                     options: {
                         strict: true,
