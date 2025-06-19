@@ -49,29 +49,36 @@ let StickerPackService = class StickerPackService {
         if (user.coins < PACK_COST) {
             throw new common_1.BadRequestException('Não há moedas suficientes para comprar pacotes de figurinhas');
         }
-        const validStickers = await this.stickerRepo.find({
-            where: { sponsor: (0, typeorm_2.Not)('SPECIAL') },
+        const allStickers = await this.stickerRepo.find();
+        if (allStickers.length === 0) {
+            throw new common_1.BadRequestException('Não há figurinhas disponíveis para montar os pacotes.');
+        }
+        const userExistingStickers = await this.userStickerRepo.find({
+            where: { user: { id: userId } },
+            relations: ['sticker'],
         });
-        if (validStickers.length < quantity * STICKER_COUNT) {
-            throw new common_1.BadRequestException('Não há figurinhas válidas suficientes para montar os pacotes');
+        const userOwnedStickerIds = new Set(userExistingStickers.map((us) => us.sticker.id));
+        const newStickersForUser = allStickers.filter((sticker) => !userOwnedStickerIds.has(sticker.id));
+        if (newStickersForUser.length < quantity * STICKER_COUNT) {
+            throw new common_1.BadRequestException('Não há figurinhas novas suficientes para montar os pacotes. Por favor, tente novamente mais tarde ou compre menos pacotes.');
         }
         const allSelectedStickers = [];
-        const usedStickerIds = new Set();
+        const usedStickerIdsForThisPurchase = new Set();
         let attempts = 0;
         while (allSelectedStickers.length < quantity * STICKER_COUNT &&
             attempts < MAX_ATTEMPTS * quantity) {
-            const randomIndex = Math.floor(Math.random() * validStickers.length);
-            const sticker = validStickers[randomIndex];
-            if (!sticker || usedStickerIds.has(sticker.id)) {
+            const randomIndex = Math.floor(Math.random() * newStickersForUser.length);
+            const sticker = newStickersForUser[randomIndex];
+            if (!sticker || usedStickerIdsForThisPurchase.has(sticker.id)) {
                 attempts++;
                 continue;
             }
-            usedStickerIds.add(sticker.id);
+            usedStickerIdsForThisPurchase.add(sticker.id);
             allSelectedStickers.push(sticker);
             attempts++;
         }
         if (allSelectedStickers.length < quantity * STICKER_COUNT) {
-            throw new common_1.BadRequestException('Não foi possível encontrar figurinhas qualificadas suficientes');
+            throw new common_1.BadRequestException('Não foi possível encontrar figurinhas novas qualificadas suficientes para os pacotes. Tente novamente.');
         }
         const userStickers = [];
         const packs = [];
@@ -81,7 +88,6 @@ let StickerPackService = class StickerPackService {
                 user,
                 sticker,
                 quantity: 1,
-                sponsor: sticker.sponsor,
                 pasted: false,
             }));
             userStickers.push(...newUserStickers);

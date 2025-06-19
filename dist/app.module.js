@@ -69,7 +69,7 @@ exports.AppModule = AppModule = __decorate([
                     },
                 },
                 defaults: {
-                    from: '"Gammification" <gammification@gmail.com>',
+                    from: '"Converge que cola" <convergequecola@gmail.com>',
                 },
                 template: {
                     dir: (0, path_1.join)(process.cwd(), 'dist', 'mail', 'templates'),
