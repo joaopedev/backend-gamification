@@ -57,7 +57,7 @@ import { AlbumModule } from './album/album.module';
         },
       },
       defaults: {
-        from: '"Gammification" <gammification@gmail.com>',
+        from: '"Converge que cola" <convergequecola@gmail.com>',
       },
       template: {
         dir: join(process.cwd(), 'dist', 'mail', 'templates'),
