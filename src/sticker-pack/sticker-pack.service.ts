@@ -51,40 +51,56 @@ export class StickerPackService {
       );
     }
 
-    const validStickers = await this.stickerRepo.find({
-      where: { sponsor: Not('SPECIAL') },
-    });
+    const allStickers = await this.stickerRepo.find();
 
-    if (validStickers.length < quantity * STICKER_COUNT) {
+    if (allStickers.length === 0) {
       throw new BadRequestException(
-        'Não há figurinhas válidas suficientes para montar os pacotes',
+        'Não há figurinhas disponíveis para montar os pacotes.',
+      );
+    }
+
+    const userExistingStickers = await this.userStickerRepo.find({
+      where: { user: { id: userId } },
+      relations: ['sticker'],
+    });
+    const userOwnedStickerIds = new Set(
+      userExistingStickers.map((us) => us.sticker.id),
+    );
+
+    const newStickersForUser = allStickers.filter(
+      (sticker) => !userOwnedStickerIds.has(sticker.id),
+    );
+
+    if (newStickersForUser.length < quantity * STICKER_COUNT) {
+      throw new BadRequestException(
+        'Não há figurinhas novas suficientes para montar os pacotes. Por favor, tente novamente mais tarde ou compre menos pacotes.',
       );
     }
 
     const allSelectedStickers: Sticker[] = [];
-    const usedStickerIds = new Set<number>();
+    const usedStickerIdsForThisPurchase = new Set<number>();
     let attempts = 0;
 
     while (
       allSelectedStickers.length < quantity * STICKER_COUNT &&
       attempts < MAX_ATTEMPTS * quantity
     ) {
-      const randomIndex = Math.floor(Math.random() * validStickers.length);
-      const sticker = validStickers[randomIndex];
+      const randomIndex = Math.floor(Math.random() * newStickersForUser.length);
+      const sticker = newStickersForUser[randomIndex];
 
-      if (!sticker || usedStickerIds.has(sticker.id)) {
+      if (!sticker || usedStickerIdsForThisPurchase.has(sticker.id)) {
         attempts++;
         continue;
       }
 
-      usedStickerIds.add(sticker.id);
+      usedStickerIdsForThisPurchase.add(sticker.id);
       allSelectedStickers.push(sticker);
       attempts++;
     }
 
     if (allSelectedStickers.length < quantity * STICKER_COUNT) {
       throw new BadRequestException(
-        'Não foi possível encontrar figurinhas qualificadas suficientes',
+        'Não foi possível encontrar figurinhas novas qualificadas suficientes para os pacotes. Tente novamente.',
       );
     }
 
@@ -102,7 +118,6 @@ export class StickerPackService {
           user,
           sticker,
           quantity: 1,
-          sponsor: sticker.sponsor,
           pasted: false,
         }),
       );
