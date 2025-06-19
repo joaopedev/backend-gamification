@@ -65,7 +65,14 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.userRepository.update(id, updateUserDto);
+    const userToUpdate = { ...updateUserDto };
+
+    if (userToUpdate.password && userToUpdate.confirm_password) {
+      userToUpdate.password = encodePassword(userToUpdate.password);
+      userToUpdate.confirm_password = encodePassword(userToUpdate.confirm_password);
+    }
+
+    await this.userRepository.update(id, userToUpdate);
     return this.findOne(id);
   }
 
