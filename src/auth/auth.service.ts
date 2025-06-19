@@ -48,11 +48,15 @@ export class AuthService {
     user.resetPasswordExpires = expires;
     await this.userRepo.save(user);
 
-    await this.mailService.sendResetPasswordEmail(user.email, token, user.username);
+    await this.mailService.sendResetPasswordEmail(
+      user.email,
+      token,
+      user.username,
+    );
 
     return { message: 'Token de recuperação enviado para o email' };
   }
-  
+
   async resetPassword(data: ResetPasswordDto) {
     const user = await this.userRepo.findOne({
       where: {
@@ -71,7 +75,11 @@ export class AuthService {
     user.password = hashedPassword;
     user.resetPasswordToken = token;
     user.resetPasswordExpires = expires;
-    await this.mailService.sendResetPasswordEmail(user.email, token, user.username);
+    await this.mailService.sendResetPasswordEmail(
+      user.email,
+      token,
+      user.username,
+    );
 
     return { message: 'Código de recuperação enviado para o email' };
   }
@@ -88,6 +96,9 @@ export class AuthService {
       throw new BadRequestException('Token inválido ou expirado');
     }
 
-    return { message: 'Token válido' };
+    return {
+      message: 'Token válido',
+      userId: user.id,
+    };
   }
 }

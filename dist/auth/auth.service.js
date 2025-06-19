@@ -82,7 +82,10 @@ let AuthService = class AuthService {
         if (!user) {
             throw new common_1.BadRequestException('Token inválido ou expirado');
         }
-        return { message: 'Token válido' };
+        return {
+            message: 'Token válido',
+            userId: user.id,
+        };
     }
 };
 exports.AuthService = AuthService;
