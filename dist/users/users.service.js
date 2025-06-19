@@ -63,7 +63,12 @@ let UsersService = class UsersService {
         return { ...userWithoutPassword, album: user.albumcompleted || null };
     }
     async update(id, updateUserDto) {
-        await this.userRepository.update(id, updateUserDto);
+        const userToUpdate = { ...updateUserDto };
+        if (userToUpdate.password && userToUpdate.confirm_password) {
+            userToUpdate.password = (0, bcrypt_1.encodePassword)(userToUpdate.password);
+            userToUpdate.confirm_password = (0, bcrypt_1.encodePassword)(userToUpdate.confirm_password);
+        }
+        await this.userRepository.update(id, userToUpdate);
         return this.findOne(id);
     }
     async remove(id) {

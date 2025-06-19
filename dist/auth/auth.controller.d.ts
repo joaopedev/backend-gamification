@@ -14,6 +14,7 @@ export declare class AuthController {
     }>;
     validateResetToken(token: string): Promise<{
         message: string;
+        userId: number;
     }>;
     resetPassword(dto: ResetPasswordDto): Promise<{
         message: string;

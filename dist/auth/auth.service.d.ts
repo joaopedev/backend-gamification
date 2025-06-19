@@ -22,5 +22,6 @@ export declare class AuthService {
     }>;
     validateToken(token: string): Promise<{
         message: string;
+        userId: number;
     }>;
 }
