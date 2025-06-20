@@ -60,7 +60,7 @@ let StickerPackService = class StickerPackService {
         const userOwnedStickerIds = new Set(userExistingStickers.map((us) => us.sticker.id));
         const newStickersForUser = allStickers.filter((sticker) => !userOwnedStickerIds.has(sticker.id));
         if (newStickersForUser.length < quantity * STICKER_COUNT) {
-            throw new common_1.BadRequestException('Não há figurinhas novas suficientes para montar os pacotes. Por favor, tente novamente mais tarde ou compre menos pacotes.');
+            throw new common_1.BadRequestException('“Você adquiriu todas as figurinhas do álbum”');
         }
         const allSelectedStickers = [];
         const usedStickerIdsForThisPurchase = new Set();

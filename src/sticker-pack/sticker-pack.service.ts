@@ -73,7 +73,7 @@ export class StickerPackService {
 
     if (newStickersForUser.length < quantity * STICKER_COUNT) {
       throw new BadRequestException(
-        'Não há figurinhas novas suficientes para montar os pacotes. Por favor, tente novamente mais tarde ou compre menos pacotes.',
+        '“Você adquiriu todas as figurinhas do álbum”',
       );
     }
 
