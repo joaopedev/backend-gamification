@@ -9,12 +9,14 @@ import { Users } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { encodePassword } from 'src/utils/bcrypt';
+import { CustomMailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
     private readonly userRepository: Repository<Users>,
+    private readonly mailService: CustomMailService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -41,6 +43,8 @@ export class UsersService {
     });
 
     await this.userRepository.save(user);
+
+    await this.mailService.sendWelcomeEmail(user.email, user.username);
 
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
@@ -69,7 +73,9 @@ export class UsersService {
 
     if (userToUpdate.password && userToUpdate.confirm_password) {
       userToUpdate.password = encodePassword(userToUpdate.password);
-      userToUpdate.confirm_password = encodePassword(userToUpdate.confirm_password);
+      userToUpdate.confirm_password = encodePassword(
+        userToUpdate.confirm_password,
+      );
     }
 
     await this.userRepository.update(id, userToUpdate);

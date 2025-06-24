@@ -26,16 +26,31 @@ let CustomMailService = class CustomMailService {
         this.userRepository = userRepository;
     }
     async sendWelcomeEmail(email, username) {
+        const year = new Date().getFullYear();
         await this.mailerService.sendMail({
             to: email,
-            sender: email,
-            subject: 'Bem-vindo ao nosso serviço!',
+            subject: 'Bem-vindo ao Converge Que Cola!',
             template: './welcome',
             context: {
                 username,
+                year,
             },
-            html: `<p>Olá ${username}, bem-vindo ao nosso serviço!</p>`,
         });
+    }
+    async sendUpdateEmailToAllUsers(description) {
+        const users = await this.userRepository.find();
+        const year = new Date().getFullYear();
+        for (const user of users) {
+            await this.mailerService.sendMail({
+                to: user.email,
+                subject: 'Novidades no Converge Que Cola!',
+                template: './update-info',
+                context: {
+                    description,
+                    year,
+                },
+            });
+        }
     }
     async sendResetPasswordEmail(email, token, name) {
         const user = await this.userRepository.findOne({ where: { email } });

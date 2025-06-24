@@ -6,5 +6,6 @@ export declare class CustomMailService {
     private readonly userRepository;
     constructor(mailerService: MailerService, userRepository: Repository<Users>);
     sendWelcomeEmail(email: string, username: string): Promise<void>;
+    sendUpdateEmailToAllUsers(description: string): Promise<void>;
     sendResetPasswordEmail(email: string, token: string, name: string): Promise<void>;
 }

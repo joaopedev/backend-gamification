@@ -18,10 +18,13 @@ const user_entity_1 = require("./entities/user.entity");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const bcrypt_1 = require("../utils/bcrypt");
+const mail_service_1 = require("../mail/mail.service");
 let UsersService = class UsersService {
     userRepository;
-    constructor(userRepository) {
+    mailService;
+    constructor(userRepository, mailService) {
         this.userRepository = userRepository;
+        this.mailService = mailService;
     }
     async create(createUserDto) {
         const { username, email, password } = createUserDto;
@@ -43,6 +46,7 @@ let UsersService = class UsersService {
             password: hashedPassword,
         });
         await this.userRepository.save(user);
+        await this.mailService.sendWelcomeEmail(user.email, user.username);
         const { password: _, ...userWithoutPassword } = user;
         return userWithoutPassword;
     }
@@ -90,6 +94,7 @@ exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.Users)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        mail_service_1.CustomMailService])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map
