@@ -2,9 +2,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { CustomMailService } from 'src/mail/mail.service';
 export declare class UsersService {
     private readonly userRepository;
-    constructor(userRepository: Repository<Users>);
+    private readonly mailService;
+    constructor(userRepository: Repository<Users>, mailService: CustomMailService);
     create(createUserDto: CreateUserDto): Promise<{
         id: number;
         name: string;
