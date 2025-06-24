@@ -164,6 +164,12 @@ export class TradesService {
         throw new Error('Negociação não encontrada');
       }
 
+      if (trade.status !== TradeStatus.PENDING) {
+        throw new Error(
+          'Esta troca já foi finalizada e não pode ser alterada.',
+        );
+      }
+
       await manager.update(Trade, id, updateTradeDto as DeepPartial<Trade>);
 
       trade = await manager.findOne(Trade, {
@@ -191,7 +197,8 @@ export class TradesService {
         toUserId: number,
         stickerId: number,
       ) => {
-        const userSticker = await manager.findOne(UserSticker, {
+        // Decrementa do usuário de origem
+        const fromSticker = await manager.findOne(UserSticker, {
           where: {
             user: { id: fromUserId },
             sticker: { id: stickerId },
@@ -199,15 +206,37 @@ export class TradesService {
           },
         });
 
-        if (!userSticker) {
+        if (!fromSticker || fromSticker.quantity < 1) {
           throw new Error(
-            `Usuário ${fromUserId} não possui a figurinha ${stickerId} ou ele já está colado.`,
+            `Usuário ${fromUserId} não possui a figurinha ${stickerId} ou ela já está colada.`,
           );
         }
 
-        userSticker.user = { id: toUserId } as Users;
-        console.log(`Transferindo figurinha ${stickerId} de ${fromUserId} para ${toUserId}`);
-        await manager.save(UserSticker, userSticker);
+        fromSticker.quantity -= 1;
+        await manager.save(UserSticker, fromSticker);
+        if (fromSticker.quantity === 0) {
+          await manager.remove(UserSticker, fromSticker);
+        }
+        let toSticker = await manager.findOne(UserSticker, {
+          where: {
+            user: { id: toUserId },
+            sticker: { id: stickerId },
+            pasted: false,
+          },
+        });
+
+        if (toSticker) {
+          toSticker.quantity += 1;
+        } else {
+          toSticker = manager.create(UserSticker, {
+            user: { id: toUserId },
+            sticker: { id: stickerId },
+            quantity: 1,
+            pasted: false,
+          });
+        }
+
+        await manager.save(UserSticker, toSticker);
       };
 
       await transferSticker(requester.id, receiver.id, offeredSticker.id);

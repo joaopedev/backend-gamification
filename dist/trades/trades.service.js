@@ -159,6 +159,9 @@ let TradesService = class TradesService {
             if (!trade) {
                 throw new Error('Negociação não encontrada');
             }
+            if (trade.status !== tradeEnum_1.TradeStatus.PENDING) {
+                throw new Error('Esta troca já foi finalizada e não pode ser alterada.');
+            }
             await manager.update(trade_entity_1.Trade, id, updateTradeDto);
             trade = await manager.findOne(trade_entity_1.Trade, {
                 where: { id },
@@ -177,19 +180,40 @@ let TradesService = class TradesService {
             }
             const { requester, receiver, offeredSticker, requestedSticker } = trade;
             const transferSticker = async (fromUserId, toUserId, stickerId) => {
-                const userSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
+                const fromSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
                     where: {
                         user: { id: fromUserId },
                         sticker: { id: stickerId },
                         pasted: false,
                     },
                 });
-                if (!userSticker) {
-                    throw new Error(`Usuário ${fromUserId} não possui a figurinha ${stickerId} ou ele já está colado.`);
+                if (!fromSticker || fromSticker.quantity < 1) {
+                    throw new Error(`Usuário ${fromUserId} não possui a figurinha ${stickerId} ou ela já está colada.`);
                 }
-                userSticker.user = { id: toUserId };
-                console.log(`Transferindo figurinha ${stickerId} de ${fromUserId} para ${toUserId}`);
-                await manager.save(user_sticker_entity_1.UserSticker, userSticker);
+                fromSticker.quantity -= 1;
+                await manager.save(user_sticker_entity_1.UserSticker, fromSticker);
+                if (fromSticker.quantity === 0) {
+                    await manager.remove(user_sticker_entity_1.UserSticker, fromSticker);
+                }
+                let toSticker = await manager.findOne(user_sticker_entity_1.UserSticker, {
+                    where: {
+                        user: { id: toUserId },
+                        sticker: { id: stickerId },
+                        pasted: false,
+                    },
+                });
+                if (toSticker) {
+                    toSticker.quantity += 1;
+                }
+                else {
+                    toSticker = manager.create(user_sticker_entity_1.UserSticker, {
+                        user: { id: toUserId },
+                        sticker: { id: stickerId },
+                        quantity: 1,
+                        pasted: false,
+                    });
+                }
+                await manager.save(user_sticker_entity_1.UserSticker, toSticker);
             };
             await transferSticker(requester.id, receiver.id, offeredSticker.id);
             await transferSticker(receiver.id, requester.id, requestedSticker.id);
