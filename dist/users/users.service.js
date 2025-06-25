@@ -59,6 +59,13 @@ let UsersService = class UsersService {
             album: albumcompleted || null,
         }));
     }
+    async findAllEmails() {
+        const users = await this.userRepository.find({
+            where: { email: (0, typeorm_2.Not)((0, typeorm_2.IsNull)()) },
+            select: ['email'],
+        });
+        return users.map((user) => user.email);
+    }
     async findOne(id) {
         const user = await this.userRepository.findOne({ where: { id } });
         if (!user)

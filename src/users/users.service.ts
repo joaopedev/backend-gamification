@@ -7,7 +7,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { encodePassword } from 'src/utils/bcrypt';
 import { CustomMailService } from 'src/mail/mail.service';
 
@@ -58,6 +58,14 @@ export class UsersService {
       ...rest,
       album: albumcompleted || null,
     }));
+  }
+
+  async findAllEmails(): Promise<string[]> {
+    const users = await this.userRepository.find({
+      where: { email: Not(IsNull()) },
+      select: ['email'],
+    });
+    return users.map((user) => user.email);
   }
 
   async findOne(id: number) {
