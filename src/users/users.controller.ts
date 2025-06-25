@@ -28,6 +28,11 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('email')
+  findAllWithEmail() {
+    return this.usersService.findAllEmails();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);

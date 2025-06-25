@@ -55,6 +55,7 @@ export declare class UsersController {
         resetPasswordToken: string;
         resetPasswordExpires: Date;
     }[]>;
+    findAllWithEmail(): Promise<string[]>;
     findOne(id: number): Promise<{
         album: import("../album/entities/album.entity").Album;
         id: number;
