@@ -210,7 +210,9 @@ export class UserStickersService {
     await this.userStickerRepo.save(userSticker);
 
     const user = userSticker.user;
-    user.level += 1;
+    if (user.level < 164) {
+      user.level += 1;
+    }
     await this.usersRepo.save(user);
 
     const totalPasted = await this.userStickerRepo.count({

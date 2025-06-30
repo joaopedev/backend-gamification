@@ -140,6 +140,7 @@ __decorate([
     __metadata("design:type", album_entity_1.Album)
 ], Users.prototype, "albumcompleted", void 0);
 exports.Users = Users = __decorate([
+    (0, typeorm_1.Check)(`"level" <= 164`),
     (0, typeorm_1.Entity)('users')
 ], Users);
 //# sourceMappingURL=user.entity.js.map

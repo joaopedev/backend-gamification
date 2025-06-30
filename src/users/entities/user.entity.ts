@@ -4,6 +4,7 @@ import { StickerPack } from 'src/sticker-pack/entities/sticker-pack.entity';
 import { Trade } from 'src/trades/entities/trade.entity';
 import { UserSticker } from 'src/user-stickers/entities/user-sticker.entity';
 import {
+  Check,
   Column,
   Entity,
   ManyToMany,
@@ -12,6 +13,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+@Check(`"level" <= 164`)
 @Entity('users')
 export class Users {
   @PrimaryGeneratedColumn()

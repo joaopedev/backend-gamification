@@ -18,6 +18,7 @@ exports.UpdateUserLevelDto = UpdateUserLevelDto;
 __decorate([
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(164),
     __metadata("design:type", Number)
 ], UpdateUserLevelDto.prototype, "level", void 0);
 //# sourceMappingURL=update-user-level.dto.js.map
