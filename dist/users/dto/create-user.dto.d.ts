@@ -5,4 +5,5 @@ export declare class CreateUserDto {
     password: string;
     confirm_password: string;
     image_url?: string;
+    level?: number;
 }
