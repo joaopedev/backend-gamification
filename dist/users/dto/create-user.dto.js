@@ -19,6 +19,7 @@ class CreateUserDto {
     password;
     confirm_password;
     image_url;
+    level;
 }
 exports.CreateUserDto = CreateUserDto;
 __decorate([
@@ -69,4 +70,10 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "image_url", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEmpty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateUserDto.prototype, "level", void 0);
 //# sourceMappingURL=create-user.dto.js.map

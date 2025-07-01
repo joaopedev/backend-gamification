@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsEmpty,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   Matches,
@@ -55,4 +56,9 @@ um caractere especial`,
   @IsOptional()
   @IsString()
   image_url?: string;
+
+  @IsOptional()
+  @IsEmpty()
+  @IsNumber()
+  level?: number;
 }
